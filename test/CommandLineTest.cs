@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System;
 
-namespace UnderBridge.Test;
+namespace Mina.Test;
 
 public class CommandLineTest
 {

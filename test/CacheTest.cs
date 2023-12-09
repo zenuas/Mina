@@ -2,7 +2,7 @@
 using Xunit;
 using System;
 
-namespace UnderBridge.Test;
+namespace Mina.Test;
 
 public class CacheTest
 {

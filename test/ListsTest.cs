@@ -4,7 +4,7 @@ using System;
 using System.Linq;
 using System.Threading;
 
-namespace UnderBridge.Test;
+namespace Mina.Test;
 
 public class ListsTest
 {

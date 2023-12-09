@@ -1,7 +1,7 @@
 ﻿using Extensions;
 using Xunit;
 
-namespace UnderBridge.Test;
+namespace Mina.Test;
 
 public class ExpressionsTest
 {
