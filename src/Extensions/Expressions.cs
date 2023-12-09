@@ -27,13 +27,36 @@ public static class Expressions
 
     public static Func<T, R> GetFunction<T, R>(string name) => GetFunction<T, R>(typeof(T).GetMethod(name)!);
 
+    public static Func<T, A, R> GetFunction<T, A, R>(string name) => GetFunction<T, A, R>(typeof(T).GetMethod(name)!);
+
+    public static Action<T> GetAction<T>(string name) => GetAction<T>(typeof(T).GetMethod(name)!);
+
+    public static Action<T, A> GetAction<T, A>(string name) => GetAction<T, A>(typeof(T).GetMethod(name)!);
+
     public static Func<T, R> GetFunction<T, R>(MethodInfo method)
     {
         var receiver = Expression.Parameter(typeof(T));
-        var call = Expression.Call(receiver, method);
         return Expression.Lambda<Func<T, R>>(
-                method.ReturnParameter.ParameterType == typeof(R) ? call : Expression.Convert(call, typeof(R)),
+                ExpressionConvert(Expression.Call(receiver, method), typeof(R), method.ReturnParameter.ParameterType),
                 receiver
+            ).Compile();
+    }
+
+    public static Func<T, A, R> GetFunction<T, A, R>(MethodInfo method)
+    {
+        var receiver = Expression.Parameter(typeof(T));
+        var parameters = method.GetParameters();
+        var arg1 = Expression.Variable(parameters[0].ParameterType);
+        var param1 = Expression.Parameter(typeof(A));
+        return Expression.Lambda<Func<T, A, R>>(
+                Expression.Block(
+                        typeof(R),
+                        [arg1],
+                        ExpressionConvertAssign(arg1, param1, parameters[0].ParameterType, typeof(A)),
+                        ExpressionConvert(Expression.Call(receiver, method, arg1), typeof(R), method.ReturnParameter.ParameterType)
+                    ),
+                receiver,
+                param1
             ).Compile();
     }
 
@@ -49,11 +72,17 @@ public static class Expressions
     public static Action<T, A> GetAction<T, A>(MethodInfo method)
     {
         var receiver = Expression.Parameter(typeof(T));
-        var arg1 = Expression.Parameter(typeof(A));
+        var parameters = method.GetParameters();
+        var arg1 = Expression.Variable(parameters[0].ParameterType);
+        var param1 = Expression.Parameter(typeof(A));
         return Expression.Lambda<Action<T, A>>(
-                Expression.Call(receiver, method, arg1),
+                Expression.Block(
+                        [arg1],
+                        ExpressionConvertAssign(arg1, param1, parameters[0].ParameterType, typeof(A)),
+                        Expression.Call(receiver, method, arg1)
+                    ),
                 receiver,
-                arg1
+                param1
             ).Compile();
     }
 
@@ -62,5 +91,14 @@ public static class Expressions
         return Expression.Lambda<Func<T>>(
                 Expression.New(typeof(T).GetConstructor([])!)
             ).Compile();
+    }
+
+    public static Expression ExpressionConvertAssign(ParameterExpression left, Expression right, Type left_type, Type right_type) => Expression.Assign(left, ExpressionConvert(right, left_type, right_type));
+
+    public static Expression ExpressionConvert(Expression right, Type left_type, Type right_type)
+    {
+        if (left_type == right_type) return right;
+        if (left_type == typeof(string)) return Expression.Call(right, right_type.GetMethod("ToString", [])!);
+        return Expression.Convert(right, left_type);
     }
 }
