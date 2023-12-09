@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mina", "src\Mina.csproj", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mina.Test", "test\Mina.Test.csproj", "{3E06F8CF-863E-453E-8A74-8D4367631212}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mina.Benchmark", "bench\Mina.Benchmark.csproj", "{56DD6FC4-753B-446B-9295-2F5B82CA4CD2}"
+EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{31BE2ED6-0A1B-49A9-9C03-3AB81609F0E7}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
@@ -26,6 +28,10 @@ Global
 		{3E06F8CF-863E-453E-8A74-8D4367631212}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3E06F8CF-863E-453E-8A74-8D4367631212}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3E06F8CF-863E-453E-8A74-8D4367631212}.Release|Any CPU.Build.0 = Release|Any CPU
+		{56DD6FC4-753B-446B-9295-2F5B82CA4CD2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{56DD6FC4-753B-446B-9295-2F5B82CA4CD2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{56DD6FC4-753B-446B-9295-2F5B82CA4CD2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{56DD6FC4-753B-446B-9295-2F5B82CA4CD2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
