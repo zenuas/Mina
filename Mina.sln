@@ -1,0 +1,36 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34309.116
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mina", "src\Mina.csproj", "{DCE68207-996C-40EF-A8DD-5D2A0332470B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mina.Test", "test\Mina.Test.csproj", "{3E06F8CF-863E-453E-8A74-8D4367631212}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{31BE2ED6-0A1B-49A9-9C03-3AB81609F0E7}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DCE68207-996C-40EF-A8DD-5D2A0332470B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DCE68207-996C-40EF-A8DD-5D2A0332470B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DCE68207-996C-40EF-A8DD-5D2A0332470B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DCE68207-996C-40EF-A8DD-5D2A0332470B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3E06F8CF-863E-453E-8A74-8D4367631212}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3E06F8CF-863E-453E-8A74-8D4367631212}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3E06F8CF-863E-453E-8A74-8D4367631212}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3E06F8CF-863E-453E-8A74-8D4367631212}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {3195E35E-9F29-4D21-98E7-8CEF74F6EBF1}
+	EndGlobalSection
+EndGlobal
