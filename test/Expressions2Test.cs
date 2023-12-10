@@ -9,15 +9,19 @@ public class Expressions2Test
     public string Test2 { get; private set; } = "yyy";
     public int Test3 { get; private set; } = 0;
 
-    public void Act1() => Test2 = "aaa";
+    public void Act() => Test2 = "aaa";
 
-    public void Act2(string s) => Test2 = s;
+    public void Act_Str(string s) => Test2 = s;
 
-    public void Act3(int n) => Test3 = n;
+    public void Act_Int(int n) => Test3 = n;
 
-    public string Func1() => Test2;
+    public void Act_Int_Int(int a, int b) => Test3 = a + b;
 
-    public int Func2(int n) => n;
+    public string Fun_Str() => Test2;
+
+    public int Fun_Int_Int(int n) => n;
+
+    public int Fun_Int_Int_Int(int a, int b) => a + b;
 
     [Fact]
     public void SetProperty()
@@ -38,74 +42,92 @@ public class Expressions2Test
     }
 
     [Fact]
-    public void GetAction1()
+    public void GetAction()
     {
         var v = new Expressions2Test();
-        var f = Expressions.GetAction<Expressions2Test>("Act1");
+        var f = Expressions.GetAction<Expressions2Test>("Act");
         f(v);
         Assert.Equal(v.Test2, "aaa");
     }
 
     [Fact]
-    public void GetAction2()
+    public void GetAction_Str()
     {
         var v = new Expressions2Test();
-        var f = Expressions.GetAction<Expressions2Test, string>("Act2");
+        var f = Expressions.GetAction<Expressions2Test, string>("Act_Str");
         f(v, "bbb");
         Assert.Equal(v.Test2, "bbb");
     }
 
     [Fact]
-    public void GetAction2_1()
+    public void GetAction_Int()
     {
         var v = new Expressions2Test();
-        var f = Expressions.GetAction<Expressions2Test, int>("Act2");
+        var f = Expressions.GetAction<Expressions2Test, int>("Act_Str");
         f(v, 123);
         Assert.Equal(v.Test2, "123");
     }
 
     [Fact]
-    public void GetAction3()
+    public void GetAction_IntLong()
     {
         var v = new Expressions2Test();
-        var f = Expressions.GetAction<Expressions2Test, long>("Act3");
+        var f = Expressions.GetAction<Expressions2Test, long>("Act_Int");
         f(v, 123);
         Assert.Equal(v.Test3, 123);
     }
 
     [Fact]
-    public void GetFunction1()
+    public void GetAction_Int_Int()
     {
         var v = new Expressions2Test();
-        var f = Expressions.GetFunction<Expressions2Test, string>("Func1");
+        var f = Expressions.GetAction<Expressions2Test, int, int>("Act_Int_Int");
+        f(v, 123, 456);
+        Assert.Equal(v.Test3, 579);
+    }
+
+    [Fact]
+    public void GetFunction_Str()
+    {
+        var v = new Expressions2Test();
+        var f = Expressions.GetFunction<Expressions2Test, string>("Fun_Str");
         var p = f(v);
         Assert.Equal(p, "yyy");
     }
 
     [Fact]
-    public void GetFunction2()
+    public void GetFunction_Int_Int()
     {
         var v = new Expressions2Test();
-        var f = Expressions.GetFunction<Expressions2Test, int, int>("Func2");
+        var f = Expressions.GetFunction<Expressions2Test, int, int>("Fun_Int_Int");
         var p = f(v, 123);
         Assert.Equal(p, 123);
     }
 
     [Fact]
-    public void GetFunction2_1()
+    public void GetFunction_IntLong_IntLong()
     {
         var v = new Expressions2Test();
-        var f = Expressions.GetFunction<Expressions2Test, long, long>("Func2");
+        var f = Expressions.GetFunction<Expressions2Test, long, long>("Fun_Int_Int");
         var p = f(v, 123);
         Assert.Equal(p, 123);
     }
 
     [Fact]
-    public void GetFunction2_2()
+    public void GetFunction_IntLong_IntObject()
     {
         var v = new Expressions2Test();
-        var f = Expressions.GetFunction<Expressions2Test, long, object>("Func2");
+        var f = Expressions.GetFunction<Expressions2Test, long, object>("Fun_Int_Int");
         var p = f(v, 123);
         Assert.True(p is int a && a == 123);
+    }
+
+    [Fact]
+    public void GetFunction_Int_Int_Int()
+    {
+        var v = new Expressions2Test();
+        var f = Expressions.GetFunction<Expressions2Test, int, int, int>("Fun_Int_Int_Int");
+        var p = f(v, 123, 456);
+        Assert.True(p is int a && a == 579);
     }
 }
