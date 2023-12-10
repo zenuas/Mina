@@ -10,6 +10,7 @@ public class CommandLineTest
 {
     [CommandOption('o')]
     [CommandOption("output")]
+    [CommandHelp("output help message")]
     public string Output { get; init; } = "";
 
     [CommandOption('e')]
