@@ -41,7 +41,7 @@ public static class Expressions
 
     public static Func<T, R> GetFunction<T, R>(MethodInfo method)
     {
-        var ilmethod = new DynamicMethod("", method.ReturnType, [typeof(T)]);
+        var ilmethod = new DynamicMethod("", typeof(R), [typeof(T)]);
         var il = ilmethod.GetILGenerator();
         il.Emit(OpCodes.Ldarg_0);
         EmitCall(il, method);

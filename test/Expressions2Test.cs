@@ -19,6 +19,8 @@ public class Expressions2Test
 
     public string Fun_Str() => Test2;
 
+    public int Fun_Int() => 123;
+
     public int Fun_Int_Int(int n) => n;
 
     public int Fun_Int_Int_Int(int a, int b) => a + b;
@@ -93,6 +95,15 @@ public class Expressions2Test
         var f = Expressions.GetFunction<Expressions2Test, string>("Fun_Str");
         var p = f(v);
         Assert.Equal(p, "yyy");
+    }
+
+    [Fact]
+    public void GetFunction_IntObject()
+    {
+        var v = new Expressions2Test();
+        var f = Expressions.GetFunction<Expressions2Test, object>("Fun_Int");
+        var p = f(v);
+        Assert.True(p is int a && a == 123);
     }
 
     [Fact]
