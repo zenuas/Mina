@@ -150,11 +150,11 @@ public class ListsTest
     [Fact]
     public void SplitTest()
     {
-        var xs1 = "".Split(',').ToList();
-        Assert.Equal(xs1.Count, 1);
+        var xs1 = "".Split(',');
+        Assert.Equal(xs1.Length, 1);
 
-        var xs2 = "123,45,,6,".Split(',').ToList();
-        Assert.Equal(xs2.Count, 5);
+        var xs2 = "123,45,,6,".Split(',');
+        Assert.Equal(xs2.Length, 5);
         Assert.Equal(xs2[0], "123");
         Assert.Equal(xs2[1], "45");
         Assert.Equal(xs2[2], "");
