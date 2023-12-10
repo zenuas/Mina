@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 
 namespace Mina.Benchmark;
 
+[MemoryDiagnoser]
 public class Program
 {
     public static void Main(string[] args)
@@ -54,21 +55,21 @@ public class Program
     }
 
     [Benchmark]
-    public void ExpressionTree1()
+    public void ILGenerator1()
     {
         var f = Expressions.GetAction<Program, int, int>("Dummy");
         f(this, 1, 2);
     }
 
     [Benchmark]
-    public void ExpressionTree1000()
+    public void ILGenerator1000()
     {
         var f = Expressions.GetAction<Program, int, int>("Dummy");
         for (var i = 0; i < 1000; i++) f(this, 1, 2);
     }
 
     [Benchmark]
-    public void ExpressionTree10000()
+    public void ILGenerator10000()
     {
         var f = Expressions.GetAction<Program, int, int>("Dummy");
         for (var i = 0; i < 10000; i++) f(this, 1, 2);

@@ -60,7 +60,7 @@ public class Expressions2Test
     }
 
     [Fact]
-    public void GetAction_Int()
+    public void GetAction_StrInt()
     {
         var v = new Expressions2Test();
         var f = Expressions.GetAction<Expressions2Test, int>("Act_Str");
