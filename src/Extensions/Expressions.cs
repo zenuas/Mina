@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq.Expressions;
 using System.Numerics;
 using System.Reflection;
 using System.Reflection.Emit;
@@ -37,6 +36,8 @@ public static class Expressions
     public static Action<T, A> GetAction<T, A>(string name) => GetAction<T, A>(typeof(T).GetMethod(name)!);
 
     public static Action<T, A1, A2> GetAction<T, A1, A2>(string name) => GetAction<T, A1, A2>(typeof(T).GetMethod(name)!);
+
+    public static Func<T> GetNew<T>() => GetNew<T>(typeof(T).GetConstructor([])!);
 
     public static Func<T, R> GetFunction<T, R>(MethodInfo method)
     {
@@ -118,11 +119,13 @@ public static class Expressions
         return ilmethod.CreateDelegate<Action<T, A1, A2>>();
     }
 
-    public static Func<T> GetNew<T>()
+    public static Func<T> GetNew<T>(ConstructorInfo ctor)
     {
-        return Expression.Lambda<Func<T>>(
-                Expression.New(typeof(T).GetConstructor([])!)
-            ).Compile();
+        var ilmethod = new DynamicMethod("", typeof(T), []);
+        var il = ilmethod.GetILGenerator();
+        il.Emit(OpCodes.Newobj, ctor);
+        il.Emit(OpCodes.Ret);
+        return ilmethod.CreateDelegate<Func<T>>();
     }
 
     public static void EmitLdarg(ILGenerator il, Type left_type, Type arg_type, int argn)
