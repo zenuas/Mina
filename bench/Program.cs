@@ -6,11 +6,13 @@ using System.Runtime.CompilerServices;
 namespace Mina.Benchmark;
 
 [MemoryDiagnoser]
+[IterationTime(0)]
+[InProcess]
 public class Program
 {
     public static void Main(string[] args)
     {
-        BenchmarkRunner.Run<Program>();
+        BenchmarkRunner.Run<Program>(null, args);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]

@@ -21,10 +21,12 @@
 
 :distclean
 	@call :clean
-	rmdir /S /Q src\bin  2>nul
-	rmdir /S /Q src\obj  2>nul
-	rmdir /S /Q test\bin 2>nul
-	rmdir /S /Q test\obj 2>nul
+	rmdir /S /Q src\bin   2>nul
+	rmdir /S /Q src\obj   2>nul
+	rmdir /S /Q test\bin  2>nul
+	rmdir /S /Q test\obj  2>nul
+	rmdir /S /Q bench\bin 2>nul
+	rmdir /S /Q bench\obj 2>nul
 	@exit /b %ERRORLEVEL%
 
 :release
@@ -38,4 +40,8 @@
 
 :test
 	dotnet test --nologo -v q
+	@exit /b %ERRORLEVEL%
+
+:bench
+	dotnet run --project bench/Mina.Benchmark.csproj -c Release %*
 	@exit /b %ERRORLEVEL%
