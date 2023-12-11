@@ -1,18 +1,28 @@
 ﻿using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Columns;
+using BenchmarkDotNet.Configs;
+using BenchmarkDotNet.Loggers;
 using BenchmarkDotNet.Running;
 using Extensions;
 using System.Runtime.CompilerServices;
 
 namespace Mina.Benchmark;
 
-[MemoryDiagnoser]
-[IterationTime(0)]
-[InProcess]
 public class Program
 {
     public static void Main(string[] args)
     {
-        BenchmarkRunner.Run<Program>(null, args);
+#if DEBUG
+        var config = new ManualConfig();
+        config.AddLogger(NullLogger.Instance);
+        config.AddExporter(new MarkdownConsoleExporter());
+        config.AddColumnProvider(DefaultColumnProviders.Instance);
+        config.WithOption(ConfigOptions.DisableOptimizationsValidator, true);
+#else
+        var config = DefaultConfig.Instance;
+#endif
+
+        BenchmarkRunner.Run<Program>(config, args);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]

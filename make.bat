@@ -43,5 +43,5 @@
 	@exit /b %ERRORLEVEL%
 
 :bench
-	dotnet run --project bench/Mina.Benchmark.csproj -c Release %*
+	dotnet run --project bench/Mina.Benchmark.csproj --no-launch-profile -c Release %*
 	@exit /b %ERRORLEVEL%
