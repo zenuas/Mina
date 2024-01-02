@@ -1,6 +1,6 @@
-﻿using Extensions;
-using Xunit;
+﻿using Mina.Extensions;
 using System;
+using Xunit;
 
 namespace Mina.Test;
 

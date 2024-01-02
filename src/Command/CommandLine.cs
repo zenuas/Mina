@@ -1,11 +1,11 @@
-﻿using Extensions;
+﻿using Mina.Extensions;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 
-namespace Command;
+namespace Mina.Command;
 
 public static class CommandLine
 {

@@ -1,8 +1,8 @@
-using Command;
-using Xunit;
+using Mina.Command;
+using System;
 using System.Collections.Generic;
 using System.IO;
-using System;
+using Xunit;
 
 namespace Mina.Test;
 

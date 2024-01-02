@@ -1,8 +1,8 @@
-﻿using Extensions;
-using Xunit;
+﻿using Mina.Extensions;
 using System;
 using System.Linq;
 using System.Threading;
+using Xunit;
 
 namespace Mina.Test;
 

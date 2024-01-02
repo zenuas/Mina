@@ -3,7 +3,7 @@ using BenchmarkDotNet.Columns;
 using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Loggers;
 using BenchmarkDotNet.Running;
-using Extensions;
+using Mina.Extensions;
 using System.Runtime.CompilerServices;
 
 namespace Mina.Benchmark;
