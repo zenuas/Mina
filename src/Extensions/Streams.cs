@@ -54,4 +54,63 @@ public static class Streams
             }
         }
     }
+
+    public static (string Line, string Eol) ReadLineSplitEol(this TextReader self)
+    {
+        Span<char> buffer = stackalloc char[1];
+        var line = new List<char>();
+        var eol = new List<char>();
+        while (true)
+        {
+            var readed = self.Read(buffer);
+            if (readed <= 0) break;
+
+            var c = buffer[0];
+            if (c == '\n')
+            {
+                eol.Add('\n');
+                break;
+            }
+            else if (c == '\r')
+            {
+                eol.Add('\r');
+                if (self.Peek() == '\n')
+                {
+                    _ = self.Read();
+                    eol.Add('\n');
+                }
+                break;
+            }
+
+            line.Add(buffer[0]);
+        }
+        return (line.ToStringByChars(), eol.ToStringByChars());
+    }
+
+    public static string ReadLineWithEol(this TextReader self)
+    {
+        Span<char> buffer = stackalloc char[1];
+        var line = new List<char>();
+        while (true)
+        {
+            var readed = self.Read(buffer);
+            if (readed <= 0) break;
+
+            var c = buffer[0];
+            line.Add(buffer[0]);
+
+            if (c == '\n') break;
+            else if (c == '\r')
+            {
+                if (self.Peek() == '\n')
+                {
+                    _ = self.Read();
+                    line.Add('\n');
+                }
+                break;
+            }
+
+        }
+        return line.ToStringByChars();
+    }
 }
