@@ -101,4 +101,141 @@ public class StreamsTest
         Assert.Equal(("", ""), input3.ReadLineSplitEol());
         Assert.Equal(("", ""), input3.ReadLineSplitEol());
     }
+
+    [Fact]
+    public void ReadCharTest()
+    {
+        var s = "\na\r\nbc\rdef";
+        var input = new StringReader(s);
+        Assert.Equal('\n', input.PeekNewLineLF());
+        Assert.Equal('\n', input.ReadNewLineLF());
+        Assert.Equal('a', input.PeekNewLineLF());
+        Assert.Equal('a', input.ReadNewLineLF());
+        Assert.Equal('\n', input.PeekNewLineLF());
+        Assert.Equal('\n', input.ReadNewLineLF());
+        Assert.Equal('b', input.PeekNewLineLF());
+        Assert.Equal('b', input.ReadNewLineLF());
+        Assert.Equal('c', input.PeekNewLineLF());
+        Assert.Equal('c', input.ReadNewLineLF());
+        Assert.Equal('\n', input.PeekNewLineLF());
+        Assert.Equal('\n', input.ReadNewLineLF());
+        Assert.Equal('d', input.PeekNewLineLF());
+        Assert.Equal('d', input.ReadNewLineLF());
+        Assert.Equal('e', input.PeekNewLineLF());
+        Assert.Equal('e', input.ReadNewLineLF());
+        Assert.Equal('f', input.PeekNewLineLF());
+        Assert.Equal('f', input.ReadNewLineLF());
+        Assert.Null(input.PeekNewLineLF());
+        Assert.Null(input.ReadNewLineLF());
+
+        var s2 = "xyz\na\r\nbc\rdef";
+        var input2 = new StringReader(s2);
+        Assert.Equal('x', input2.PeekNewLineLF());
+        Assert.Equal('x', input2.ReadNewLineLF());
+        Assert.Equal('y', input2.PeekNewLineLF());
+        Assert.Equal('y', input2.ReadNewLineLF());
+        Assert.Equal('z', input2.PeekNewLineLF());
+        Assert.Equal('z', input2.ReadNewLineLF());
+        Assert.Equal('\n', input2.PeekNewLineLF());
+        Assert.Equal('\n', input2.ReadNewLineLF());
+        Assert.Equal('a', input2.PeekNewLineLF());
+        Assert.Equal('a', input2.ReadNewLineLF());
+        Assert.Equal('\n', input2.PeekNewLineLF());
+        Assert.Equal('\n', input2.ReadNewLineLF());
+        Assert.Equal('b', input2.PeekNewLineLF());
+        Assert.Equal('b', input2.ReadNewLineLF());
+        Assert.Equal('c', input2.PeekNewLineLF());
+        Assert.Equal('c', input2.ReadNewLineLF());
+        Assert.Equal('\n', input2.PeekNewLineLF());
+        Assert.Equal('\n', input2.ReadNewLineLF());
+        Assert.Equal('d', input2.PeekNewLineLF());
+        Assert.Equal('d', input2.ReadNewLineLF());
+        Assert.Equal('e', input2.PeekNewLineLF());
+        Assert.Equal('e', input2.ReadNewLineLF());
+        Assert.Equal('f', input2.PeekNewLineLF());
+        Assert.Equal('f', input2.ReadNewLineLF());
+        Assert.Null(input2.PeekNewLineLF());
+        Assert.Null(input2.ReadNewLineLF());
+
+        var s3 = "xyz\na\r\nbc\rdef\n\n";
+        var input3 = new StringReader(s3);
+        Assert.Equal('x', input3.PeekNewLineLF());
+        Assert.Equal('x', input3.ReadNewLineLF());
+        Assert.Equal('y', input3.PeekNewLineLF());
+        Assert.Equal('y', input3.ReadNewLineLF());
+        Assert.Equal('z', input3.PeekNewLineLF());
+        Assert.Equal('z', input3.ReadNewLineLF());
+        Assert.Equal('\n', input3.PeekNewLineLF());
+        Assert.Equal('\n', input3.ReadNewLineLF());
+        Assert.Equal('a', input3.PeekNewLineLF());
+        Assert.Equal('a', input3.ReadNewLineLF());
+        Assert.Equal('\n', input3.PeekNewLineLF());
+        Assert.Equal('\n', input3.ReadNewLineLF());
+        Assert.Equal('b', input3.PeekNewLineLF());
+        Assert.Equal('b', input3.ReadNewLineLF());
+        Assert.Equal('c', input3.PeekNewLineLF());
+        Assert.Equal('c', input3.ReadNewLineLF());
+        Assert.Equal('\n', input3.PeekNewLineLF());
+        Assert.Equal('\n', input3.ReadNewLineLF());
+        Assert.Equal('d', input3.PeekNewLineLF());
+        Assert.Equal('d', input3.ReadNewLineLF());
+        Assert.Equal('e', input3.PeekNewLineLF());
+        Assert.Equal('e', input3.ReadNewLineLF());
+        Assert.Equal('f', input3.PeekNewLineLF());
+        Assert.Equal('f', input3.ReadNewLineLF());
+        Assert.Equal('\n', input3.PeekNewLineLF());
+        Assert.Equal('\n', input3.ReadNewLineLF());
+        Assert.Equal('\n', input3.PeekNewLineLF());
+        Assert.Equal('\n', input3.ReadNewLineLF());
+        Assert.Null(input3.PeekNewLineLF());
+        Assert.Null(input3.ReadNewLineLF());
+    }
+
+    [Fact]
+    public void ReadCharBadCaseTest()
+    {
+        var s = "a\r\nb";
+        var input = new StringReader(s);
+        Assert.Equal('a', input.PeekNewLineLF());
+        Assert.Equal('a', input.ReadNewLineLF());
+        Assert.Equal('\n', input.PeekNewLineLF());
+
+        var c = input.Read();
+        Assert.Equal('\r', c);
+
+        Assert.Equal('\n', input.PeekNewLineLF());
+        Assert.Equal('\n', input.ReadNewLineLF());
+        Assert.Equal('b', input.PeekNewLineLF());
+        Assert.Equal('b', input.ReadNewLineLF());
+        Assert.Null(input.PeekNewLineLF());
+        Assert.Null(input.ReadNewLineLF());
+
+        var s2 = "a\rb";
+        var input2 = new StringReader(s2);
+        Assert.Equal('a', input2.PeekNewLineLF());
+        Assert.Equal('a', input2.ReadNewLineLF());
+        Assert.Equal('\n', input2.PeekNewLineLF());
+
+        var c2 = input2.Read();
+        Assert.Equal('\r', c2);
+
+        Assert.Equal('b', input2.PeekNewLineLF());
+        Assert.Equal('b', input2.ReadNewLineLF());
+        Assert.Null(input2.PeekNewLineLF());
+        Assert.Null(input2.ReadNewLineLF());
+
+        var s3 = "a\nb";
+        var input3 = new StringReader(s3);
+        Assert.Equal('a', input3.PeekNewLineLF());
+        Assert.Equal('a', input3.ReadNewLineLF());
+        Assert.Equal('\n', input3.PeekNewLineLF());
+
+        var c3 = input3.Read();
+        Assert.Equal('\n', c3);
+
+        Assert.Equal('b', input3.PeekNewLineLF());
+        Assert.Equal('b', input3.ReadNewLineLF());
+        Assert.Null(input3.PeekNewLineLF());
+        Assert.Null(input3.ReadNewLineLF());
+    }
 }

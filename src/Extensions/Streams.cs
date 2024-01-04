@@ -113,4 +113,24 @@ public static class Streams
         }
         return line.ToStringByChars();
     }
+
+    public static char? PeekNewLineLF(this TextReader self)
+    {
+        var c = self.Peek();
+        if (c < 0) return null;
+        if (c == '\r') return '\n';
+        return (char)c;
+    }
+
+    public static char? ReadNewLineLF(this TextReader self)
+    {
+        var c = self.Read();
+        if (c < 0) return null;
+        if (c == '\r')
+        {
+            if (self.Peek() == '\n') _ = self.Read();
+            return '\n';
+        }
+        return (char)c;
+    }
 }
