@@ -1,4 +1,5 @@
 ﻿using Mina.Extensions;
+using System;
 using Xunit;
 
 namespace Mina.Test;
@@ -8,7 +9,7 @@ public class StringsTest
     public StringsTest() => System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
 
     [Fact]
-    public void CountTest()
+    public void CountAsByteTest()
     {
         var s = "abcあいうアイウ亜伊宇ｱｲｳ";
         var sjis = System.Text.Encoding.GetEncoding(932);
@@ -42,10 +43,37 @@ public class StringsTest
     }
 
     [Fact]
-    public void SubstringTest()
+    public void SubstringAsByteTest()
     {
         var s = "abcあいうアイウ亜伊宇ｱｲｳ";
         var sjis = System.Text.Encoding.GetEncoding(932);
+
+        Assert.Equal(s.SubstringAsByte(0, sjis), "abcあいうアイウ亜伊宇ｱｲｳ");
+        Assert.Equal(s.SubstringAsByte(1, sjis), "bcあいうアイウ亜伊宇ｱｲｳ");
+        Assert.Equal(s.SubstringAsByte(2, sjis), "cあいうアイウ亜伊宇ｱｲｳ");
+        Assert.Equal(s.SubstringAsByte(3, sjis), "あいうアイウ亜伊宇ｱｲｳ");
+        Assert.Equal(s.SubstringAsByte(4, sjis), "あいうアイウ亜伊宇ｱｲｳ");
+        Assert.Equal(s.SubstringAsByte(5, sjis), "いうアイウ亜伊宇ｱｲｳ");
+        Assert.Equal(s.SubstringAsByte(6, sjis), "いうアイウ亜伊宇ｱｲｳ");
+        Assert.Equal(s.SubstringAsByte(7, sjis), "うアイウ亜伊宇ｱｲｳ");
+        Assert.Equal(s.SubstringAsByte(8, sjis), "うアイウ亜伊宇ｱｲｳ");
+        Assert.Equal(s.SubstringAsByte(9, sjis), "アイウ亜伊宇ｱｲｳ");
+        Assert.Equal(s.SubstringAsByte(10, sjis), "アイウ亜伊宇ｱｲｳ");
+        Assert.Equal(s.SubstringAsByte(11, sjis), "イウ亜伊宇ｱｲｳ");
+        Assert.Equal(s.SubstringAsByte(12, sjis), "イウ亜伊宇ｱｲｳ");
+        Assert.Equal(s.SubstringAsByte(13, sjis), "ウ亜伊宇ｱｲｳ");
+        Assert.Equal(s.SubstringAsByte(14, sjis), "ウ亜伊宇ｱｲｳ");
+        Assert.Equal(s.SubstringAsByte(15, sjis), "亜伊宇ｱｲｳ");
+        Assert.Equal(s.SubstringAsByte(16, sjis), "亜伊宇ｱｲｳ");
+        Assert.Equal(s.SubstringAsByte(17, sjis), "伊宇ｱｲｳ");
+        Assert.Equal(s.SubstringAsByte(18, sjis), "伊宇ｱｲｳ");
+        Assert.Equal(s.SubstringAsByte(19, sjis), "宇ｱｲｳ");
+        Assert.Equal(s.SubstringAsByte(20, sjis), "宇ｱｲｳ");
+        Assert.Equal(s.SubstringAsByte(21, sjis), "ｱｲｳ");
+        Assert.Equal(s.SubstringAsByte(22, sjis), "ｲｳ");
+        Assert.Equal(s.SubstringAsByte(23, sjis), "ｳ");
+        Assert.Equal(s.SubstringAsByte(24, sjis), "");
+        Assert.Equal(s.SubstringAsByte(25, sjis), "");
 
         Assert.Equal(s.SubstringAsByte(0, 0, sjis), "");
         Assert.Equal(s.SubstringAsByte(0, 1, sjis), "a");
@@ -99,5 +127,123 @@ public class StringsTest
         Assert.Equal(s.SubstringAsByte(22, 3, sjis), "ｲｳ");
         Assert.Equal(s.SubstringAsByte(23, 3, sjis), "ｳ");
         Assert.Equal(s.SubstringAsByte(24, 3, sjis), "");
+    }
+
+    [Fact]
+    public void SubstringAsCountTest()
+    {
+        var s = "abcあいうアイウ亜伊宇ｱｲｳ";
+
+        Assert.Equal(s.SubstringAsCount(0), "abcあいうアイウ亜伊宇ｱｲｳ");
+        Assert.Equal(s.SubstringAsCount(1), "bcあいうアイウ亜伊宇ｱｲｳ");
+        Assert.Equal(s.SubstringAsCount(2), "cあいうアイウ亜伊宇ｱｲｳ");
+        Assert.Equal(s.SubstringAsCount(3), "あいうアイウ亜伊宇ｱｲｳ");
+        Assert.Equal(s.SubstringAsCount(4), "いうアイウ亜伊宇ｱｲｳ");
+        Assert.Equal(s.SubstringAsCount(5), "うアイウ亜伊宇ｱｲｳ");
+        Assert.Equal(s.SubstringAsCount(6), "アイウ亜伊宇ｱｲｳ");
+        Assert.Equal(s.SubstringAsCount(7), "イウ亜伊宇ｱｲｳ");
+        Assert.Equal(s.SubstringAsCount(8), "ウ亜伊宇ｱｲｳ");
+        Assert.Equal(s.SubstringAsCount(9), "亜伊宇ｱｲｳ");
+        Assert.Equal(s.SubstringAsCount(10), "伊宇ｱｲｳ");
+        Assert.Equal(s.SubstringAsCount(11), "宇ｱｲｳ");
+        Assert.Equal(s.SubstringAsCount(12), "ｱｲｳ");
+        Assert.Equal(s.SubstringAsCount(13), "ｲｳ");
+        Assert.Equal(s.SubstringAsCount(14), "ｳ");
+        Assert.Equal(s.SubstringAsCount(15), "");
+        Assert.Equal(s.SubstringAsCount(16), "");
+
+        Assert.Equal(s.SubstringAsCount(0, 0), "");
+        Assert.Equal(s.SubstringAsCount(0, 1), "a");
+        Assert.Equal(s.SubstringAsCount(0, 2), "ab");
+        Assert.Equal(s.SubstringAsCount(0, 3), "abc");
+        Assert.Equal(s.SubstringAsCount(0, 4), "abcあ");
+        Assert.Equal(s.SubstringAsCount(0, 5), "abcあい");
+        Assert.Equal(s.SubstringAsCount(0, 6), "abcあいう");
+        Assert.Equal(s.SubstringAsCount(0, 7), "abcあいうア");
+        Assert.Equal(s.SubstringAsCount(0, 8), "abcあいうアイ");
+        Assert.Equal(s.SubstringAsCount(0, 9), "abcあいうアイウ");
+        Assert.Equal(s.SubstringAsCount(0, 10), "abcあいうアイウ亜");
+        Assert.Equal(s.SubstringAsCount(0, 11), "abcあいうアイウ亜伊");
+        Assert.Equal(s.SubstringAsCount(0, 12), "abcあいうアイウ亜伊宇");
+        Assert.Equal(s.SubstringAsCount(0, 13), "abcあいうアイウ亜伊宇ｱ");
+        Assert.Equal(s.SubstringAsCount(0, 14), "abcあいうアイウ亜伊宇ｱｲ");
+        Assert.Equal(s.SubstringAsCount(0, 15), "abcあいうアイウ亜伊宇ｱｲｳ");
+        Assert.Equal(s.SubstringAsCount(0, 16), "abcあいうアイウ亜伊宇ｱｲｳ");
+
+        Assert.Equal(s.SubstringAsCount(0, 3), "abc");
+        Assert.Equal(s.SubstringAsCount(1, 3), "bcあ");
+        Assert.Equal(s.SubstringAsCount(2, 3), "cあい");
+        Assert.Equal(s.SubstringAsCount(3, 3), "あいう");
+        Assert.Equal(s.SubstringAsCount(4, 3), "いうア");
+        Assert.Equal(s.SubstringAsCount(5, 3), "うアイ");
+        Assert.Equal(s.SubstringAsCount(6, 3), "アイウ");
+        Assert.Equal(s.SubstringAsCount(7, 3), "イウ亜");
+        Assert.Equal(s.SubstringAsCount(8, 3), "ウ亜伊");
+        Assert.Equal(s.SubstringAsCount(9, 3), "亜伊宇");
+        Assert.Equal(s.SubstringAsCount(10, 3), "伊宇ｱ");
+        Assert.Equal(s.SubstringAsCount(11, 3), "宇ｱｲ");
+        Assert.Equal(s.SubstringAsCount(12, 3), "ｱｲｳ");
+        Assert.Equal(s.SubstringAsCount(13, 3), "ｲｳ");
+        Assert.Equal(s.SubstringAsCount(14, 3), "ｳ");
+        Assert.Equal(s.SubstringAsCount(15, 3), "");
+    }
+
+    [Fact]
+    public void SubstringTest()
+    {
+        var s = "abcあいうアイウ亜伊宇ｱｲｳ";
+
+        Assert.Equal(s.Substring(0), "abcあいうアイウ亜伊宇ｱｲｳ");
+        Assert.Equal(s.Substring(1), "bcあいうアイウ亜伊宇ｱｲｳ");
+        Assert.Equal(s.Substring(2), "cあいうアイウ亜伊宇ｱｲｳ");
+        Assert.Equal(s.Substring(3), "あいうアイウ亜伊宇ｱｲｳ");
+        Assert.Equal(s.Substring(4), "いうアイウ亜伊宇ｱｲｳ");
+        Assert.Equal(s.Substring(5), "うアイウ亜伊宇ｱｲｳ");
+        Assert.Equal(s.Substring(6), "アイウ亜伊宇ｱｲｳ");
+        Assert.Equal(s.Substring(7), "イウ亜伊宇ｱｲｳ");
+        Assert.Equal(s.Substring(8), "ウ亜伊宇ｱｲｳ");
+        Assert.Equal(s.Substring(9), "亜伊宇ｱｲｳ");
+        Assert.Equal(s.Substring(10), "伊宇ｱｲｳ");
+        Assert.Equal(s.Substring(11), "宇ｱｲｳ");
+        Assert.Equal(s.Substring(12), "ｱｲｳ");
+        Assert.Equal(s.Substring(13), "ｲｳ");
+        Assert.Equal(s.Substring(14), "ｳ");
+        Assert.Equal(s.Substring(15), "");
+        _ = Assert.Throws<ArgumentOutOfRangeException>(() => s.Substring(16));
+
+        Assert.Equal(s.Substring(0, 0), "");
+        Assert.Equal(s.Substring(0, 1), "a");
+        Assert.Equal(s.Substring(0, 2), "ab");
+        Assert.Equal(s.Substring(0, 3), "abc");
+        Assert.Equal(s.Substring(0, 4), "abcあ");
+        Assert.Equal(s.Substring(0, 5), "abcあい");
+        Assert.Equal(s.Substring(0, 6), "abcあいう");
+        Assert.Equal(s.Substring(0, 7), "abcあいうア");
+        Assert.Equal(s.Substring(0, 8), "abcあいうアイ");
+        Assert.Equal(s.Substring(0, 9), "abcあいうアイウ");
+        Assert.Equal(s.Substring(0, 10), "abcあいうアイウ亜");
+        Assert.Equal(s.Substring(0, 11), "abcあいうアイウ亜伊");
+        Assert.Equal(s.Substring(0, 12), "abcあいうアイウ亜伊宇");
+        Assert.Equal(s.Substring(0, 13), "abcあいうアイウ亜伊宇ｱ");
+        Assert.Equal(s.Substring(0, 14), "abcあいうアイウ亜伊宇ｱｲ");
+        Assert.Equal(s.Substring(0, 15), "abcあいうアイウ亜伊宇ｱｲｳ");
+        _ = Assert.Throws<ArgumentOutOfRangeException>(() => s.Substring(0, 16));
+
+        Assert.Equal(s.Substring(0, 3), "abc");
+        Assert.Equal(s.Substring(1, 3), "bcあ");
+        Assert.Equal(s.Substring(2, 3), "cあい");
+        Assert.Equal(s.Substring(3, 3), "あいう");
+        Assert.Equal(s.Substring(4, 3), "いうア");
+        Assert.Equal(s.Substring(5, 3), "うアイ");
+        Assert.Equal(s.Substring(6, 3), "アイウ");
+        Assert.Equal(s.Substring(7, 3), "イウ亜");
+        Assert.Equal(s.Substring(8, 3), "ウ亜伊");
+        Assert.Equal(s.Substring(9, 3), "亜伊宇");
+        Assert.Equal(s.Substring(10, 3), "伊宇ｱ");
+        Assert.Equal(s.Substring(11, 3), "宇ｱｲ");
+        Assert.Equal(s.Substring(12, 3), "ｱｲｳ");
+        _ = Assert.Throws<ArgumentOutOfRangeException>(() => s.Substring(13, 3));
+        _ = Assert.Throws<ArgumentOutOfRangeException>(() => s.Substring(14, 3));
+        _ = Assert.Throws<ArgumentOutOfRangeException>(() => s.Substring(15, 3));
     }
 }

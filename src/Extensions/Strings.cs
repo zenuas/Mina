@@ -22,6 +22,12 @@ public static class Strings
     public static string SubstringAsByte(this string self, int startIndex, int length, Encoding enc) => self.SubstringAsByte(startIndex, enc).To(x => x[..x.CountAsByte(length, enc)]);
 
     [DebuggerHidden]
+    public static string SubstringAsCount(this string self, int startIndex) => self[Math.Min(startIndex, self.Length)..];
+
+    [DebuggerHidden]
+    public static string SubstringAsCount(this string self, int startIndex, int length) => self[startIndex..Math.Min(startIndex + length, self.Length)];
+
+    [DebuggerHidden]
     public static string Join(this IEnumerable<string> self, char separator) => string.Join(separator, self);
 
     [DebuggerHidden]
