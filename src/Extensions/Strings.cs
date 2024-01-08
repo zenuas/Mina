@@ -28,6 +28,25 @@ public static class Strings
     public static string SubstringAsCount(this string self, int startIndex, int length) => self[startIndex..Math.Min(startIndex + length, self.Length)];
 
     [DebuggerHidden]
+    public static bool IsWildcardMatch(this string self, string pattern) => IsWildcardMatch(self.AsSpan(), pattern.AsSpan());
+
+    [DebuggerHidden]
+    public static bool IsWildcardMatch(this ReadOnlySpan<char> self, ReadOnlySpan<char> pattern)
+    {
+        if (self.Length == 0 && pattern.Length == 0) return true;
+        if (self.Length == 0 && pattern.Length >= 1 && pattern[0] == '*') return IsWildcardMatch(self, pattern[1..]);
+        if (self.Length == 0 || pattern.Length == 0) return false;
+
+        return pattern[0] switch
+        {
+            var c when c == '*' => IsWildcardMatch(self[1..], pattern) || IsWildcardMatch(self[1..], pattern[1..]),
+            var c when c == '?' => IsWildcardMatch(self[1..], pattern[1..]),
+            var c when c == self[0] => IsWildcardMatch(self[1..], pattern[1..]),
+            _ => false,
+        };
+    }
+
+    [DebuggerHidden]
     public static string Join(this IEnumerable<string> self, char separator) => string.Join(separator, self);
 
     [DebuggerHidden]
