@@ -28,21 +28,21 @@ public static class Strings
     public static string SubstringAsCount(this string self, int startIndex, int length) => self[startIndex..Math.Min(startIndex + length, self.Length)];
 
     [DebuggerHidden]
-    public static bool IsWildcardMatch(this string self, string pattern) => IsWildcardMatch(self.AsSpan(), pattern.AsSpan());
+    public static bool IsWildcardMatch(this string self, string pattern) => IsWildcardMatch(self, pattern, 0, 0);
 
     [DebuggerHidden]
-    public static bool IsWildcardMatch(this ReadOnlySpan<char> self, ReadOnlySpan<char> pattern)
+    public static bool IsWildcardMatch(this string self, string pattern, int startIndex, int patternIndex)
     {
-        if (self.Length == 0 && pattern.Length == 0) return true;
-        if (self.Length == 0 && pattern.Length >= 1 && pattern[0] == '*') return IsWildcardMatch(self, pattern[1..]);
-        if (self.Length == 0 || pattern.Length == 0) return false;
+        if (self.Length <= startIndex && pattern.Length <= patternIndex) return true;
+        if (self.Length <= startIndex && pattern.Length > patternIndex && pattern[patternIndex] == '*') return IsWildcardMatch(self, pattern, startIndex, patternIndex + 1);
+        if (self.Length <= startIndex || pattern.Length <= patternIndex) return false;
 
-        return pattern[0] switch
+        var c = pattern[patternIndex];
+        return c switch
         {
-            var c when c == '*' => IsWildcardMatch(self[1..], pattern) || IsWildcardMatch(self[1..], pattern[1..]),
-            var c when c == '?' => IsWildcardMatch(self[1..], pattern[1..]),
-            var c when c == self[0] => IsWildcardMatch(self[1..], pattern[1..]),
-            _ => false,
+            '*' => IsWildcardMatch(self, pattern, startIndex + 1, patternIndex) || IsWildcardMatch(self, pattern, startIndex + 1, patternIndex + 1),
+            '?' => IsWildcardMatch(self, pattern, startIndex + 1, patternIndex + 1),
+            _ => c == self[startIndex] && IsWildcardMatch(self, pattern, startIndex + 1, patternIndex + 1),
         };
     }
 

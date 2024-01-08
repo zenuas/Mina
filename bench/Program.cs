@@ -5,6 +5,7 @@ using BenchmarkDotNet.Loggers;
 using BenchmarkDotNet.Running;
 using Mina.Extensions;
 using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
 
 namespace Mina.Benchmark;
 
@@ -155,5 +156,32 @@ public class Program
             map_dynamic["StringA"](receiver, "x");
             map_dynamic["StringB"](receiver, "y");
         }
+    }
+
+    public Regex psc_ = null!;
+
+    [GlobalSetup]
+    public void GlobalSetup()
+    {
+        psc_ = new Regex("^a.*0.*..*0.*f$", RegexOptions.Compiled);
+    }
+
+    [Benchmark]
+    public void Wildcard()
+    {
+        _ = "abcdefabcdefabcdefabcdefabcdef01234567890abcdefabcdefabcdefabcdefabcdef".IsWildcardMatch("a*0*?*0*f");
+    }
+
+    [Benchmark]
+    public void WildcardRegex()
+    {
+        _ = psc_.IsMatch("abcdefabcdefabcdefabcdefabcdef01234567890abcdefabcdefabcdefabcdefabcdef");
+    }
+
+    [Benchmark]
+    public void WildcardRegex2()
+    {
+        var ps = new Regex("^a.*0.*..*0.*f$");
+        _ = ps.IsMatch("abcdefabcdefabcdefabcdefabcdef01234567890abcdefabcdefabcdefabcdefabcdef");
     }
 }
