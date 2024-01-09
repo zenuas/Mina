@@ -28,22 +28,60 @@ public static class Strings
     public static string SubstringAsCount(this string self, int startIndex, int length) => self[startIndex..Math.Min(startIndex + length, self.Length)];
 
     [DebuggerHidden]
-    public static bool IsWildcardMatch(this string self, string pattern) => IsWildcardMatch(self, pattern, 0, 0);
+    public static bool IsWildcardMatch(this string self, string pattern) => MultiBlockMatch(self, WildcardAsteriskSplit(pattern));
 
-    [DebuggerHidden]
-    public static bool IsWildcardMatch(this string self, string pattern, int startIndex, int patternIndex)
+    public static string[] WildcardAsteriskSplit(string pattern)
     {
-        if (self.Length <= startIndex && pattern.Length <= patternIndex) return true;
-        if (self.Length <= startIndex && pattern.Length > patternIndex && pattern[patternIndex] == '*') return IsWildcardMatch(self, pattern, startIndex, patternIndex + 1);
-        if (self.Length <= startIndex || pattern.Length <= patternIndex) return false;
+        var patterns = new List<string>();
+        var start = 0;
+        var length = 0;
 
-        var c = pattern[patternIndex];
-        return c switch
+        for (var i = 0; i < pattern.Length; i++)
         {
-            '*' => IsWildcardMatch(self, pattern, startIndex + 1, patternIndex) || IsWildcardMatch(self, pattern, startIndex + 1, patternIndex + 1),
-            '?' => IsWildcardMatch(self, pattern, startIndex + 1, patternIndex + 1),
-            _ => c == self[startIndex] && IsWildcardMatch(self, pattern, startIndex + 1, patternIndex + 1),
-        };
+            if (pattern[i] == '*')
+            {
+                if (length > 0) patterns.Add(pattern[start..(start + length)]);
+                for (i++; i < pattern.Length && pattern[i] == '*'; i++) ;
+                start = i;
+                length = 1;
+            }
+            else
+            {
+                length++;
+            }
+        }
+        if (length > 0) patterns.Add(pattern[start..Math.Min(pattern.Length, start + length)]);
+        return [.. patterns];
+    }
+
+    public static bool MultiBlockMatch(string s, string[] patterns)
+    {
+        if (patterns.Length == 0) return s.Length == 0;
+        var span = s.AsSpan();
+        var index = 0;
+        for (var i = 0; i < patterns.Length - 1; i++)
+        {
+            var m = Wild1Match(span[index..], patterns[i]);
+            if (m < 0) return false;
+            index += m + patterns[i].Length;
+        }
+        var last = patterns[^1];
+        return span.Length >= last.Length && Wild1Match(span[^last.Length..], last) >= 0;
+    }
+
+    public static int Wild1Match(ReadOnlySpan<char> s, string pattern)
+    {
+        if (pattern.Length == 0) return 0;
+        for (var i = 0; i < s.Length - pattern.Length + 1; i++)
+        {
+            for (var pi = 0; pi < pattern.Length; pi++)
+            {
+                var pc = pattern[pi];
+                if (pc != '?' && s[i + pi] != pc) break;
+                if (pi == pattern.Length - 1) return i;
+            }
+        }
+        return -1;
     }
 
     [DebuggerHidden]

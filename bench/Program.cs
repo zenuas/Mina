@@ -159,15 +159,23 @@ public class Program
     }
 
     public Regex psc_ = null!;
+    public string[] wil_ = null!;
 
     [GlobalSetup]
     public void GlobalSetup()
     {
         psc_ = new Regex("^a.*0.*..*0.*f$", RegexOptions.Compiled);
+        wil_ = Strings.WildcardAsteriskSplit("a*0*?*0*f");
     }
 
     [Benchmark]
     public void Wildcard()
+    {
+        _ = Strings.MultiBlockMatch("abcdefabcdefabcdefabcdefabcdef01234567890abcdefabcdefabcdefabcdefabcdef", wil_);
+    }
+
+    [Benchmark]
+    public void Wildcard2()
     {
         _ = "abcdefabcdefabcdefabcdefabcdef01234567890abcdefabcdefabcdefabcdefabcdef".IsWildcardMatch("a*0*?*0*f");
     }

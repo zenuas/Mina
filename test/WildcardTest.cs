@@ -85,6 +85,9 @@ public class WildcardTest
         Assert.True("aa".IsWildcardMatch("***"));
         Assert.True("aaa".IsWildcardMatch("**"));
         Assert.True("aaa".IsWildcardMatch("***"));
+        Assert.True("img001.jpg".IsWildcardMatch("img*.jpg"));
+        Assert.True("img001.002.jpg".IsWildcardMatch("img*.*.jpg"));
+        Assert.True("img001..jpg".IsWildcardMatch("img*.*.jpg"));
 
         Assert.False("".IsWildcardMatch("**x"));
         Assert.False("a".IsWildcardMatch("**x"));
@@ -93,5 +96,8 @@ public class WildcardTest
         Assert.False("aa".IsWildcardMatch("***x"));
         Assert.False("aaa".IsWildcardMatch("**x"));
         Assert.False("aaa".IsWildcardMatch("***x"));
+        Assert.False("img001.jpg".IsWildcardMatch("img*.png"));
+        Assert.False("img001.002.jpg".IsWildcardMatch("img*.*.png"));
+        Assert.False("img001..jpg".IsWildcardMatch("img*.*.png"));
     }
 }
