@@ -9,6 +9,40 @@ namespace Mina.Extensions;
 public static class Strings
 {
     [DebuggerHidden]
+    public static int IndexOf(this string self, BoyerMooreTable table) => self.AsSpan().IndexOf(table, 0);
+
+    [DebuggerHidden]
+    public static int IndexOf(this string self, BoyerMooreTable table, int startIndex) => self.AsSpan().IndexOf(table, startIndex);
+
+    [DebuggerHidden]
+    public static int IndexOf(this ReadOnlySpan<char> self, BoyerMooreTable table) => self.IndexOf(table, 0);
+
+    [DebuggerHidden]
+    public static int IndexOf(this ReadOnlySpan<char> self, BoyerMooreTable table, int startIndex)
+    {
+        if (startIndex < 0 || self.Length < startIndex) return -1;
+        if (table.Value.Length == 0) return startIndex;
+
+        var i = table.Value.Length - 1 + startIndex;
+        var j = table.Value.Length - 1;
+        while (i < self.Length)
+        {
+            if (self[i] != table.Value[j])
+            {
+                i += table.TryGetValue(self[i], out var offset) ? offset : table.Value.Length;
+                j = table.Value.Length - 1;
+            }
+            else if (j == 0) return i;
+            else
+            {
+                i--;
+                j--;
+            }
+        }
+        return -1;
+    }
+
+    [DebuggerHidden]
     public static int CountAsByte(this string self, int length, Encoding enc) =>
         self.Select(x => enc.GetByteCount([x]))
             .Accumulator((acc, x) => acc + x)
