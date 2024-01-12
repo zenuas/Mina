@@ -61,13 +61,18 @@ public static class Strings
         var index = 0;
         for (var i = 0; i < patterns.Length - 1; i++)
         {
-            var m = Wild1Match(span[index..], patterns[i]);
+            var m = WildOrStringMatch(span[index..], patterns[i]);
             if (m < 0) return false;
             index += m + patterns[i].Length;
         }
         var last = patterns[^1];
-        return span.Length >= last.Length && Wild1Match(span[^last.Length..], last) >= 0;
+        return span.Length >= last.Length && WildOrStringMatch(span[^last.Length..], last) >= 0;
     }
+
+    public static int WildOrStringMatch(ReadOnlySpan<char> s, string pattern) =>
+        pattern.Contains('?', StringComparison.Ordinal)
+            ? Wild1Match(s, pattern)
+            : s.IndexOf(pattern, StringComparison.Ordinal);
 
     public static int Wild1Match(ReadOnlySpan<char> s, string pattern)
     {
