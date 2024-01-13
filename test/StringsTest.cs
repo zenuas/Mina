@@ -14,6 +14,7 @@ public class StringsTest
         var s = "abcあいうアイウ亜伊宇ｱｲｳ";
         var sjis = System.Text.Encoding.GetEncoding(932);
 
+        Assert.Equal(s.CountAsByte(-1, sjis), 0);
         Assert.Equal(s.CountAsByte(0, sjis), 0);
         Assert.Equal(s.CountAsByte(1, sjis), 1);
         Assert.Equal(s.CountAsByte(2, sjis), 2);
@@ -48,6 +49,7 @@ public class StringsTest
         var s = "abcあいうアイウ亜伊宇ｱｲｳ";
         var sjis = System.Text.Encoding.GetEncoding(932);
 
+        Assert.Equal(s.SubstringAsByte(-1, sjis), "abcあいうアイウ亜伊宇ｱｲｳ");
         Assert.Equal(s.SubstringAsByte(0, sjis), "abcあいうアイウ亜伊宇ｱｲｳ");
         Assert.Equal(s.SubstringAsByte(1, sjis), "bcあいうアイウ亜伊宇ｱｲｳ");
         Assert.Equal(s.SubstringAsByte(2, sjis), "cあいうアイウ亜伊宇ｱｲｳ");
@@ -75,6 +77,7 @@ public class StringsTest
         Assert.Equal(s.SubstringAsByte(24, sjis), "");
         Assert.Equal(s.SubstringAsByte(25, sjis), "");
 
+        Assert.Equal(s.SubstringAsByte(0, -1, sjis), "");
         Assert.Equal(s.SubstringAsByte(0, 0, sjis), "");
         Assert.Equal(s.SubstringAsByte(0, 1, sjis), "a");
         Assert.Equal(s.SubstringAsByte(0, 2, sjis), "ab");
@@ -102,6 +105,7 @@ public class StringsTest
         Assert.Equal(s.SubstringAsByte(0, 24, sjis), "abcあいうアイウ亜伊宇ｱｲｳ");
         Assert.Equal(s.SubstringAsByte(0, 25, sjis), "abcあいうアイウ亜伊宇ｱｲｳ");
 
+        Assert.Equal(s.SubstringAsByte(-1, 3, sjis), "abc");
         Assert.Equal(s.SubstringAsByte(0, 3, sjis), "abc");
         Assert.Equal(s.SubstringAsByte(1, 3, sjis), "bc");
         Assert.Equal(s.SubstringAsByte(2, 3, sjis), "cあ");
@@ -134,6 +138,7 @@ public class StringsTest
     {
         var s = "abcあいうアイウ亜伊宇ｱｲｳ";
 
+        _ = Assert.Throws<ArgumentOutOfRangeException>(() => s.SubstringAsCount(-1));
         Assert.Equal(s.SubstringAsCount(0), "abcあいうアイウ亜伊宇ｱｲｳ");
         Assert.Equal(s.SubstringAsCount(1), "bcあいうアイウ亜伊宇ｱｲｳ");
         Assert.Equal(s.SubstringAsCount(2), "cあいうアイウ亜伊宇ｱｲｳ");
@@ -152,6 +157,7 @@ public class StringsTest
         Assert.Equal(s.SubstringAsCount(15), "");
         Assert.Equal(s.SubstringAsCount(16), "");
 
+        _ = Assert.Throws<ArgumentOutOfRangeException>(() => s.SubstringAsCount(0, -1));
         Assert.Equal(s.SubstringAsCount(0, 0), "");
         Assert.Equal(s.SubstringAsCount(0, 1), "a");
         Assert.Equal(s.SubstringAsCount(0, 2), "ab");
@@ -170,6 +176,7 @@ public class StringsTest
         Assert.Equal(s.SubstringAsCount(0, 15), "abcあいうアイウ亜伊宇ｱｲｳ");
         Assert.Equal(s.SubstringAsCount(0, 16), "abcあいうアイウ亜伊宇ｱｲｳ");
 
+        _ = Assert.Throws<ArgumentOutOfRangeException>(() => s.SubstringAsCount(-1, 3));
         Assert.Equal(s.SubstringAsCount(0, 3), "abc");
         Assert.Equal(s.SubstringAsCount(1, 3), "bcあ");
         Assert.Equal(s.SubstringAsCount(2, 3), "cあい");
@@ -193,6 +200,7 @@ public class StringsTest
     {
         var s = "abcあいうアイウ亜伊宇ｱｲｳ";
 
+        _ = Assert.Throws<ArgumentOutOfRangeException>(() => s.Substring(-1));
         Assert.Equal(s.Substring(0), "abcあいうアイウ亜伊宇ｱｲｳ");
         Assert.Equal(s.Substring(1), "bcあいうアイウ亜伊宇ｱｲｳ");
         Assert.Equal(s.Substring(2), "cあいうアイウ亜伊宇ｱｲｳ");
@@ -211,6 +219,7 @@ public class StringsTest
         Assert.Equal(s.Substring(15), "");
         _ = Assert.Throws<ArgumentOutOfRangeException>(() => s.Substring(16));
 
+        _ = Assert.Throws<ArgumentOutOfRangeException>(() => s.Substring(0, -1));
         Assert.Equal(s.Substring(0, 0), "");
         Assert.Equal(s.Substring(0, 1), "a");
         Assert.Equal(s.Substring(0, 2), "ab");
@@ -229,6 +238,7 @@ public class StringsTest
         Assert.Equal(s.Substring(0, 15), "abcあいうアイウ亜伊宇ｱｲｳ");
         _ = Assert.Throws<ArgumentOutOfRangeException>(() => s.Substring(0, 16));
 
+        _ = Assert.Throws<ArgumentOutOfRangeException>(() => s.Substring(-1, 3));
         Assert.Equal(s.Substring(0, 3), "abc");
         Assert.Equal(s.Substring(1, 3), "bcあ");
         Assert.Equal(s.Substring(2, 3), "cあい");
