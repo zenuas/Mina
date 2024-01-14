@@ -159,6 +159,10 @@ public static class Expressions
             var tostr = right_type.GetMethod("ToString", [])!;
             EmitCall(il, tostr);
         }
+        else if (left_type.IsValueType && right_type == typeof(string))
+        {
+            il.EmitCall(OpCodes.Call, left_type.GetMethod("Parse", [typeof(string)])!, null);
+        }
         else if (left_type.IsValueType && right_type.IsValueType)
         {
             switch (left_type)

@@ -80,6 +80,15 @@ public class Expressions2Test
     }
 
     [Fact]
+    public void GetAction_IntStr()
+    {
+        var v = new Expressions2Test();
+        var f = Expressions.GetAction<Expressions2Test, string>("Act_Int");
+        f(v, "123");
+        Assert.Equal(v.Test3, 123);
+    }
+
+    [Fact]
     public void GetAction_Int_Int()
     {
         var v = new Expressions2Test();
