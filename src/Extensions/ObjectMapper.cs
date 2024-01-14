@@ -18,10 +18,10 @@ public static class ObjectMapper
         .Where(x => x.Method.GetParameters().Length == 0)
         .ToDictionary(x => x.Name, x => Expressions.GetFunction<T, object>(x.Method));
 
-    public static Dictionary<string, Action<T, A>> CreateSetMapper<T, A>() => typeof(T)
+    public static Dictionary<string, Action<T, A>> CreateSetMapper<T, A>(bool parameter_type_check = true) => typeof(T)
         .GetProperties()
         .Select(x => (x.Name, Method: x.GetSetMethod()!))
-        .Where(x => x.Method.GetParameters() is { } ps && ps.Length == 1 && ps[0].ParameterType == typeof(A))
+        .Where(x => x.Method.GetParameters() is { } ps && ps.Length == 1 && (!parameter_type_check || ps[0].ParameterType == typeof(A)))
         .ToDictionary(x => x.Name, x => Expressions.GetAction<T, A>(x.Method));
 
     public static Dictionary<string, Action<T, dynamic>> CreateSetMapper<T>() => typeof(T)
