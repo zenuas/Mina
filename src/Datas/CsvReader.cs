@@ -1,4 +1,5 @@
 ﻿using Mina.Extensions;
+using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -46,6 +47,38 @@ public static class CsvReader
             }
         }
         return [.. fields];
+    }
+
+    public static IEnumerable<T> ReadMapperWithHeader<T>(TextReader input) => ReadMapperWithHeader<T>(input, s => s);
+
+    public static IEnumerable<T> ReadMapperWithHeader<T>(TextReader input, Func<string, string> header_to_fieldname)
+    {
+        var header = TryReadFields(input);
+        if (header is null) yield break;
+        foreach (var x in ReadMapper<T>(input, index => index < header.Length ? header_to_fieldname(header[index]) : null))
+        {
+            yield return x;
+        }
+    }
+
+    public static IEnumerable<T> ReadMapper<T>(TextReader input, Func<int, string?> index_to_fieldname)
+    {
+        var mapper = ObjectMapper.CreateSetMapper<T, string>(false);
+        var ctor = Expressions.GetNew<T>();
+        while (true)
+        {
+            var fields = TryReadFields(input);
+            if (fields is null) break;
+            var o = ctor();
+
+            for (var i = 0; i < fields.Length; i++)
+            {
+                var name = index_to_fieldname(i);
+                if (name is null) break;
+                if (mapper.TryGetValue(name, out var value)) value(o, fields[i]);
+            }
+            yield return o;
+        }
     }
 
     public static string ReadRFC4180Field(TextReader input)
