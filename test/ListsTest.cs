@@ -1,5 +1,6 @@
 ﻿using Mina.Extensions;
 using System;
+using System.Collections;
 using System.Linq;
 using System.Threading;
 using Xunit;
@@ -235,5 +236,18 @@ public class ListsTest
         _ = Assert.Throws<InvalidOperationException>(() => xs4.Last());
         Assert.Null(xs4.FindFirstOrNullValue(_ => true));
         Assert.Null(xs4.FindLastOrNullValue(_ => true));
+    }
+
+    [Fact]
+    public void GetIteratorTest()
+    {
+        var enumable = (IEnumerable)new string[] { "A", "B", "C" };
+
+        var xs = enumable.GetIterator().OfType<string>().ToArray();
+        Assert.IsType<string[]>(xs);
+        Assert.Equal(xs.Length, 3);
+        Assert.Equal(xs[0], "A");
+        Assert.Equal(xs[1], "B");
+        Assert.Equal(xs[2], "C");
     }
 }
