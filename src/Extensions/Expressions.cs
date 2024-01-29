@@ -132,7 +132,7 @@ public static class Expressions
         return ilmethod.CreateDelegate<Func<T, R>>();
     }
 
-    public static Action<T, A> SetField<T, A>(string name)
+    public static Action<T, A> SetField<T, A>(string name) where T : class
     {
         var field = typeof(T).GetField(name)!;
 

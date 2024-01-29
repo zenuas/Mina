@@ -10,6 +10,9 @@ public class ObjectMapperTest
     public string PropStringAAA { get; init; } = "AAA";
     public string PropStringBBB { get; init; } = "BBB";
 
+    public string FieldStr = "zzz";
+    public int FieldInt = 1;
+
     [Fact]
     public void CreateGetMapperTest()
     {
@@ -98,5 +101,51 @@ public class ObjectMapperTest
         Assert.Equal(receiver2.PropInt2, 40);
         Assert.Equal(receiver2.PropStringAAA, "a-a");
         Assert.Equal(receiver2.PropStringBBB, "b-b");
+    }
+
+    [Fact]
+    public void CreateFieldGetMapperTest()
+    {
+        var receiver = (StringAAA: "aa", Int1: 10);
+        var map_str = ObjectMapper.CreateFieldGetMapper<(string StringAAA, int Int1), string>();
+        var map_int = ObjectMapper.CreateFieldGetMapper<(string StringAAA, int Int1), int>();
+
+        Assert.Equal(map_str["Item1"](receiver), "aa");
+        Assert.Equal(map_int["Item2"](receiver), 10);
+    }
+
+    [Fact]
+    public void CreateFieldGetMapperDynamicTest()
+    {
+        var receiver = (StringAAA: "aa", Int1: 10);
+        var map_dynamic = ObjectMapper.CreateFieldGetMapper<(string StringAAA, int Int1)>();
+
+        Assert.Equal(map_dynamic["Item1"](receiver), "aa");
+        Assert.Equal(map_dynamic["Item2"](receiver), 10);
+    }
+
+    [Fact]
+    public void CreateFieldSetMapperTest()
+    {
+        var receiver = new ObjectMapperTest();
+        var map_str = ObjectMapper.CreateFieldSetMapper<ObjectMapperTest, string>();
+        var map_int = ObjectMapper.CreateFieldSetMapper<ObjectMapperTest, int>();
+
+        map_str["FieldStr"](receiver, "abc");
+        map_int["FieldInt"](receiver, 123);
+        Assert.Equal(receiver.FieldStr, "abc");
+        Assert.Equal(receiver.FieldInt, 123);
+    }
+
+    [Fact]
+    public void CreateFieldSetMapperDynamicTest()
+    {
+        var receiver = new ObjectMapperTest();
+        var map_dynamic = ObjectMapper.CreateFieldSetMapper<ObjectMapperTest>();
+
+        map_dynamic["FieldStr"](receiver, "abc");
+        map_dynamic["FieldInt"](receiver, 123);
+        Assert.Equal(receiver.FieldStr, "abc");
+        Assert.Equal(receiver.FieldInt, 123);
     }
 }

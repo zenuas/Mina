@@ -49,9 +49,9 @@ public static class CsvReader
         return [.. fields];
     }
 
-    public static IEnumerable<T> ReadMapperWithHeader<T>(TextReader input) => ReadMapperWithHeader<T>(input, s => s);
+    public static IEnumerable<T> ReadMapperWithHeader<T>(TextReader input) where T : class => ReadMapperWithHeader<T>(input, s => s);
 
-    public static IEnumerable<T> ReadMapperWithHeader<T>(TextReader input, Func<string, string> header_to_fieldname)
+    public static IEnumerable<T> ReadMapperWithHeader<T>(TextReader input, Func<string, string> header_to_fieldname) where T : class
     {
         var header = TryReadFields(input);
         if (header is null) yield break;
@@ -61,7 +61,7 @@ public static class CsvReader
         }
     }
 
-    public static IEnumerable<T> ReadMapper<T>(TextReader input, Func<int, string?> index_to_fieldname)
+    public static IEnumerable<T> ReadMapper<T>(TextReader input, Func<int, string?> index_to_fieldname) where T : class
     {
         var mapper = ObjectMapper.CreateSetMapper<T, string>(false);
         var ctor = Expressions.GetNew<T>();
