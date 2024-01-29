@@ -40,7 +40,7 @@ public class CacheTest
         Assert.Equal(fib(10), 89);
         Assert.Equal(count, 177);
 
-        Func<int, int> fibmemo = x => 1;
+        Func<int, int> fibmemo = default!;
         int fib2(int x)
         {
             count++;
