@@ -119,6 +119,32 @@ public static class Expressions
         return ilmethod.CreateDelegate<Action<T, A1, A2>>();
     }
 
+    public static Func<T, R> GetField<T, R>(string name)
+    {
+        var field = typeof(T).GetField(name)!;
+
+        var ilmethod = new DynamicMethod("", typeof(R), [typeof(T)]);
+        var il = ilmethod.GetILGenerator();
+        il.Emit(OpCodes.Ldarg_0);
+        il.Emit(OpCodes.Ldfld, field);
+        EmitCast(il, typeof(R), field.FieldType);
+        il.Emit(OpCodes.Ret);
+        return ilmethod.CreateDelegate<Func<T, R>>();
+    }
+
+    public static Action<T, A> SetField<T, A>(string name)
+    {
+        var field = typeof(T).GetField(name)!;
+
+        var ilmethod = new DynamicMethod("", null, [typeof(T), typeof(A)]);
+        var il = ilmethod.GetILGenerator();
+        il.Emit(OpCodes.Ldarg_0);
+        EmitLdarg(il, field.FieldType, typeof(A), 1);
+        il.Emit(OpCodes.Stfld, field);
+        il.Emit(OpCodes.Ret);
+        return ilmethod.CreateDelegate<Action<T, A>>();
+    }
+
     public static Func<T> GetNew<T>(ConstructorInfo ctor)
     {
         var ilmethod = new DynamicMethod("", typeof(T), []);

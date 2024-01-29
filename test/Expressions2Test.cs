@@ -9,6 +9,9 @@ public class Expressions2Test
     public string Test2 { get; private set; } = "yyy";
     public int Test3 { get; private set; } = 0;
 
+    public string FieldStr = "zzz";
+    public int FieldInt = 1;
+
     public void Act() => Test2 = "aaa";
 
     public void Act_Str(string s) => Test2 = s;
@@ -149,5 +152,59 @@ public class Expressions2Test
         var f = Expressions.GetFunction<Expressions2Test, int, int, int>("Fun_Int_Int_Int");
         var p = f(v, 123, 456);
         Assert.True(p is int a && a == 579);
+    }
+
+    [Fact]
+    public void GetField_Str()
+    {
+        var v = new Expressions2Test();
+        var f = Expressions.GetField<Expressions2Test, string>("FieldStr");
+        var p = f(v);
+        Assert.Equal(p, "zzz");
+    }
+
+    [Fact]
+    public void GetField_Int()
+    {
+        var v = new Expressions2Test();
+        var f = Expressions.GetField<Expressions2Test, int>("FieldInt");
+        var p = f(v);
+        Assert.Equal(p, 1);
+    }
+
+    [Fact]
+    public void GetField_IntLong()
+    {
+        var v = new Expressions2Test();
+        var f = Expressions.GetField<Expressions2Test, long>("FieldInt");
+        var p = f(v);
+        Assert.Equal(p, 1);
+    }
+
+    [Fact]
+    public void SetField_Str()
+    {
+        var v = new Expressions2Test();
+        var f = Expressions.SetField<Expressions2Test, string>("FieldStr");
+        f(v, "aaa");
+        Assert.Equal(v.FieldStr, "aaa");
+    }
+
+    [Fact]
+    public void SetField_Int()
+    {
+        var v = new Expressions2Test();
+        var f = Expressions.SetField<Expressions2Test, int>("FieldInt");
+        f(v, 123);
+        Assert.Equal(v.FieldInt, 123);
+    }
+
+    [Fact]
+    public void SetField_IntLong()
+    {
+        var v = new Expressions2Test();
+        var f = Expressions.SetField<Expressions2Test, long>("FieldInt");
+        f(v, 123);
+        Assert.Equal(v.FieldInt, 123);
     }
 }
