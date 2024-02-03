@@ -15,6 +15,13 @@ public class ObjectMapper_DataTableTest
         public long Field = 2;
     }
 
+    public struct StructData
+    {
+        public int Prop;
+        public string Method;
+        public long Field;
+    }
+
     public DataTable table3x3 = new();
     public DataTable table4x3 = new();
 
@@ -53,6 +60,26 @@ public class ObjectMapper_DataTableTest
     public void CreateMapperDataTable()
     {
         var f = ObjectMapper.CreateMapper<FieldData>(table3x3);
+        var d1 = f(table3x3.Rows[0]);
+        Assert.Equal(d1.Prop, 123);
+        Assert.Equal(d1.Method, "test0");
+        Assert.Equal(d1.Field, 456);
+
+        var d2 = f(table3x3.Rows[1]);
+        Assert.Equal(d2.Prop, 124);
+        Assert.Equal(d2.Method, "test1");
+        Assert.Equal(d2.Field, 457);
+
+        var d3 = f(table3x3.Rows[2]);
+        Assert.Equal(d3.Prop, 125);
+        Assert.Equal(d3.Method, "test2");
+        Assert.Equal(d3.Field, 458);
+    }
+
+    [Fact]
+    public void CreateMapperDataTableToStruct()
+    {
+        var f = ObjectMapper.CreateMapper<StructData>(table3x3);
         var d1 = f(table3x3.Rows[0]);
         Assert.Equal(d1.Prop, 123);
         Assert.Equal(d1.Method, "test0");

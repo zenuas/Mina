@@ -46,6 +46,13 @@ public class ObjectMapper2Test
         public long Field;
     }
 
+    public struct StructData
+    {
+        public int Prop;
+        public string Method;
+        public long Field;
+    }
+
     [Fact]
     public void CreateMapperToProp()
     {
@@ -99,6 +106,17 @@ public class ObjectMapper2Test
     {
         var v = new ObjectMapper2Test() { Prop = 123, Field = 456 };
         var f = ObjectMapper.CreateMapper<ObjectMapper2Test, FieldData>(["Prop", "Method", "Field"]);
+        var d = f(v);
+        Assert.Equal(d.Prop, 123);
+        Assert.Equal(d.Method, "test");
+        Assert.Equal(d.Field, 456);
+    }
+
+    [Fact]
+    public void CreateMapperToStruct()
+    {
+        var v = new ObjectMapper2Test() { Prop = 123, Field = 456 };
+        var f = ObjectMapper.CreateMapper<ObjectMapper2Test, StructData>(["Prop", "Method", "Field"]);
         var d = f(v);
         Assert.Equal(d.Prop, 123);
         Assert.Equal(d.Method, "test");

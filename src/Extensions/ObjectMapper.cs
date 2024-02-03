@@ -54,11 +54,20 @@ public static class ObjectMapper
 
     public static Func<T, R> CreateMapper<T, R>(Dictionary<string, string> map)
     {
-        var ctor = typeof(R).GetConstructor([])!;
-
         var ilmethod = new DynamicMethod("", typeof(R), [typeof(T)]);
         var il = ilmethod.GetILGenerator();
-        il.Emit(OpCodes.Newobj, ctor);
+        var local = il.DeclareLocal(typeof(R));
+        if (typeof(R).IsValueType)
+        {
+            il.Emit(OpCodes.Ldloca_S, local);
+            il.Emit(OpCodes.Initobj, typeof(R));
+            il.Emit(OpCodes.Ldloca_S, local);
+        }
+        else
+        {
+            il.Emit(OpCodes.Newobj, typeof(R).GetConstructor([])!);
+        }
+
         foreach (var (from_name, to_name) in map)
         {
             il.Emit(OpCodes.Dup);
@@ -67,6 +76,11 @@ public static class ObjectMapper
             var load_type = Expressions.EmitLoad<T>(il, from_name);
             if (load_type is null) throw new("source not found");
             if (!Expressions.EmitStore<R>(il, to_name, load_type)) throw new("destination not found");
+        }
+        if (typeof(R).IsValueType)
+        {
+            il.Emit(OpCodes.Pop);
+            il.Emit(OpCodes.Ldloc, local);
         }
         il.Emit(OpCodes.Ret);
         return ilmethod.CreateDelegate<Func<T, R>>();
@@ -82,12 +96,22 @@ public static class ObjectMapper
 
     public static Func<DataRow, R> CreateMapper<R>(DataTable table, Dictionary<string, string> map)
     {
-        var ctor = typeof(R).GetConstructor([])!;
         var get_item = typeof(DataRow).GetProperty("Item", [typeof(string)])!.GetMethod!;
 
         var ilmethod = new DynamicMethod("", typeof(R), [typeof(DataRow)]);
         var il = ilmethod.GetILGenerator();
-        il.Emit(OpCodes.Newobj, ctor);
+        var local = il.DeclareLocal(typeof(R));
+        if (typeof(R).IsValueType)
+        {
+            il.Emit(OpCodes.Ldloca_S, local);
+            il.Emit(OpCodes.Initobj, typeof(R));
+            il.Emit(OpCodes.Ldloca_S, local);
+        }
+        else
+        {
+            il.Emit(OpCodes.Newobj, typeof(R).GetConstructor([])!);
+        }
+
         foreach (var (from_name, to_name) in map)
         {
             il.Emit(OpCodes.Dup);
@@ -99,6 +123,11 @@ public static class ObjectMapper
             if (load_type.IsValueType) il.Emit(OpCodes.Unbox_Any, load_type);
 
             if (!Expressions.EmitStore<R>(il, to_name, load_type)) throw new("destination not found");
+        }
+        if (typeof(R).IsValueType)
+        {
+            il.Emit(OpCodes.Pop);
+            il.Emit(OpCodes.Ldloc, local);
         }
         il.Emit(OpCodes.Ret);
         return ilmethod.CreateDelegate<Func<DataRow, R>>();
