@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Reflection.Emit;
 
@@ -64,10 +65,42 @@ public static class ObjectMapper
             il.Emit(OpCodes.Ldarg_0);
 
             var load_type = Expressions.EmitLoad<T>(il, from_name);
-            if (load_type is null) throw new();
-            if (!Expressions.EmitStore<R>(il, to_name, load_type)) throw new();
+            if (load_type is null) throw new("source not found");
+            if (!Expressions.EmitStore<R>(il, to_name, load_type)) throw new("destination not found");
         }
         il.Emit(OpCodes.Ret);
         return ilmethod.CreateDelegate<Func<T, R>>();
+    }
+
+    public static Func<DataRow, R> CreateMapper<R>(DataTable table) => CreateMapper<R>(table, table.Columns
+        .GetIterator()
+        .OfType<DataColumn>()
+        .Where(x => Expressions.WhenEmitStorable<R>(x.ColumnName))
+        .ToDictionary(x => x.ColumnName, x => x.ColumnName));
+
+    public static Func<DataRow, R> CreateMapper<R>(DataTable table, IEnumerable<string> map) => CreateMapper<R>(table, map.ToDictionary(x => x));
+
+    public static Func<DataRow, R> CreateMapper<R>(DataTable table, Dictionary<string, string> map)
+    {
+        var ctor = typeof(R).GetConstructor([])!;
+        var get_item = typeof(DataRow).GetProperty("Item", [typeof(string)])!.GetMethod!;
+
+        var ilmethod = new DynamicMethod("", typeof(R), [typeof(DataRow)]);
+        var il = ilmethod.GetILGenerator();
+        il.Emit(OpCodes.Newobj, ctor);
+        foreach (var (from_name, to_name) in map)
+        {
+            il.Emit(OpCodes.Dup);
+            var load_type = table.Columns[from_name]!.DataType;
+
+            il.Emit(OpCodes.Ldarg_0);
+            il.Emit(OpCodes.Ldstr, from_name);
+            il.Emit(OpCodes.Callvirt, get_item);
+            if (load_type.IsValueType) il.Emit(OpCodes.Unbox_Any, load_type);
+
+            if (!Expressions.EmitStore<R>(il, to_name, load_type)) throw new("destination not found");
+        }
+        il.Emit(OpCodes.Ret);
+        return ilmethod.CreateDelegate<Func<DataRow, R>>();
     }
 }

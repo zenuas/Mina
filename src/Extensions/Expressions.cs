@@ -261,4 +261,21 @@ public static class Expressions
         }
         return false;
     }
+
+    public static bool WhenEmitStorable<T>(string name)
+    {
+        if (typeof(T).GetProperty(name)?.SetMethod is { } set_prop && set_prop.GetParameters() is { } prop_param && prop_param.Length == 1)
+        {
+            return true;
+        }
+        else if (typeof(T).GetMethod(name) is { } set_method && set_method.GetParameters() is { } method_param && method_param.Length == 1)
+        {
+            return true;
+        }
+        else if (typeof(T).GetField(name) is { } store_field)
+        {
+            return true;
+        }
+        return false;
+    }
 }
