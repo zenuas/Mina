@@ -217,4 +217,48 @@ public static class Expressions
             il.Emit(OpCodes.Castclass, left_type);
         }
     }
+
+    public static Type? EmitLoad<T>(ILGenerator il, string name)
+    {
+        if (typeof(T).GetProperty(name)?.GetMethod is { } get_prop)
+        {
+            EmitCall(il, get_prop);
+            return get_prop.ReturnType;
+        }
+        else if (typeof(T).GetMethod(name) is { } get_method)
+        {
+            EmitCall(il, get_method);
+            return get_method.ReturnType;
+        }
+        else if (typeof(T).GetField(name) is { } load_field)
+        {
+            il.Emit(OpCodes.Ldfld, load_field);
+            return load_field.FieldType;
+        }
+        return null;
+    }
+
+    public static bool EmitStore<T>(ILGenerator il, string name, Type parameter_type)
+    {
+        if (typeof(T).GetProperty(name)?.SetMethod is { } set_prop && set_prop.GetParameters() is { } prop_param && prop_param.Length == 1)
+        {
+            EmitCast(il, prop_param[0].ParameterType, parameter_type);
+            il.Emit(OpCodes.Call, set_prop);
+            return true;
+        }
+        else if (typeof(T).GetMethod(name) is { } set_method && set_method.GetParameters() is { } method_param && method_param.Length == 1)
+        {
+            EmitCast(il, method_param[0].ParameterType, parameter_type);
+            il.Emit(OpCodes.Call, set_method);
+            if (set_method.ReturnType != typeof(void)) il.Emit(OpCodes.Pop);
+            return true;
+        }
+        else if (typeof(T).GetField(name) is { } store_field)
+        {
+            EmitCast(il, store_field.FieldType, parameter_type);
+            il.Emit(OpCodes.Stfld, store_field);
+            return true;
+        }
+        return false;
+    }
 }
