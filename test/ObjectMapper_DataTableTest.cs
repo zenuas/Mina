@@ -122,7 +122,7 @@ public class ObjectMapper_DataTableTest
         var f = ObjectMapper.CreateMapper<FieldData>(table3x3, new Dictionary<string, string>() {
             { "Prop", "Field" },
             { "Method", "Method" },
-            { "Field", "Prop" }
+            { "Field", "Prop" },
         });
         var d1 = f(table3x3.Rows[0]);
         Assert.Equal(d1.Prop, 456);

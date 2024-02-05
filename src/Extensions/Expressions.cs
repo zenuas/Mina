@@ -185,6 +185,38 @@ public static class Expressions
             var tostr = right_type.GetMethod("ToString", [])!;
             EmitCall(il, tostr);
         }
+        else if (Nullable.GetUnderlyingType(left_type) is { } value_type)
+        {
+            var nullable = il.DeclareLocal(left_type);
+            var right_value = il.DeclareLocal(typeof(object));
+            var else_label = il.DefineLabel();
+            var endif_label = il.DefineLabel();
+
+            // var right_value = stack[top];
+            il.Emit(OpCodes.Stloc, right_value);
+
+            // if (right_value is value_type)
+            il.Emit(OpCodes.Ldloc, right_value);
+            il.Emit(OpCodes.Isinst, right_type);
+            il.Emit(OpCodes.Brfalse_S, else_label);
+
+            // then: nullable = Nullable<value_type>((value_type)right_value);
+            il.Emit(OpCodes.Ldloca_S, nullable);
+            il.Emit(OpCodes.Ldloc, right_value);
+            il.Emit(OpCodes.Unbox_Any, right_type);
+            EmitCast(il, value_type, right_type);
+            il.Emit(OpCodes.Call, left_type.GetConstructor([value_type])!);
+            il.Emit(OpCodes.Br_S, endif_label);
+
+            // else: nullable = Nullable<value_type>();
+            il.MarkLabel(else_label);
+            il.Emit(OpCodes.Ldloca_S, nullable);
+            il.Emit(OpCodes.Initobj, left_type);
+
+            // endif: stack[top] = nullable;
+            il.MarkLabel(endif_label);
+            il.Emit(OpCodes.Ldloc, nullable);
+        }
         else if (left_type.IsValueType && right_type == typeof(string))
         {
             il.EmitCall(OpCodes.Call, left_type.GetMethod("Parse", [typeof(string)])!, null);
@@ -262,20 +294,37 @@ public static class Expressions
         return false;
     }
 
-    public static bool WhenEmitStorable<T>(string name)
+    public static Type? WhenEmitStorable<T>(string name)
     {
         if (typeof(T).GetProperty(name)?.SetMethod is { } set_prop && set_prop.GetParameters() is { } prop_param && prop_param.Length == 1)
         {
-            return true;
+            return prop_param[0].ParameterType;
         }
         else if (typeof(T).GetMethod(name) is { } set_method && set_method.GetParameters() is { } method_param && method_param.Length == 1)
         {
-            return true;
+            return method_param[0].ParameterType;
         }
         else if (typeof(T).GetField(name) is { } store_field)
         {
-            return true;
+            return store_field.FieldType;
         }
-        return false;
+        return null;
+    }
+
+    public static bool IsNullableValueType(Type type) => type.IsValueType && Nullable.GetUnderlyingType(type) is { };
+
+    public static void EmitUnboxWithoutDBNull(ILGenerator il, Type type)
+    {
+        // dup stack[top];
+        il.Emit(OpCodes.Dup);
+
+        // if (stack[top] is not DBNull)
+        var endif_label = il.DefineLabel();
+        il.Emit(OpCodes.Isinst, typeof(DBNull));
+        il.Emit(OpCodes.Brtrue_S, endif_label);
+
+        // then: stack[top] = (load_type)stack[top];
+        il.Emit(OpCodes.Unbox_Any, type);
+        il.MarkLabel(endif_label);
     }
 }
