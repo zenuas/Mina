@@ -2,13 +2,12 @@
 using Mina.Extensions;
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using Xunit;
 
 namespace Mina.Test;
 
-public class ObjectMapper_DataReader
+public class ObjectMapper_DataReaderTest
 {
     public class FieldData
     {
@@ -31,7 +30,7 @@ public class ObjectMapper_DataReader
 
     public SqliteConnection con;
 
-    public ObjectMapper_DataReader()
+    public ObjectMapper_DataReaderTest()
     {
         SQLitePCL.Batteries.Init();
         con = new("Data Source=:memory:");
