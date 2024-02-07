@@ -217,6 +217,12 @@ public static class Expressions
             il.MarkLabel(endif_label);
             il.Emit(OpCodes.Ldloc, nullable);
         }
+        else if (left_type.IsValueType && Nullable.GetUnderlyingType(right_type) is { } from_type)
+        {
+            // stack[top] = (from_type)stack[top].GetValueOrDefault();
+            EmitCall(il, right_type.GetMethod("GetValueOrDefault", [])!);
+            EmitCast(il, left_type, from_type);
+        }
         else if (left_type.IsValueType && right_type == typeof(string))
         {
             il.EmitCall(OpCodes.Call, left_type.GetMethod("Parse", [typeof(string)])!, null);
