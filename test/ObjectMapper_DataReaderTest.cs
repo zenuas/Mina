@@ -22,10 +22,17 @@ public class ObjectMapper_DataReaderTest
         public string Method;
         public long Field;
     }
+
     public class NullableData
     {
         public int? Prop;
         public long? Field;
+    }
+
+    public class DateData
+    {
+        public DateTime Date;
+        public DateTime? DateOrNull;
     }
 
     public SqliteConnection con;
@@ -59,6 +66,14 @@ public class ObjectMapper_DataReaderTest
         for (var i = 0; i < 2; i++)
         {
             command.CommandText = $"INSERT INTO Test2Null(Prop, Field) VALUES ({(i == 0 ? "null" : 123 + i)}, {(i != 0 ? "null" : 456 + i)})";
+            _ = command.ExecuteNonQuery();
+        }
+
+        command.CommandText = "CREATE TABLE Date2Null(Date datetime not null, DateOrNull datetime)";
+        _ = command.ExecuteNonQuery();
+        for (var i = 0; i < 2; i++)
+        {
+            command.CommandText = $"INSERT INTO Date2Null(Date, DateOrNull) VALUES ('2000/01/1{i}', {(i != 0 ? "null" : "'2001/02/03'")})";
             _ = command.ExecuteNonQuery();
         }
     }
@@ -197,6 +212,23 @@ public class ObjectMapper_DataReaderTest
 
         Assert.Equal(d[1].Prop, 124);
         Assert.Null(d[1].Field);
+    }
+
+    [Fact]
+    public void CreateMapperDataTable_Date()
+    {
+        using var command = con.CreateCommand();
+        command.CommandText = $"SELECT * FROM Date2Null ORDER BY 1";
+        using var reader = command.ExecuteReader();
+        var f = ObjectMapper.CreateMapper<DateData>(reader);
+        var d = f(reader).ToArray();
+        Assert.Equal(d.Length, 2);
+
+        Assert.Equal(d[0].Date, DateTime.Parse("2000/01/10"));
+        Assert.Equal(d[0].DateOrNull, DateTime.Parse("2001/02/03"));
+
+        Assert.Equal(d[1].Date, DateTime.Parse("2000/01/11"));
+        Assert.Null(d[1].DateOrNull);
     }
 
     [Fact]
