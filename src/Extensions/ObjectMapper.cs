@@ -117,15 +117,14 @@ public static class ObjectMapper
             il.Emit(OpCodes.Dup);
             var store_type = Expressions.WhenEmitStorable<R>(to_name)!;
             var load_type = table.Columns[from_name]!.DataType;
-            var temp_type = Expressions.IsNullableValueType(store_type) ? typeof(object) : load_type;
 
+            // stack[top] = (store_type)arg0[from_name];
             il.Emit(OpCodes.Ldarg_0);
             il.Emit(OpCodes.Ldstr, from_name);
             il.Emit(OpCodes.Callvirt, get_item);
+            Expressions.EmitCastViaObject(il, store_type, load_type);
 
-            if (temp_type.IsValueType && !Expressions.IsNullableValueType(store_type)) Expressions.EmitUnboxWithoutDBNull(il, load_type);
-
-            if (!Expressions.EmitStore<R>(il, to_name, load_type)) throw new("destination not found");
+            if (!Expressions.EmitStore<R>(il, to_name, store_type)) throw new("destination not found");
         }
         if (typeof(R).IsValueType)
         {
@@ -165,16 +164,14 @@ public static class ObjectMapper
             var index = reader.GetOrdinal(from_name);
             var store_type = Expressions.WhenEmitStorable<R>(to_name)!;
             var load_type = reader.GetFieldType(index);
-            var temp_type = Expressions.IsNullableValueType(store_type) ? typeof(object) : load_type;
 
-            // stack[top] = arg0[index];
+            // stack[top] = (store_type)arg0[index];
             il.Emit(OpCodes.Ldarg_0);
             il.Emit(OpCodes.Ldc_I4, index);
             il.Emit(OpCodes.Ldelem_Ref);
+            Expressions.EmitCastViaObject(il, store_type, load_type);
 
-            if (temp_type.IsValueType && !Expressions.IsNullableValueType(store_type)) Expressions.EmitUnboxWithoutDBNull(il, load_type);
-
-            if (!Expressions.EmitStore<R>(il, to_name, load_type)) throw new("destination not found");
+            if (!Expressions.EmitStore<R>(il, to_name, store_type)) throw new("destination not found");
         }
         if (typeof(R).IsValueType)
         {

@@ -177,6 +177,51 @@ public static class Expressions
 
     public static void EmitCall(ILGenerator il, MethodInfo method) => il.EmitCall(method.IsFinal || !method.IsVirtual ? OpCodes.Call : OpCodes.Callvirt, method, null);
 
+    public static void EmitCastViaObject(ILGenerator il, Type left_type, Type right_type_wrap_object)
+    {
+        if (Nullable.GetUnderlyingType(left_type) is { } value_type)
+        {
+            var nullable = il.DeclareLocal(left_type);
+            var right_value = il.DeclareLocal(typeof(object));
+            var else_label = il.DefineLabel();
+            var endif_label = il.DefineLabel();
+
+            // var right_value = stack[top];
+            il.Emit(OpCodes.Stloc, right_value);
+
+            // if (right_value is value_type)
+            il.Emit(OpCodes.Ldloc, right_value);
+            il.Emit(OpCodes.Isinst, right_type_wrap_object);
+            il.Emit(OpCodes.Brfalse_S, else_label);
+
+            // then: nullable = Nullable<value_type>((value_type)right_value);
+            il.Emit(OpCodes.Ldloca_S, nullable);
+            il.Emit(OpCodes.Ldloc, right_value);
+            il.Emit(OpCodes.Unbox_Any, right_type_wrap_object);
+            EmitCast(il, value_type, right_type_wrap_object);
+            il.Emit(OpCodes.Call, left_type.GetConstructor([value_type])!);
+            il.Emit(OpCodes.Br_S, endif_label);
+
+            // else: nullable = Nullable<value_type>();
+            il.MarkLabel(else_label);
+            il.Emit(OpCodes.Ldloca_S, nullable);
+            il.Emit(OpCodes.Initobj, left_type);
+
+            // endif: stack[top] = nullable;
+            il.MarkLabel(endif_label);
+            il.Emit(OpCodes.Ldloc, nullable);
+        }
+        else if (right_type_wrap_object.IsValueType)
+        {
+            EmitUnboxWithoutDBNull(il, right_type_wrap_object);
+            EmitCast(il, left_type, right_type_wrap_object);
+        }
+        else
+        {
+            EmitCast(il, left_type, right_type_wrap_object);
+        }
+    }
+
     public static void EmitCast(ILGenerator il, Type left_type, Type right_type)
     {
         if (left_type == right_type) return;
@@ -225,7 +270,7 @@ public static class Expressions
         }
         else if (left_type.IsValueType && right_type == typeof(string))
         {
-            il.EmitCall(OpCodes.Call, left_type.GetMethod("Parse", [typeof(string)])!, null);
+            EmitCall(il, left_type.GetMethod("Parse", [typeof(string)])!);
         }
         else if (left_type.IsValueType && right_type.IsValueType)
         {
@@ -316,8 +361,6 @@ public static class Expressions
         }
         return null;
     }
-
-    public static bool IsNullableValueType(Type type) => type.IsValueType && Nullable.GetUnderlyingType(type) is { };
 
     public static void EmitUnboxWithoutDBNull(ILGenerator il, Type type)
     {
