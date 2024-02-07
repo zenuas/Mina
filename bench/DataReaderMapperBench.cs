@@ -72,7 +72,7 @@ CREATE TABLE Test
         command.CommandText = $"SELECT * FROM Test ORDER BY 1";
         using var reader = command.ExecuteReader();
         var f = ObjectMapper.CreateMapper<TestData>(reader);
-        _ = f(reader).ToArray();
+        var xs = f(reader).ToArray();
     }
 
     public static Func<IDataReader, IEnumerable<TestData>>? CachedObjectMapperAll_cache_ = null;
@@ -84,12 +84,12 @@ CREATE TABLE Test
         command.CommandText = $"SELECT * FROM Test ORDER BY 1";
         using var reader = command.ExecuteReader();
         var f = CachedObjectMapperAll_cache_ ??= ObjectMapper.CreateMapper<TestData>(reader);
-        _ = f(reader).ToArray();
+        var xs = f(reader).ToArray();
     }
 
     [Benchmark]
     public void DapperAll()
     {
-        _ = con.Query<TestData>($"SELECT * FROM Test ORDER BY 1").ToArray();
+        var xs = con.Query<TestData>($"SELECT * FROM Test ORDER BY 1").ToArray();
     }
 }
