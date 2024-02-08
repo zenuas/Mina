@@ -589,7 +589,7 @@ public class EmitCastTest
         var f = ilmethod.CreateDelegate<Action<Data, object?>>();
 
         var x = new Data();
-        object? n = null;
+        object? n = DBNull.Value;
         f(x, n);
         Assert.Equal(x.D, default);
     }
