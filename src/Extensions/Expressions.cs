@@ -295,7 +295,9 @@ public static class Expressions
             }
             else if (right_type == typeof(string))
             {
-
+                // stack[top] = (left_type)left_nullable_t.Parse((string)stack[top]);
+                EmitCall(il, left_nullable_t.GetMethod("Parse", [typeof(string)])!);
+                EmitCast(il, left_type, left_nullable_t);
             }
             else
             {
