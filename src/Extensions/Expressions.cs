@@ -301,10 +301,7 @@ public static class Expressions
             }
             else
             {
-                // if (stack[top] is DBNull)
-                // if (stack[top] is object o && o is null)
-                // if (stack[top] is string)
-                // if (stack[top] is not {})
+                EmitNullableCastViaObject(il, left_type, left_nullable_t, left_nullable_t);
             }
         }
         else if (left_type.IsValueType)
