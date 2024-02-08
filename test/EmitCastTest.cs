@@ -9,14 +9,14 @@ public class EmitCastTest
 {
     public class Data
     {
-        public int V { get; set; }
-        public int? Vn { get; set; }
-        public long W { get; set; }
-        public long? Wn { get; set; }
-        public DateTime D { get; set; }
-        public DateTime? Dn { get; set; }
-        public string S { get; set; } = "";
-        public string? Sn { get; set; } = "";
+        public int V { get; set; } = 999;
+        public int? Vn { get; set; } = 999;
+        public long W { get; set; } = 999;
+        public long? Wn { get; set; } = 999;
+        public DateTime D { get; set; } = DateTime.Parse("1950/12/31");
+        public DateTime? Dn { get; set; } = DateTime.Parse("1950/12/31");
+        public string S { get; set; } = "dummy";
+        public string? Sn { get; set; } = "dummy";
     }
 
     [Fact]
@@ -340,7 +340,7 @@ public class EmitCastTest
         var x = new Data();
         long? n = null;
         f(x, n);
-        Assert.Equal(x.Vn, 0);
+        Assert.Equal(x.Vn, null);
     }
 
     [Fact]
