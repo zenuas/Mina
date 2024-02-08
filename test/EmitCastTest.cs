@@ -637,7 +637,7 @@ public class EmitCastTest
         var ilmethod = new DynamicMethod("", null, [typeof(Data), typeof(DateTime?)]);
         var il = ilmethod.GetILGenerator();
         il.Emit(OpCodes.Ldarg_0);
-        il.Emit(OpCodes.Ldarga_S, 1);
+        il.Emit(OpCodes.Ldarg_1);
         Expressions.EmitCast(il, typeof(DateTime?), typeof(DateTime?));
         Expressions.EmitCall(il, typeof(Data).GetProperty("Dn")!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
