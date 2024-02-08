@@ -159,8 +159,7 @@ public class EmitCastTest
 
         var x = new Data();
         object? n = 123L;
-        f(x, n);
-        Assert.Equal(x.V, 123);
+        _ = Assert.Throws<InvalidCastException>(() => f(x, n));
     }
 
     [Fact]
