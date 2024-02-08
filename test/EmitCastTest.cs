@@ -259,7 +259,7 @@ public class EmitCastTest
         var ilmethod = new DynamicMethod("", null, [typeof(Data), typeof(int?)]);
         var il = ilmethod.GetILGenerator();
         il.Emit(OpCodes.Ldarg_0);
-        il.Emit(OpCodes.Ldarga_S, 1);
+        il.Emit(OpCodes.Ldarg_1);
         Expressions.EmitCast(il, typeof(int?), typeof(int?));
         Expressions.EmitCall(il, typeof(Data).GetProperty("Vn")!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
@@ -277,7 +277,7 @@ public class EmitCastTest
         var ilmethod = new DynamicMethod("", null, [typeof(Data), typeof(int?)]);
         var il = ilmethod.GetILGenerator();
         il.Emit(OpCodes.Ldarg_0);
-        il.Emit(OpCodes.Ldarga_S, 1);
+        il.Emit(OpCodes.Ldarg_1);
         Expressions.EmitCast(il, typeof(int?), typeof(int?));
         Expressions.EmitCall(il, typeof(Data).GetProperty("Vn")!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
@@ -286,7 +286,7 @@ public class EmitCastTest
         var x = new Data();
         int? n = null;
         f(x, n);
-        Assert.Equal(x.Vn, 0);
+        Assert.Equal(x.Vn, null);
     }
 
     [Fact]
