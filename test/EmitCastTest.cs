@@ -523,7 +523,7 @@ public class EmitCastTest
     }
 
     [Fact]
-    public void D_Tn()
+    public void D_Tx()
     {
         var ilmethod = new DynamicMethod("", null, [typeof(Data), typeof(object)]);
         var il = ilmethod.GetILGenerator();
@@ -667,7 +667,7 @@ public class EmitCastTest
     }
 
     [Fact]
-    public void Dn_Tn()
+    public void Dn_Tx()
     {
         var ilmethod = new DynamicMethod("", null, [typeof(Data), typeof(object)]);
         var il = ilmethod.GetILGenerator();
@@ -697,7 +697,7 @@ public class EmitCastTest
         var f = ilmethod.CreateDelegate<Action<Data, object?>>();
 
         var x = new Data();
-        object? n = null;
+        object? n = DBNull.Value;
         f(x, n);
         Assert.Equal(x.Dn, null);
     }
