@@ -177,39 +177,83 @@ public static class Expressions
 
     public static void EmitCall(ILGenerator il, MethodInfo method) => il.EmitCall(method.IsFinal || !method.IsVirtual ? OpCodes.Call : OpCodes.Callvirt, method, null);
 
+    public static LocalBuilder EmitStoreNullable(ILGenerator il, Type left_nullable, Type left_nullable_t, LocalBuilder right_value, Type? right_type = null)
+    {
+        var nullable = il.DeclareLocal(left_nullable);
+
+        // then: nullable = Nullable<left_nullable_t>((left_nullable_t)(right_type)right_value);
+        il.Emit(OpCodes.Ldloca_S, nullable);
+        il.Emit(OpCodes.Ldloc, right_value);
+        if (right_type is { }) il.Emit(OpCodes.Unbox_Any, right_type);
+        EmitCast(il, left_nullable_t, right_type ?? right_value.LocalType);
+        il.Emit(OpCodes.Call, left_nullable.GetConstructor([left_nullable_t])!);
+
+        return nullable;
+    }
+
+    public static void EmitNullableCastViaObject(ILGenerator il, Type left_nullable, Type left_nullable_t, Type right_type)
+    {
+        var right_value = il.DeclareLocal(typeof(object));
+        var else_label = il.DefineLabel();
+        var endif_label = il.DefineLabel();
+
+        // var right_value = stack[top];
+        il.Emit(OpCodes.Stloc, right_value);
+
+        // if (right_value is right_type)
+        il.Emit(OpCodes.Ldloc, right_value);
+        il.Emit(OpCodes.Isinst, right_type);
+        il.Emit(OpCodes.Brfalse_S, else_label);
+
+        // then: nullable = Nullable<left_nullable_t>(right_value);
+        var nullable = EmitStoreNullable(il, left_nullable, left_nullable_t, right_value, right_type);
+        il.Emit(OpCodes.Br_S, endif_label);
+
+        // else: nullable = Nullable<nullable_t>();
+        il.MarkLabel(else_label);
+        il.Emit(OpCodes.Ldloca_S, nullable);
+        il.Emit(OpCodes.Initobj, left_nullable);
+
+        // endif: stack[top] = nullable;
+        il.MarkLabel(endif_label);
+        il.Emit(OpCodes.Ldloc, nullable);
+    }
+
+    public static void EmitNullableCast(ILGenerator il, Type left_nullable, Type left_nullable_t, Type right_nullable, Type right_nullable_t)
+    {
+        var right_value = il.DeclareLocal(right_nullable_t);
+        var else_label = il.DefineLabel();
+        var endif_label = il.DefineLabel();
+
+        // dup stack[top];
+        il.Emit(OpCodes.Dup);
+
+        // if (stack[top].HasValue)
+        EmitCall(il, right_nullable.GetProperty("HasValue")!.GetGetMethod()!);
+        il.Emit(OpCodes.Brfalse_S, else_label);
+
+        // then: nullable = Nullable<left_nullable_t>(right_value = stack[top].GetValueOrDefault());
+        EmitCall(il, right_nullable.GetMethod("GetValueOrDefault", [])!);
+        il.Emit(OpCodes.Stloc, right_value);
+        var nullable = EmitStoreNullable(il, left_nullable, left_nullable_t, right_value);
+        il.Emit(OpCodes.Br_S, endif_label);
+
+        // else: nullable = Nullable<nullable_t>();
+        il.MarkLabel(else_label);
+        il.Emit(OpCodes.Pop);
+        il.Emit(OpCodes.Ldloca_S, nullable);
+        il.Emit(OpCodes.Initobj, left_nullable);
+
+        // endif: stack[top] = nullable;
+        il.MarkLabel(endif_label);
+        il.Emit(OpCodes.Ldloc, nullable);
+    }
+
     public static void EmitCastViaObject(ILGenerator il, Type left_type, Type right_type_wrap_object)
     {
         if (Nullable.GetUnderlyingType(left_type) is { } value_type)
         {
-            var nullable = il.DeclareLocal(left_type);
-            var right_value = il.DeclareLocal(typeof(object));
-            var else_label = il.DefineLabel();
-            var endif_label = il.DefineLabel();
-
-            // var right_value = stack[top];
-            il.Emit(OpCodes.Stloc, right_value);
-
-            // if (right_value is value_type)
-            il.Emit(OpCodes.Ldloc, right_value);
-            il.Emit(OpCodes.Isinst, right_type_wrap_object);
-            il.Emit(OpCodes.Brfalse_S, else_label);
-
-            // then: nullable = Nullable<value_type>((value_type)right_value);
-            il.Emit(OpCodes.Ldloca_S, nullable);
-            il.Emit(OpCodes.Ldloc, right_value);
-            il.Emit(OpCodes.Unbox_Any, right_type_wrap_object);
-            EmitCast(il, value_type, right_type_wrap_object);
-            il.Emit(OpCodes.Call, left_type.GetConstructor([value_type])!);
-            il.Emit(OpCodes.Br_S, endif_label);
-
-            // else: nullable = Nullable<value_type>();
-            il.MarkLabel(else_label);
-            il.Emit(OpCodes.Ldloca_S, nullable);
-            il.Emit(OpCodes.Initobj, left_type);
-
-            // endif: stack[top] = nullable;
-            il.MarkLabel(endif_label);
-            il.Emit(OpCodes.Ldloc, nullable);
+            EmitNullableCastViaObject(il, left_type, value_type, right_type_wrap_object);
         }
         else if (right_type_wrap_object.IsValueType)
         {
@@ -227,76 +271,88 @@ public static class Expressions
         if (left_type == right_type) return;
         if (left_type == typeof(string))
         {
-            var tostr = right_type.GetMethod("ToString", [])!;
-            EmitCall(il, tostr);
+            // stack[top] = stack[top].ToString();
+            EmitCall(il, right_type.GetMethod("ToString", [])!);
         }
-        else if (Nullable.GetUnderlyingType(left_type) is { } value_type)
+        else if (Nullable.GetUnderlyingType(left_type) is { } left_nullable_t)
         {
-            var nullable = il.DeclareLocal(left_type);
-            var right_value = il.DeclareLocal(typeof(object));
-            var else_label = il.DefineLabel();
-            var endif_label = il.DefineLabel();
-
-            // var right_value = stack[top];
-            il.Emit(OpCodes.Stloc, right_value);
-
-            // if (right_value is value_type)
-            il.Emit(OpCodes.Ldloc, right_value);
-            il.Emit(OpCodes.Isinst, right_type);
-            il.Emit(OpCodes.Brfalse_S, else_label);
-
-            // then: nullable = Nullable<value_type>((value_type)right_value);
-            il.Emit(OpCodes.Ldloca_S, nullable);
-            il.Emit(OpCodes.Ldloc, right_value);
-            il.Emit(OpCodes.Unbox_Any, right_type);
-            EmitCast(il, value_type, right_type);
-            il.Emit(OpCodes.Call, left_type.GetConstructor([value_type])!);
-            il.Emit(OpCodes.Br_S, endif_label);
-
-            // else: nullable = Nullable<value_type>();
-            il.MarkLabel(else_label);
-            il.Emit(OpCodes.Ldloca_S, nullable);
-            il.Emit(OpCodes.Initobj, left_type);
-
-            // endif: stack[top] = nullable;
-            il.MarkLabel(endif_label);
-            il.Emit(OpCodes.Ldloc, nullable);
-        }
-        else if (left_type.IsValueType && Nullable.GetUnderlyingType(right_type) is { } from_type)
-        {
-            // stack[top] = (from_type)stack[top].GetValueOrDefault();
-            EmitCall(il, right_type.GetMethod("GetValueOrDefault", [])!);
-            EmitCast(il, left_type, from_type);
-        }
-        else if (left_type.IsValueType && right_type == typeof(string))
-        {
-            EmitCall(il, left_type.GetMethod("Parse", [typeof(string)])!);
-        }
-        else if (left_type.IsValueType && right_type.IsValueType)
-        {
-            switch (left_type)
+            if (Nullable.GetUnderlyingType(right_type) is { } right_nullable_t)
             {
-                case Type a when a == typeof(int): il.Emit(OpCodes.Conv_I4); break;
-                case Type a when a == typeof(long): il.Emit(OpCodes.Conv_I8); break;
-                case Type a when a == typeof(short): il.Emit(OpCodes.Conv_I2); break;
-                case Type a when a == typeof(sbyte): il.Emit(OpCodes.Conv_I1); break;
+                EmitNullableCast(il, left_type, left_nullable_t, right_type, right_nullable_t);
+            }
+            else if (right_type.IsValueType)
+            {
+                // right_value = (value_type)stack[top];
+                var right_value = il.DeclareLocal(right_type);
+                EmitCast(il, left_nullable_t, right_type);
+                il.Emit(OpCodes.Stloc, right_value);
 
-                case Type a when a == typeof(uint): il.Emit(OpCodes.Conv_U4); break;
-                case Type a when a == typeof(ulong): il.Emit(OpCodes.Conv_U8); break;
-                case Type a when a == typeof(ushort): il.Emit(OpCodes.Conv_U2); break;
-                case Type a when a == typeof(byte): il.Emit(OpCodes.Conv_U1); break;
+                // nullable = Nullable<nullable_t>(right_value);
+                var nullable = EmitStoreNullable(il, left_type, left_nullable_t, right_value);
+
+                // stack[top] = nullable;
+                il.Emit(OpCodes.Ldloc, nullable);
+            }
+            else if (right_type == typeof(string))
+            {
+
+            }
+            else
+            {
+                // if (stack[top] is DBNull)
+                // if (stack[top] is object o && o is null)
+                // if (stack[top] is string)
+                // if (stack[top] is not {})
             }
         }
-        else if (left_type.IsValueType && !right_type.IsValueType)
+        else if (left_type.IsValueType)
         {
-            il.Emit(OpCodes.Unbox_Any, left_type);
+            if (Nullable.GetUnderlyingType(right_type) is { } right_nullable_t)
+            {
+                // stack[top] = (from_type)stack[top].GetValueOrDefault();
+                EmitCall(il, right_type.GetMethod("GetValueOrDefault", [])!);
+                EmitCast(il, left_type, right_nullable_t);
+            }
+            else if (right_type.IsValueType)
+            {
+                // stack[top] = (left_type)stack[top];
+                switch (left_type)
+                {
+                    case Type a when a == typeof(int): il.Emit(OpCodes.Conv_I4); break;
+                    case Type a when a == typeof(long): il.Emit(OpCodes.Conv_I8); break;
+                    case Type a when a == typeof(short): il.Emit(OpCodes.Conv_I2); break;
+                    case Type a when a == typeof(sbyte): il.Emit(OpCodes.Conv_I1); break;
+
+                    case Type a when a == typeof(uint): il.Emit(OpCodes.Conv_U4); break;
+                    case Type a when a == typeof(ulong): il.Emit(OpCodes.Conv_U8); break;
+                    case Type a when a == typeof(ushort): il.Emit(OpCodes.Conv_U2); break;
+                    case Type a when a == typeof(byte): il.Emit(OpCodes.Conv_U1); break;
+                }
+            }
+            else if (right_type == typeof(string))
+            {
+                // stack[top] = left_type.Parse((string)stack[top]);
+                EmitCall(il, left_type.GetMethod("Parse", [typeof(string)])!);
+            }
+            else
+            {
+                // if (stack[top] is DBNull)
+                // if (stack[top] is object o && o is null)
+                // if (stack[top] is string)
+                // if (stack[top] is not {})
+
+                // stack[top] = (left_type)stack[top];
+                il.Emit(OpCodes.Unbox_Any, left_type);
+            }
         }
         else if (!left_type.IsValueType && right_type.IsValueType)
         {
+            // stack[top] = (object)stack[top];
             il.Emit(OpCodes.Box, right_type);
         }
         else
         {
+            // stack[top] = (left_type)stack[top];
             il.Emit(OpCodes.Castclass, left_type);
         }
     }
