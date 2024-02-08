@@ -353,11 +353,13 @@ public static class Expressions
             {
                 var else1_label = il.DefineLabel();
                 var else2_label = il.DefineLabel();
+                var else3_label = il.DefineLabel();
                 var endif_label = il.DefineLabel();
 
-                // if (stack[top] is DBNull)
+                // if (stack[top] is null)
                 il.Emit(OpCodes.Dup);
-                il.Emit(OpCodes.Isinst, typeof(DBNull));
+                il.Emit(OpCodes.Ldnull);
+                il.Emit(OpCodes.Ceq);
                 il.Emit(OpCodes.Brfalse_S, else1_label);
 
                 // then: stack[top] = 0;
@@ -365,20 +367,29 @@ public static class Expressions
                 il.Emit(OpCodes.Ldc_I4_0);
                 il.Emit(OpCodes.Br_S, endif_label);
 
-                // if (stack[top] is object o && o is null)
-
-                // if (stack[top] is string)
+                // if (stack[top] is DBNull)
                 il.MarkLabel(else1_label);
                 il.Emit(OpCodes.Dup);
-                il.Emit(OpCodes.Isinst, typeof(string));
+                il.Emit(OpCodes.Isinst, typeof(DBNull));
                 il.Emit(OpCodes.Brfalse_S, else2_label);
+
+                // then: stack[top] = 0;
+                il.Emit(OpCodes.Pop);
+                il.Emit(OpCodes.Ldc_I4_0);
+                il.Emit(OpCodes.Br_S, endif_label);
+
+                // if (stack[top] is string)
+                il.MarkLabel(else2_label);
+                il.Emit(OpCodes.Dup);
+                il.Emit(OpCodes.Isinst, typeof(string));
+                il.Emit(OpCodes.Brfalse_S, else3_label);
 
                 // then: stack[top] = (left_type)(string)stack[top];
                 EmitCast(il, left_type, typeof(string));
                 il.Emit(OpCodes.Br_S, endif_label);
 
                 // else: stack[top] = (left_type)stack[top];
-                il.MarkLabel(else2_label);
+                il.MarkLabel(else3_label);
                 il.Emit(OpCodes.Unbox_Any, left_type);
 
                 il.MarkLabel(endif_label);
