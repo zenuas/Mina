@@ -199,6 +199,24 @@ public class EmitCastTest
     }
 
     [Fact]
+    public void V_T0()
+    {
+        var ilmethod = new DynamicMethod("", null, [typeof(Data), typeof(object)]);
+        var il = ilmethod.GetILGenerator();
+        il.Emit(OpCodes.Ldarg_0);
+        il.Emit(OpCodes.Ldarg_1);
+        Expressions.EmitCast(il, typeof(int), typeof(object));
+        Expressions.EmitCall(il, typeof(Data).GetProperty("V")!.GetSetMethod()!);
+        il.Emit(OpCodes.Ret);
+        var f = ilmethod.CreateDelegate<Action<Data, object?>>();
+
+        var x = new Data();
+        object? n = 0;
+        f(x, n);
+        Assert.Equal(x.V, 0);
+    }
+
+    [Fact]
     public void V_Ts()
     {
         var ilmethod = new DynamicMethod("", null, [typeof(Data), typeof(object)]);
@@ -412,6 +430,24 @@ public class EmitCastTest
         object? n = DBNull.Value;
         f(x, n);
         Assert.Equal(x.Vn, null);
+    }
+
+    [Fact]
+    public void Vn_T0()
+    {
+        var ilmethod = new DynamicMethod("", null, [typeof(Data), typeof(object)]);
+        var il = ilmethod.GetILGenerator();
+        il.Emit(OpCodes.Ldarg_0);
+        il.Emit(OpCodes.Ldarg_1);
+        Expressions.EmitCast(il, typeof(int?), typeof(object));
+        Expressions.EmitCall(il, typeof(Data).GetProperty("Vn")!.GetSetMethod()!);
+        il.Emit(OpCodes.Ret);
+        var f = ilmethod.CreateDelegate<Action<Data, object?>>();
+
+        var x = new Data();
+        object? n = 0;
+        f(x, n);
+        Assert.Equal(x.Vn, 0);
     }
 
     [Fact]
