@@ -394,7 +394,7 @@ public class EmitCastTest
         var x = new Data();
         object? n = null;
         f(x, n);
-        Assert.Equal(x.Vn, 0);
+        Assert.Equal(x.Vn, null);
     }
 
     [Fact]
@@ -412,7 +412,7 @@ public class EmitCastTest
         var x = new Data();
         object? n = DBNull.Value;
         f(x, n);
-        Assert.Equal(x.Vn, 0);
+        Assert.Equal(x.Vn, null);
     }
 
     [Fact]
@@ -682,7 +682,7 @@ public class EmitCastTest
         var x = new Data();
         object? n = null;
         f(x, n);
-        Assert.Equal(x.Dn, default);
+        Assert.Equal(x.Dn, null);
     }
 
     [Fact]
@@ -700,7 +700,7 @@ public class EmitCastTest
         var x = new Data();
         object? n = null;
         f(x, n);
-        Assert.Equal(x.Dn, default);
+        Assert.Equal(x.Dn, null);
     }
 
     [Fact]
