@@ -367,9 +367,6 @@ public static class Expressions
                 il.MarkLabel(endif_label);
             }
         }
-        else if (left_type == typeof(string))
-        {
-        }
         else if (Nullable.GetUnderlyingType(left_type) is { } left_nullable_t)
         {
             if (Nullable.GetUnderlyingType(right_type) is { } right_nullable_t)
