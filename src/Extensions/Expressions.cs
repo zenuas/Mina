@@ -184,7 +184,14 @@ public static class Expressions
         // nullable = Nullable<left_nullable_t>((left_nullable_t)(right_type)right_value);
         il.Emit(OpCodes.Ldloca_S, nullable);
         il.Emit(OpCodes.Ldloc, right_value);
-        if (right_type is { }) il.Emit(OpCodes.Unbox_Any, right_type);
+        if (right_type is { })
+        {
+            // stack[top] = (left_type)Convert.ChangeType(stack[top], left_type);
+            il.Emit(OpCodes.Ldtoken, right_type);
+            EmitCall(il, typeof(Type).GetMethod(nameof(Type.GetTypeFromHandle))!);
+            EmitCall(il, typeof(Convert).GetMethod(nameof(Convert.ChangeType), [typeof(object), typeof(Type)])!);
+            il.Emit(OpCodes.Unbox_Any, right_type);
+        }
         EmitCast(il, left_nullable_t, right_type ?? right_value.LocalType);
         il.Emit(OpCodes.Call, left_nullable.GetConstructor([left_nullable_t])!);
 
@@ -194,23 +201,34 @@ public static class Expressions
     public static void EmitNullableCastViaObject(ILGenerator il, Type left_nullable, Type left_nullable_t, Type right_type)
     {
         var right_value = il.DeclareLocal(typeof(object));
-        var else_label = il.DefineLabel();
+        var else1_label = il.DefineLabel();
+        var else2_label = il.DefineLabel();
         var endif_label = il.DefineLabel();
 
         // var right_value = stack[top];
         il.Emit(OpCodes.Stloc, right_value);
 
-        // if (right_value is right_type)
+        // if (right_value is null)
         il.Emit(OpCodes.Ldloc, right_value);
-        il.Emit(OpCodes.Isinst, right_type);
-        il.Emit(OpCodes.Brfalse_S, else_label);
+        il.Emit(OpCodes.Ldnull);
+        il.Emit(OpCodes.Ceq);
+        il.Emit(OpCodes.Brfalse_S, else1_label);
+
+        // then: goto else2_label;
+        il.Emit(OpCodes.Br_S, else2_label);
+
+        // if (right_value is not DBNull)
+        il.MarkLabel(else1_label);
+        il.Emit(OpCodes.Ldloc, right_value);
+        il.Emit(OpCodes.Isinst, typeof(DBNull));
+        il.Emit(OpCodes.Brtrue_S, else2_label);
 
         // then: nullable = Nullable<left_nullable_t>(right_value);
         var nullable = EmitStoreNullable(il, left_nullable, left_nullable_t, right_value, right_type);
         il.Emit(OpCodes.Br_S, endif_label);
 
         // else: nullable = Nullable<nullable_t>();
-        il.MarkLabel(else_label);
+        il.MarkLabel(else2_label);
         il.Emit(OpCodes.Ldloca_S, nullable);
         il.Emit(OpCodes.Initobj, left_nullable);
 

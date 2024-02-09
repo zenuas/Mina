@@ -394,7 +394,7 @@ public class EmitCastTest
         var x = new Data();
         object? n = 123L;
         f(x, n);
-        Assert.Equal(x.Vn, null);
+        Assert.Equal(x.Vn, 123);
     }
 
     [Fact]
