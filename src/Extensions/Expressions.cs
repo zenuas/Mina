@@ -383,8 +383,8 @@ public static class Expressions
             }
             else if (right_type == typeof(string))
             {
-                // stack[top] = (left_type)left_nullable_t.Parse((string)stack[top]);
-                EmitCall(il, left_nullable_t.GetMethod("Parse", [typeof(string)])!);
+                // stack[top] = (left_type)(left_nullable_t)stack[top];
+                EmitChangeType(il, left_nullable_t);
                 EmitCast(il, left_type, left_nullable_t);
             }
             else
@@ -434,8 +434,8 @@ public static class Expressions
             }
             else if (right_type == typeof(string))
             {
-                // stack[top] = left_type.Parse((string)stack[top]);
-                EmitCall(il, left_type.GetMethod("Parse", [typeof(string)])!);
+                // stack[top] = (left_type)stack[top]);
+                EmitChangeType(il, left_type);
             }
             else
             {
