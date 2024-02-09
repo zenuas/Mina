@@ -177,6 +177,15 @@ public static class Expressions
 
     public static void EmitCall(ILGenerator il, MethodInfo method) => il.EmitCall(method.IsFinal || !method.IsVirtual ? OpCodes.Call : OpCodes.Callvirt, method, null);
 
+    public static void EmitChangeType(ILGenerator il, Type type)
+    {
+        // stack[top] = (type)Convert.ChangeType(stack[top], type);
+        il.Emit(OpCodes.Ldtoken, type);
+        EmitCall(il, typeof(Type).GetMethod(nameof(Type.GetTypeFromHandle))!);
+        EmitCall(il, typeof(Convert).GetMethod(nameof(Convert.ChangeType), [typeof(object), typeof(Type)])!);
+        il.Emit(OpCodes.Unbox_Any, type);
+    }
+
     public static LocalBuilder EmitStoreNullable(ILGenerator il, Type left_nullable, Type left_nullable_t, LocalBuilder right_value, Type? right_type = null)
     {
         var nullable = il.DeclareLocal(left_nullable);
@@ -184,14 +193,7 @@ public static class Expressions
         // nullable = Nullable<left_nullable_t>((left_nullable_t)(right_type)right_value);
         il.Emit(OpCodes.Ldloca_S, nullable);
         il.Emit(OpCodes.Ldloc, right_value);
-        if (right_type is { })
-        {
-            // stack[top] = (left_type)Convert.ChangeType(stack[top], left_type);
-            il.Emit(OpCodes.Ldtoken, right_type);
-            EmitCall(il, typeof(Type).GetMethod(nameof(Type.GetTypeFromHandle))!);
-            EmitCall(il, typeof(Convert).GetMethod(nameof(Convert.ChangeType), [typeof(object), typeof(Type)])!);
-            il.Emit(OpCodes.Unbox_Any, right_type);
-        }
+        if (right_type is { }) EmitChangeType(il, right_type);
         EmitCast(il, left_nullable_t, right_type ?? right_value.LocalType);
         il.Emit(OpCodes.Call, left_nullable.GetConstructor([left_nullable_t])!);
 
@@ -406,12 +408,9 @@ public static class Expressions
                 EmitCast(il, left_type, typeof(string));
                 il.Emit(OpCodes.Br_S, endif_label);
 
-                // else: stack[top] = (left_type)Convert.ChangeType(stack[top], left_type);
+                // else: stack[top] = (left_type)stack[top];
                 il.MarkLabel(else3_label);
-                il.Emit(OpCodes.Ldtoken, left_type);
-                EmitCall(il, typeof(Type).GetMethod(nameof(Type.GetTypeFromHandle))!);
-                EmitCall(il, typeof(Convert).GetMethod(nameof(Convert.ChangeType), [typeof(object), typeof(Type)])!);
-                il.Emit(OpCodes.Unbox_Any, left_type);
+                EmitChangeType(il, left_type);
 
                 il.MarkLabel(endif_label);
             }
