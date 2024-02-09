@@ -391,8 +391,8 @@ public static class Expressions
                 // else: stack[top] = (left_type)Convert.ChangeType(stack[top], left_type);
                 il.MarkLabel(else3_label);
                 il.Emit(OpCodes.Ldtoken, left_type);
-                EmitCall(il, typeof(Type).GetMethod("GetTypeFromHandle")!);
-                EmitCall(il, typeof(Convert).GetMethod("ChangeType", [typeof(object), typeof(Type)])!);
+                EmitCall(il, typeof(Type).GetMethod(nameof(Type.GetTypeFromHandle))!);
+                EmitCall(il, typeof(Convert).GetMethod(nameof(Convert.ChangeType), [typeof(object), typeof(Type)])!);
                 il.Emit(OpCodes.Unbox_Any, left_type);
 
                 il.MarkLabel(endif_label);
