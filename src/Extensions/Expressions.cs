@@ -277,7 +277,20 @@ public static class Expressions
         }
         else if (right_type_wrap_object.IsValueType)
         {
-            EmitUnboxWithoutDBNull(il, right_type_wrap_object);
+            var endif_label = il.DefineLabel();
+
+            // dup stack[top];
+            il.Emit(OpCodes.Dup);
+
+            // if (stack[top] is not DBNull)
+            il.Emit(OpCodes.Isinst, typeof(DBNull));
+            il.Emit(OpCodes.Brtrue_S, endif_label);
+
+            // then: stack[top] = (load_type)stack[top];
+            il.Emit(OpCodes.Unbox_Any, right_type_wrap_object);
+
+            il.MarkLabel(endif_label);
+
             EmitCast(il, left_type, right_type_wrap_object);
         }
         else
@@ -549,20 +562,5 @@ public static class Expressions
             return store_field.FieldType;
         }
         return null;
-    }
-
-    public static void EmitUnboxWithoutDBNull(ILGenerator il, Type type)
-    {
-        // dup stack[top];
-        il.Emit(OpCodes.Dup);
-
-        // if (stack[top] is not DBNull)
-        var endif_label = il.DefineLabel();
-        il.Emit(OpCodes.Isinst, typeof(DBNull));
-        il.Emit(OpCodes.Brtrue_S, endif_label);
-
-        // then: stack[top] = (load_type)stack[top];
-        il.Emit(OpCodes.Unbox_Any, type);
-        il.MarkLabel(endif_label);
     }
 }
