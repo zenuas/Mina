@@ -295,7 +295,7 @@ public static class Expressions
         }
         else
         {
-            EmitCast(il, left_type, right_type_wrap_object);
+            EmitCast(il, left_type, typeof(object));
         }
     }
 
