@@ -181,7 +181,7 @@ public static class Expressions
     {
         var nullable = il.DeclareLocal(left_nullable);
 
-        // then: nullable = Nullable<left_nullable_t>((left_nullable_t)(right_type)right_value);
+        // nullable = Nullable<left_nullable_t>((left_nullable_t)(right_type)right_value);
         il.Emit(OpCodes.Ldloca_S, nullable);
         il.Emit(OpCodes.Ldloc, right_value);
         if (right_type is { }) il.Emit(OpCodes.Unbox_Any, right_type);
