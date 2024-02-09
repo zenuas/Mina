@@ -293,8 +293,38 @@ public static class Expressions
         {
             if (right_type.IsValueType)
             {
-                // stack[top] = stack[top].ToString();
-                EmitCall(il, right_type.GetMethod("ToString", [])!);
+                if (Nullable.GetUnderlyingType(right_type) is { } right_nullable_t)
+                {
+                    var else_label = il.DefineLabel();
+                    var endif_label = il.DefineLabel();
+                    var right_value = il.DeclareLocal(right_nullable_t);
+
+                    // dup stack[top];
+                    il.Emit(OpCodes.Dup);
+
+                    // if (stack[top].HasValue)
+                    EmitCall(il, right_type.GetProperty("HasValue")!.GetGetMethod()!);
+                    il.Emit(OpCodes.Brfalse_S, else_label);
+
+                    // then: stack[top] = stack[top].Value.ToString();
+                    EmitCall(il, right_type.GetProperty("Value")!.GetGetMethod()!);
+                    il.Emit(OpCodes.Stloc, right_value);
+                    il.Emit(OpCodes.Ldloca, right_value);
+                    EmitCall(il, right_nullable_t.GetMethod("ToString", [])!);
+                    il.Emit(OpCodes.Br_S, endif_label);
+
+                    // else: stack[top] = null;
+                    il.MarkLabel(else_label);
+                    il.Emit(OpCodes.Pop);
+                    il.Emit(OpCodes.Ldnull);
+
+                    il.MarkLabel(endif_label);
+                }
+                else
+                {
+                    // stack[top] = stack[top].ToString();
+                    EmitCall(il, right_type.GetMethod("ToString", [])!);
+                }
             }
             else
             {
