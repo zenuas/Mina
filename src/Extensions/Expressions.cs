@@ -291,8 +291,41 @@ public static class Expressions
         if (left_type == right_type) return;
         if (left_type == typeof(string))
         {
-            // stack[top] = stack[top].ToString();
-            EmitCall(il, right_type.GetMethod("ToString", [])!);
+            if (right_type.IsValueType)
+            {
+                // stack[top] = stack[top].ToString();
+                EmitCall(il, right_type.GetMethod("ToString", [])!);
+            }
+            else
+            {
+                var else_label = il.DefineLabel();
+                var endif_label = il.DefineLabel();
+
+                // if (stack[top] is null) goto endif_label;
+                il.Emit(OpCodes.Dup);
+                il.Emit(OpCodes.Ldnull);
+                il.Emit(OpCodes.Ceq);
+                il.Emit(OpCodes.Brtrue_S, endif_label);
+
+                // if (stack[top] is DBNull)
+                il.Emit(OpCodes.Dup);
+                il.Emit(OpCodes.Isinst, typeof(DBNull));
+                il.Emit(OpCodes.Brfalse_S, else_label);
+
+                // then: stack[top] = null;
+                il.Emit(OpCodes.Pop);
+                il.Emit(OpCodes.Ldnull);
+                il.Emit(OpCodes.Br_S, endif_label);
+
+                // else: stack[top] = stack[top].ToString();
+                il.MarkLabel(else_label);
+                EmitCall(il, right_type.GetMethod("ToString", [])!);
+
+                il.MarkLabel(endif_label);
+            }
+        }
+        else if (left_type == typeof(string))
+        {
         }
         else if (Nullable.GetUnderlyingType(left_type) is { } left_nullable_t)
         {

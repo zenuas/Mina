@@ -774,4 +774,148 @@ public class EmitCastTest
         f(x, n);
         Assert.Equal(x.Dn, DateTime.Parse("2000/01/01"));
     }
+
+    [Fact]
+    public void S_S()
+    {
+        var ilmethod = new DynamicMethod("", null, [typeof(Data), typeof(string)]);
+        var il = ilmethod.GetILGenerator();
+        il.Emit(OpCodes.Ldarg_0);
+        il.Emit(OpCodes.Ldarg_1);
+        Expressions.EmitCast(il, typeof(string), typeof(string));
+        Expressions.EmitCall(il, typeof(Data).GetProperty("S")!.GetSetMethod()!);
+        il.Emit(OpCodes.Ret);
+        var f = ilmethod.CreateDelegate<Action<Data, string>>();
+
+        var x = new Data();
+        string n = "abc";
+        f(x, n);
+        Assert.Equal(x.S, "abc");
+    }
+
+    [Fact]
+    public void S_Ss()
+    {
+        var ilmethod = new DynamicMethod("", null, [typeof(Data), typeof(string)]);
+        var il = ilmethod.GetILGenerator();
+        il.Emit(OpCodes.Ldarg_0);
+        il.Emit(OpCodes.Ldarg_1);
+        Expressions.EmitCast(il, typeof(string), typeof(string));
+        Expressions.EmitCall(il, typeof(Data).GetProperty("S")!.GetSetMethod()!);
+        il.Emit(OpCodes.Ret);
+        var f = ilmethod.CreateDelegate<Action<Data, string?>>();
+
+        var x = new Data();
+        string? n = "abc";
+        f(x, n);
+        Assert.Equal(x.S, "abc");
+    }
+
+    [Fact]
+    public void S_Sx()
+    {
+        var ilmethod = new DynamicMethod("", null, [typeof(Data), typeof(string)]);
+        var il = ilmethod.GetILGenerator();
+        il.Emit(OpCodes.Ldarg_0);
+        il.Emit(OpCodes.Ldarg_1);
+        Expressions.EmitCast(il, typeof(string), typeof(string));
+        Expressions.EmitCall(il, typeof(Data).GetProperty("S")!.GetSetMethod()!);
+        il.Emit(OpCodes.Ret);
+        var f = ilmethod.CreateDelegate<Action<Data, string?>>();
+
+        var x = new Data();
+        string? n = null;
+        f(x, n);
+        Assert.Equal(x.S, null);
+    }
+
+    [Fact]
+    public void S_V()
+    {
+        var ilmethod = new DynamicMethod("", null, [typeof(Data), typeof(int)]);
+        var il = ilmethod.GetILGenerator();
+        il.Emit(OpCodes.Ldarg_0);
+        il.Emit(OpCodes.Ldarga_S, 1);
+        Expressions.EmitCast(il, typeof(string), typeof(int));
+        Expressions.EmitCall(il, typeof(Data).GetProperty("S")!.GetSetMethod()!);
+        il.Emit(OpCodes.Ret);
+        var f = ilmethod.CreateDelegate<Action<Data, int>>();
+
+        var x = new Data();
+        int n = 123;
+        f(x, n);
+        Assert.Equal(x.S, "123");
+    }
+
+    [Fact]
+    public void S_Tx()
+    {
+        var ilmethod = new DynamicMethod("", null, [typeof(Data), typeof(object)]);
+        var il = ilmethod.GetILGenerator();
+        il.Emit(OpCodes.Ldarg_0);
+        il.Emit(OpCodes.Ldarg_1);
+        Expressions.EmitCast(il, typeof(string), typeof(object));
+        Expressions.EmitCall(il, typeof(Data).GetProperty("S")!.GetSetMethod()!);
+        il.Emit(OpCodes.Ret);
+        var f = ilmethod.CreateDelegate<Action<Data, object?>>();
+
+        var x = new Data();
+        object? n = null;
+        f(x, n);
+        Assert.Equal(x.S, null);
+    }
+
+    [Fact]
+    public void S_To()
+    {
+        var ilmethod = new DynamicMethod("", null, [typeof(Data), typeof(object)]);
+        var il = ilmethod.GetILGenerator();
+        il.Emit(OpCodes.Ldarg_0);
+        il.Emit(OpCodes.Ldarg_1);
+        Expressions.EmitCast(il, typeof(string), typeof(object));
+        Expressions.EmitCall(il, typeof(Data).GetProperty("S")!.GetSetMethod()!);
+        il.Emit(OpCodes.Ret);
+        var f = ilmethod.CreateDelegate<Action<Data, object?>>();
+
+        var x = new Data();
+        object? n = DBNull.Value;
+        f(x, n);
+        Assert.Equal(x.S, null);
+    }
+
+    [Fact]
+    public void S_Ts()
+    {
+        var ilmethod = new DynamicMethod("", null, [typeof(Data), typeof(object)]);
+        var il = ilmethod.GetILGenerator();
+        il.Emit(OpCodes.Ldarg_0);
+        il.Emit(OpCodes.Ldarg_1);
+        Expressions.EmitCast(il, typeof(string), typeof(object));
+        Expressions.EmitCall(il, typeof(Data).GetProperty("S")!.GetSetMethod()!);
+        il.Emit(OpCodes.Ret);
+        var f = ilmethod.CreateDelegate<Action<Data, object?>>();
+
+        var x = new Data();
+        object? n = "abc";
+        f(x, n);
+        Assert.Equal(x.S, "abc");
+    }
+
+    [Fact]
+    public void S_Tn()
+    {
+        var ilmethod = new DynamicMethod("", null, [typeof(Data), typeof(object)]);
+        var il = ilmethod.GetILGenerator();
+        il.Emit(OpCodes.Ldarg_0);
+        il.Emit(OpCodes.Ldarg_1);
+        Expressions.EmitCast(il, typeof(string), typeof(object));
+        Expressions.EmitCall(il, typeof(Data).GetProperty("S")!.GetSetMethod()!);
+        il.Emit(OpCodes.Ret);
+        var f = ilmethod.CreateDelegate<Action<Data, object?>>();
+
+        var x = new Data();
+        object? n = 123;
+        f(x, n);
+        Assert.Equal(x.S, "123");
+    }
 }
