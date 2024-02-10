@@ -57,7 +57,7 @@ public class ObjectMapper_DataTableTest
     }
 
     [Fact]
-    public void CreateMapperDataTable()
+    public void ToClass()
     {
         var f = ObjectMapper.CreateMapper<FieldData>(table3x3);
         var d1 = f(table3x3.Rows[0]);
@@ -77,7 +77,7 @@ public class ObjectMapper_DataTableTest
     }
 
     [Fact]
-    public void CreateMapperDataTableToStruct()
+    public void ToStruct()
     {
         var f = ObjectMapper.CreateMapper<StructData>(table3x3);
         var d1 = f(table3x3.Rows[0]);
@@ -97,7 +97,7 @@ public class ObjectMapper_DataTableTest
     }
 
     [Fact]
-    public void CreateMapperDataTable_FilterMap()
+    public void FilterMap()
     {
         var f = ObjectMapper.CreateMapper<FieldData>(table3x3, ["Prop", "Method"]);
         var d1 = f(table3x3.Rows[0]);
@@ -117,7 +117,7 @@ public class ObjectMapper_DataTableTest
     }
 
     [Fact]
-    public void CreateMapperDataTable_SelectMap()
+    public void SelectMap()
     {
         var f = ObjectMapper.CreateMapper<FieldData>(table3x3, new Dictionary<string, string>() {
             { "Prop", "Field" },
@@ -141,7 +141,7 @@ public class ObjectMapper_DataTableTest
     }
 
     [Fact]
-    public void CreateMapperDataTable_4ColumnTo3Field()
+    public void Column4ToField3()
     {
         var f = ObjectMapper.CreateMapper<FieldData>(table4x3);
         var d1 = f(table4x3.Rows[0]);
@@ -161,7 +161,7 @@ public class ObjectMapper_DataTableTest
     }
 
     [Fact]
-    public void CreateMapperDataTable_Error()
+    public void Error()
     {
         _ = Assert.Throws<NullReferenceException>(() => ObjectMapper.CreateMapper<FieldData>(table3x3, ["Foo"]));
     }

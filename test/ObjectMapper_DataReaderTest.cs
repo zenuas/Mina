@@ -79,7 +79,7 @@ public class ObjectMapper_DataReaderTest
     }
 
     [Fact]
-    public void CreateMapperDataReader()
+    public void ToClass()
     {
         using var command = con.CreateCommand();
         command.CommandText = $"SELECT * FROM Test3x3 ORDER BY 1";
@@ -102,7 +102,7 @@ public class ObjectMapper_DataReaderTest
     }
 
     [Fact]
-    public void CreateMapperDataTableToStruct()
+    public void ToStruct()
     {
         using var command = con.CreateCommand();
         command.CommandText = $"SELECT * FROM Test3x3 ORDER BY 1";
@@ -125,7 +125,7 @@ public class ObjectMapper_DataReaderTest
     }
 
     [Fact]
-    public void CreateMapperDataTable_FilterMap()
+    public void FilterMap()
     {
         using var command = con.CreateCommand();
         command.CommandText = $"SELECT * FROM Test3x3 ORDER BY 1";
@@ -148,7 +148,7 @@ public class ObjectMapper_DataReaderTest
     }
 
     [Fact]
-    public void CreateMapperDataTable_SelectMap()
+    public void SelectMap()
     {
         using var command = con.CreateCommand();
         command.CommandText = $"SELECT * FROM Test3x3 ORDER BY 1";
@@ -175,7 +175,7 @@ public class ObjectMapper_DataReaderTest
     }
 
     [Fact]
-    public void CreateMapperDataTable_4ColumnTo3Field()
+    public void Column4ToField3()
     {
         using var command = con.CreateCommand();
         command.CommandText = $"SELECT * FROM Test4x3 ORDER BY 1";
@@ -198,7 +198,7 @@ public class ObjectMapper_DataReaderTest
     }
 
     [Fact]
-    public void CreateMapperDataTable_Nullable()
+    public void Nullable()
     {
         using var command = con.CreateCommand();
         command.CommandText = $"SELECT * FROM Test2Null ORDER BY 1";
@@ -215,7 +215,7 @@ public class ObjectMapper_DataReaderTest
     }
 
     [Fact]
-    public void CreateMapperDataTable_Date()
+    public void DateOrNull()
     {
         using var command = con.CreateCommand();
         command.CommandText = $"SELECT * FROM Date2Null ORDER BY 1";
@@ -232,7 +232,7 @@ public class ObjectMapper_DataReaderTest
     }
 
     [Fact]
-    public void CreateMapperDataTable_Error()
+    public void Error()
     {
         using var command = con.CreateCommand();
         command.CommandText = $"SELECT * FROM Test4x3 ORDER BY 1";

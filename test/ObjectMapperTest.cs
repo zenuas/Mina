@@ -14,7 +14,7 @@ public class ObjectMapperTest
     public int FieldInt = 1;
 
     [Fact]
-    public void CreateGetMapperTest()
+    public void GetMap()
     {
         var receiver1 = new ObjectMapperTest();
         var receiver2 = new ObjectMapperTest() { PropInt1 = 10, PropInt2 = 20, PropStringAAA = "XXX", PropStringBBB = "YYY" };
@@ -33,7 +33,7 @@ public class ObjectMapperTest
     }
 
     [Fact]
-    public void CreateGetMapperDynamicTest()
+    public void DynamicGetMap()
     {
         var receiver1 = new ObjectMapperTest();
         var receiver2 = new ObjectMapperTest() { PropInt1 = 10, PropInt2 = 20, PropStringAAA = "XXX", PropStringBBB = "YYY" };
@@ -51,7 +51,7 @@ public class ObjectMapperTest
     }
 
     [Fact]
-    public void CreateSetMapperTest()
+    public void SetMap()
     {
         var receiver1 = new ObjectMapperTest();
         var receiver2 = new ObjectMapperTest() { PropInt1 = 10, PropInt2 = 20, PropStringAAA = "XXX", PropStringBBB = "YYY" };
@@ -78,7 +78,7 @@ public class ObjectMapperTest
     }
 
     [Fact]
-    public void CreateSetMapperDynamicTest()
+    public void DynamicSetMap()
     {
         var receiver1 = new ObjectMapperTest();
         var receiver2 = new ObjectMapperTest() { PropInt1 = 10, PropInt2 = 20, PropStringAAA = "XXX", PropStringBBB = "YYY" };
@@ -104,7 +104,7 @@ public class ObjectMapperTest
     }
 
     [Fact]
-    public void CreateFieldGetMapperTest()
+    public void TupleGetMap()
     {
         var receiver = (StringAAA: "aa", Int1: 10);
         var map_str = ObjectMapper.CreateFieldGetMapper<(string StringAAA, int Int1), string>();
@@ -115,7 +115,7 @@ public class ObjectMapperTest
     }
 
     [Fact]
-    public void CreateFieldGetMapperDynamicTest()
+    public void TupleDynamicGetMap()
     {
         var receiver = (StringAAA: "aa", Int1: 10);
         var map_dynamic = ObjectMapper.CreateFieldGetMapper<(string StringAAA, int Int1)>();
@@ -125,7 +125,28 @@ public class ObjectMapperTest
     }
 
     [Fact]
-    public void CreateFieldSetMapperTest()
+    public void FieldGetMap()
+    {
+        var receiver = new ObjectMapperTest() { FieldStr = "abc", FieldInt = 123 };
+        var map_str = ObjectMapper.CreateFieldGetMapper<ObjectMapperTest, string>();
+        var map_int = ObjectMapper.CreateFieldGetMapper<ObjectMapperTest, int>();
+
+        Assert.Equal(map_str["FieldStr"](receiver), "abc");
+        Assert.Equal(map_int["FieldInt"](receiver), 123);
+    }
+
+    [Fact]
+    public void FieldDynamicGetMap()
+    {
+        var receiver = new ObjectMapperTest() { FieldStr = "abc", FieldInt = 123 };
+        var map_dynamic = ObjectMapper.CreateFieldGetMapper<ObjectMapperTest>();
+
+        Assert.Equal(map_dynamic["FieldStr"](receiver), "abc");
+        Assert.Equal(map_dynamic["FieldInt"](receiver), 123);
+    }
+
+    [Fact]
+    public void FieldSetMap()
     {
         var receiver = new ObjectMapperTest();
         var map_str = ObjectMapper.CreateFieldSetMapper<ObjectMapperTest, string>();
@@ -138,7 +159,7 @@ public class ObjectMapperTest
     }
 
     [Fact]
-    public void CreateFieldSetMapperDynamicTest()
+    public void FieldDynamicSetMap()
     {
         var receiver = new ObjectMapperTest();
         var map_dynamic = ObjectMapper.CreateFieldSetMapper<ObjectMapperTest>();

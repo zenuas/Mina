@@ -54,7 +54,7 @@ public class ObjectMapper2Test
     }
 
     [Fact]
-    public void CreateMapperToProp()
+    public void ToProp()
     {
         var v = new ObjectMapper2Test() { Prop = 123, Field = 456 };
         var f = ObjectMapper.CreateMapper<ObjectMapper2Test, PropData>(["Prop", "Method", "Field"]);
@@ -65,7 +65,7 @@ public class ObjectMapper2Test
     }
 
     [Fact]
-    public void CreateMapperToMethod()
+    public void ToMethod()
     {
         var v = new ObjectMapper2Test() { Prop = 123, Field = 456 };
         var f = ObjectMapper.CreateMapper<ObjectMapper2Test, MethodData>(["Prop", "Method", "Field"]);
@@ -76,7 +76,7 @@ public class ObjectMapper2Test
     }
 
     [Fact]
-    public void CreateMapperToMethodVoid()
+    public void ToMethodVoid()
     {
         var v = new ObjectMapper2Test() { Prop = 123, Field = 456 };
         var f = ObjectMapper.CreateMapper<ObjectMapper2Test, MethodVoidData>(["Prop", "Method", "Field"]);
@@ -87,7 +87,7 @@ public class ObjectMapper2Test
     }
 
     [Fact]
-    public void CreateMapperToMethodVoid2()
+    public void ToMethodVoid2()
     {
         var v = new ObjectMapper2Test() { Prop = 123, Field = 456 };
         var f = ObjectMapper.CreateMapper<ObjectMapper2Test, MethodVoidData>(new Dictionary<string, string>() {
@@ -102,7 +102,7 @@ public class ObjectMapper2Test
     }
 
     [Fact]
-    public void CreateMapperToField()
+    public void ToField()
     {
         var v = new ObjectMapper2Test() { Prop = 123, Field = 456 };
         var f = ObjectMapper.CreateMapper<ObjectMapper2Test, FieldData>(["Prop", "Method", "Field"]);
@@ -113,7 +113,7 @@ public class ObjectMapper2Test
     }
 
     [Fact]
-    public void CreateMapperToStruct()
+    public void ToStruct()
     {
         var v = new ObjectMapper2Test() { Prop = 123, Field = 456 };
         var f = ObjectMapper.CreateMapper<ObjectMapper2Test, StructData>(["Prop", "Method", "Field"]);
