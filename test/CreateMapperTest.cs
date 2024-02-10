@@ -4,7 +4,7 @@ using Xunit;
 
 namespace Mina.Test;
 
-public class ObjectMapper2Test
+public class CreateMapperTest
 {
     public int Prop { get; set; } = 1;
     public string Method() => "test";
@@ -60,8 +60,8 @@ public class ObjectMapper2Test
     [Fact]
     public void ToProp()
     {
-        var v = new ObjectMapper2Test() { Prop = 123, Field = 456 };
-        var f = ObjectMapper.CreateMapper<ObjectMapper2Test, PropData>(["Prop", "Method", "Field"]);
+        var v = new CreateMapperTest() { Prop = 123, Field = 456 };
+        var f = ObjectMapper.CreateMapper<CreateMapperTest, PropData>(["Prop", "Method", "Field"]);
         var d = f(v);
         Assert.Equal(d.Prop, 123);
         Assert.Equal(d.Method, "test");
@@ -71,8 +71,8 @@ public class ObjectMapper2Test
     [Fact]
     public void ToMethod()
     {
-        var v = new ObjectMapper2Test() { Prop = 123, Field = 456 };
-        var f = ObjectMapper.CreateMapper<ObjectMapper2Test, MethodData>(["Prop", "Method", "Field"]);
+        var v = new CreateMapperTest() { Prop = 123, Field = 456 };
+        var f = ObjectMapper.CreateMapper<CreateMapperTest, MethodData>(["Prop", "Method", "Field"]);
         var d = f(v);
         Assert.Equal(d._Prop, 123);
         Assert.Equal(d._Method, "test");
@@ -82,8 +82,8 @@ public class ObjectMapper2Test
     [Fact]
     public void ToMethodVoid()
     {
-        var v = new ObjectMapper2Test() { Prop = 123, Field = 456 };
-        var f = ObjectMapper.CreateMapper<ObjectMapper2Test, MethodVoidData>(["Prop", "Method", "Field"]);
+        var v = new CreateMapperTest() { Prop = 123, Field = 456 };
+        var f = ObjectMapper.CreateMapper<CreateMapperTest, MethodVoidData>(["Prop", "Method", "Field"]);
         var d = f(v);
         Assert.Equal(d._Prop, 123);
         Assert.Equal(d._Method, "test");
@@ -93,8 +93,8 @@ public class ObjectMapper2Test
     [Fact]
     public void ToMethodVoid2()
     {
-        var v = new ObjectMapper2Test() { Prop = 123, Field = 456 };
-        var f = ObjectMapper.CreateMapper<ObjectMapper2Test, MethodVoidData>(new Dictionary<string, string>() {
+        var v = new CreateMapperTest() { Prop = 123, Field = 456 };
+        var f = ObjectMapper.CreateMapper<CreateMapperTest, MethodVoidData>(new Dictionary<string, string>() {
             { "Prop", "_Field" },
             { "Method", "_Method" },
             { "Field", "_Prop" }
@@ -108,8 +108,8 @@ public class ObjectMapper2Test
     [Fact]
     public void ToField()
     {
-        var v = new ObjectMapper2Test() { Prop = 123, Field = 456 };
-        var f = ObjectMapper.CreateMapper<ObjectMapper2Test, FieldData>(["Prop", "Method", "Field"]);
+        var v = new CreateMapperTest() { Prop = 123, Field = 456 };
+        var f = ObjectMapper.CreateMapper<CreateMapperTest, FieldData>(["Prop", "Method", "Field"]);
         var d = f(v);
         Assert.Equal(d.Prop, 123);
         Assert.Equal(d.Method, "test");
@@ -119,8 +119,8 @@ public class ObjectMapper2Test
     [Fact]
     public void ToStruct()
     {
-        var v = new ObjectMapper2Test() { Prop = 123, Field = 456 };
-        var f = ObjectMapper.CreateMapper<ObjectMapper2Test, StructData>(["Prop", "Method", "Field"]);
+        var v = new CreateMapperTest() { Prop = 123, Field = 456 };
+        var f = ObjectMapper.CreateMapper<CreateMapperTest, StructData>(["Prop", "Method", "Field"]);
         var d = f(v);
         Assert.Equal(d.Prop, 123);
         Assert.Equal(d.Method, "test");
@@ -130,8 +130,8 @@ public class ObjectMapper2Test
     [Fact]
     public void ToRecord()
     {
-        var v = new ObjectMapper2Test() { Prop = 123, Field = 456 };
-        var f = ObjectMapper.CreateMapper<ObjectMapper2Test, RecordData>(["Prop", "Method", "Field"]);
+        var v = new CreateMapperTest() { Prop = 123, Field = 456 };
+        var f = ObjectMapper.CreateMapper<CreateMapperTest, RecordData>(["Prop", "Method", "Field"]);
         var d = f(v);
         Assert.Equal(d.Prop, 123);
         Assert.Equal(d.Method, "test");

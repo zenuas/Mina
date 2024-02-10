@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Mina.Test;
 
-public class ObjectMapper_DataReaderTest
+public class CreateDataReaderMapperTest
 {
     public class FieldData
     {
@@ -41,7 +41,7 @@ public class ObjectMapper_DataReaderTest
 
     public SqliteConnection con;
 
-    public ObjectMapper_DataReaderTest()
+    public CreateDataReaderMapperTest()
     {
         SQLitePCL.Batteries.Init();
         con = new("Data Source=:memory:");
