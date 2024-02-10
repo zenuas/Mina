@@ -272,6 +272,7 @@ public static class Expressions
         }
         else if (right_type_wrap_object.IsValueType)
         {
+            var else_label = il.DefineLabel();
             var endif_label = il.DefineLabel();
 
             // dup stack[top];
@@ -279,10 +280,23 @@ public static class Expressions
 
             // if (stack[top] is not DBNull)
             il.Emit(OpCodes.Isinst, typeof(DBNull));
-            il.Emit(OpCodes.Brtrue_S, endif_label);
+            il.Emit(OpCodes.Brtrue_S, else_label);
 
             // then: stack[top] = (load_type)stack[top];
             il.Emit(OpCodes.Unbox_Any, right_type_wrap_object);
+            il.Emit(OpCodes.Br_S, endif_label);
+
+            // else: stack[top] = 0 or null;
+            il.MarkLabel(else_label);
+            il.Emit(OpCodes.Pop);
+            if (left_type.IsValueType)
+            {
+                il.Emit(OpCodes.Ldc_I4_0);
+            }
+            else
+            {
+                il.Emit(OpCodes.Ldnull);
+            }
 
             il.MarkLabel(endif_label);
 
