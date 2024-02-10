@@ -200,32 +200,67 @@ public static class Expressions
         return nullable;
     }
 
+    public static Label EmitIfIsInstanceThenGoto<T>(ILGenerator il, Label? then_label = null, LocalBuilder? local = null) => (then_label ?? il.DefineLabel()).Return(x => EmitIfIsInstanceGoto<T>(il, OpCodes.Brtrue_S, x, local));
+    public static Label EmitIfIsInstanceElseGoto<T>(ILGenerator il, Label? else_label = null, LocalBuilder? local = null) => (else_label ?? il.DefineLabel()).Return(x => EmitIfIsInstanceGoto<T>(il, OpCodes.Brfalse_S, x, local));
+    public static Label EmitIfIsNotInstanceThenGoto<T>(ILGenerator il, Label? then_label = null, LocalBuilder? local = null) => (then_label ?? il.DefineLabel()).Return(x => EmitIfIsInstanceGoto<T>(il, OpCodes.Brfalse_S, x, local));
+    public static Label EmitIfIsNotInstanceElseGoto<T>(ILGenerator il, Label? else_label = null, LocalBuilder? local = null) => (else_label ?? il.DefineLabel()).Return(x => EmitIfIsInstanceGoto<T>(il, OpCodes.Brtrue_S, x, local));
+
+    public static void EmitIfIsInstanceGoto<T>(ILGenerator il, OpCode br, Label goto_label, LocalBuilder? local = null)
+    {
+        // if (local is T) goto goto_label;
+        if (local is { })
+        {
+            il.Emit(OpCodes.Ldloc, local);
+        }
+        else
+        {
+            il.Emit(OpCodes.Dup);
+        }
+        il.Emit(OpCodes.Isinst, typeof(T));
+        il.Emit(br, goto_label);
+    }
+
+    public static Label EmitIfIsNullThenGoto(ILGenerator il, Label? then_label = null, LocalBuilder? local = null) => (then_label ?? il.DefineLabel()).Return(x => EmitIfIsNullGoto(il, OpCodes.Brtrue_S, x, local));
+    public static Label EmitIfIsNullElseGoto(ILGenerator il, Label? else_label = null, LocalBuilder? local = null) => (else_label ?? il.DefineLabel()).Return(x => EmitIfIsNullGoto(il, OpCodes.Brfalse_S, x, local));
+    public static Label EmitIfIsNotNullThenGoto(ILGenerator il, Label? then_label = null, LocalBuilder? local = null) => (then_label ?? il.DefineLabel()).Return(x => EmitIfIsNullGoto(il, OpCodes.Brfalse_S, x, local));
+    public static Label EmitIfIsNotNullElseGoto(ILGenerator il, Label? else_label = null, LocalBuilder? local = null) => (else_label ?? il.DefineLabel()).Return(x => EmitIfIsNullGoto(il, OpCodes.Brtrue_S, x, local));
+
+    public static void EmitIfIsNullGoto(ILGenerator il, OpCode br, Label goto_label, LocalBuilder? local = null)
+    {
+        // if (local is null) goto goto_label;
+        if (local is { })
+        {
+            il.Emit(OpCodes.Ldloc, local);
+        }
+        else
+        {
+            il.Emit(OpCodes.Dup);
+        }
+        il.Emit(OpCodes.Ldnull);
+        il.Emit(OpCodes.Ceq);
+        il.Emit(br, goto_label);
+    }
+
     public static void EmitNullableCastViaObject(ILGenerator il, Type left_nullable, Type left_nullable_t, Type right_type)
     {
         var right_value = il.DeclareLocal(typeof(object));
-        var else_label = il.DefineLabel();
         var endif_label = il.DefineLabel();
 
         // var right_value = stack[top];
         il.Emit(OpCodes.Stloc, right_value);
 
-        // if (right_value is null) goto else_label;
-        il.Emit(OpCodes.Ldloc, right_value);
-        il.Emit(OpCodes.Ldnull);
-        il.Emit(OpCodes.Ceq);
-        il.Emit(OpCodes.Brtrue_S, else_label);
+        // if (right_value is null) goto goto_label;
+        var goto_label = EmitIfIsNullThenGoto(il, local: right_value);
 
-        // if (right_value is not DBNull)
-        il.Emit(OpCodes.Ldloc, right_value);
-        il.Emit(OpCodes.Isinst, typeof(DBNull));
-        il.Emit(OpCodes.Brtrue_S, else_label);
+        // if (right_value is DBNull) goto goto_label;
+        _ = EmitIfIsInstanceThenGoto<DBNull>(il, goto_label, right_value);
 
         // then: nullable = Nullable<left_nullable_t>(right_value);
         var nullable = EmitStoreNullable(il, left_nullable, left_nullable_t, right_value, right_type);
         il.Emit(OpCodes.Br_S, endif_label);
 
-        // else: nullable = Nullable<nullable_t>();
-        il.MarkLabel(else_label);
+        // goto_label: nullable = Nullable<nullable_t>();
+        il.MarkLabel(goto_label);
         il.Emit(OpCodes.Ldloca_S, nullable);
         il.Emit(OpCodes.Initobj, left_nullable);
 
@@ -272,22 +307,12 @@ public static class Expressions
         }
         else if (right_type_wrap_object.IsValueType)
         {
-            var else_label = il.DefineLabel();
             var endif_label = il.DefineLabel();
 
-            // dup stack[top];
-            il.Emit(OpCodes.Dup);
+            // if (stack[top] is DBNull)
+            var else_label = EmitIfIsInstanceElseGoto<DBNull>(il);
 
-            // if (stack[top] is not DBNull)
-            il.Emit(OpCodes.Isinst, typeof(DBNull));
-            il.Emit(OpCodes.Brtrue_S, else_label);
-
-            // then: stack[top] = (load_type)stack[top];
-            il.Emit(OpCodes.Unbox_Any, right_type_wrap_object);
-            il.Emit(OpCodes.Br_S, endif_label);
-
-            // else: stack[top] = 0 or null;
-            il.MarkLabel(else_label);
+            // then: stack[top] = 0 or null;
             il.Emit(OpCodes.Pop);
             if (left_type.IsValueType)
             {
@@ -297,6 +322,11 @@ public static class Expressions
             {
                 il.Emit(OpCodes.Ldnull);
             }
+            il.Emit(OpCodes.Br_S, endif_label);
+
+            // else: stack[top] = (load_type)stack[top];
+            il.MarkLabel(else_label);
+            il.Emit(OpCodes.Unbox_Any, right_type_wrap_object);
 
             il.MarkLabel(endif_label);
 
@@ -350,19 +380,11 @@ public static class Expressions
             }
             else
             {
-                var else_label = il.DefineLabel();
-                var endif_label = il.DefineLabel();
-
                 // if (stack[top] is null) goto endif_label;
-                il.Emit(OpCodes.Dup);
-                il.Emit(OpCodes.Ldnull);
-                il.Emit(OpCodes.Ceq);
-                il.Emit(OpCodes.Brtrue_S, endif_label);
+                var endif_label = EmitIfIsNullThenGoto(il);
 
                 // if (stack[top] is DBNull)
-                il.Emit(OpCodes.Dup);
-                il.Emit(OpCodes.Isinst, typeof(DBNull));
-                il.Emit(OpCodes.Brfalse_S, else_label);
+                var else_label = EmitIfIsInstanceElseGoto<DBNull>(il);
 
                 // then: stack[top] = null;
                 il.Emit(OpCodes.Pop);
@@ -403,13 +425,10 @@ public static class Expressions
             }
             else
             {
-                var else_label = il.DefineLabel();
                 var endif_label = il.DefineLabel();
 
                 // if (stack[top] is string)
-                il.Emit(OpCodes.Dup);
-                il.Emit(OpCodes.Isinst, typeof(string));
-                il.Emit(OpCodes.Brfalse_S, else_label);
+                var else_label = EmitIfIsInstanceElseGoto<string>(il);
 
                 // then: stack[top] = (left_type)(string)stack[top];
                 EmitCast(il, left_type, typeof(string));
@@ -453,16 +472,10 @@ public static class Expressions
             }
             else
             {
-                var else1_label = il.DefineLabel();
-                var else2_label = il.DefineLabel();
-                var else3_label = il.DefineLabel();
                 var endif_label = il.DefineLabel();
 
                 // if (stack[top] is null)
-                il.Emit(OpCodes.Dup);
-                il.Emit(OpCodes.Ldnull);
-                il.Emit(OpCodes.Ceq);
-                il.Emit(OpCodes.Brfalse_S, else1_label);
+                var else1_label = EmitIfIsNullElseGoto(il);
 
                 // then: stack[top] = 0;
                 il.Emit(OpCodes.Pop);
@@ -471,9 +484,7 @@ public static class Expressions
 
                 // if (stack[top] is DBNull)
                 il.MarkLabel(else1_label);
-                il.Emit(OpCodes.Dup);
-                il.Emit(OpCodes.Isinst, typeof(DBNull));
-                il.Emit(OpCodes.Brfalse_S, else2_label);
+                var else2_label = EmitIfIsInstanceElseGoto<DBNull>(il);
 
                 // then: stack[top] = 0;
                 il.Emit(OpCodes.Pop);
@@ -482,9 +493,7 @@ public static class Expressions
 
                 // if (stack[top] is string)
                 il.MarkLabel(else2_label);
-                il.Emit(OpCodes.Dup);
-                il.Emit(OpCodes.Isinst, typeof(string));
-                il.Emit(OpCodes.Brfalse_S, else3_label);
+                var else3_label = EmitIfIsInstanceElseGoto<string>(il);
 
                 // then: stack[top] = (left_type)(string)stack[top];
                 EmitCast(il, left_type, typeof(string));
