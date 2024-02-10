@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Reflection;
 using System.Reflection.Emit;
 
 namespace Mina.Extensions;
@@ -50,25 +51,50 @@ public static class ObjectMapper
         .GetFields()
         .ToDictionary(x => x.Name, x => Expressions.SetField<T, dynamic>(x.Name));
 
+    public static (LocalBuilder? Local, Dictionary<string, string>? NewMap) EmitCreateMapperInstance<T>(ILGenerator il, Dictionary<string, string> map, Action<string, ParameterInfo> loadf)
+    {
+        LocalBuilder? local = null;
+        Dictionary<string, string>? newmap = null;
+
+        if (typeof(T).IsValueType)
+        {
+            local = il.DeclareLocal(typeof(T));
+            il.Emit(OpCodes.Ldloca_S, local);
+            il.Emit(OpCodes.Initobj, typeof(T));
+            il.Emit(OpCodes.Ldloca_S, local);
+        }
+        else if (typeof(T).GetConstructor([]) is { } ctor0)
+        {
+            il.Emit(OpCodes.Newobj, ctor0);
+        }
+        else if (typeof(T).GetConstructors() is { } ctors && ctors.Where(x => x.GetParameters().All(y => map.ContainsValue(y.Name!))).FirstOrDefault() is { } ctor)
+        {
+            var ctor_params = ctor.GetParameters();
+            var ctor_map = map.Where(x => ctor_params.Contains(y => y.Name == x.Value)).ToDictionary(x => x.Value, x => x.Key);
+            ctor_params.Each(x => loadf(ctor_map[x.Name!], x));
+            il.Emit(OpCodes.Newobj, ctor);
+            newmap = map.Where(x => !ctor_params.Contains(y => y.Name == x.Value)).ToDictionary();
+        }
+        else
+        {
+            throw new InvalidOperationException();
+        }
+        return (local, newmap);
+    }
+
     public static Func<T, R> CreateMapper<T, R>(IEnumerable<string> map) => CreateMapper<T, R>(map.ToDictionary(x => x));
 
     public static Func<T, R> CreateMapper<T, R>(Dictionary<string, string> map)
     {
         var ilmethod = new DynamicMethod("", typeof(R), [typeof(T)]);
         var il = ilmethod.GetILGenerator();
-        var local = il.DeclareLocal(typeof(R));
-        if (typeof(R).IsValueType)
+        var (local, newmap) = EmitCreateMapperInstance<R>(il, map, (name, _) =>
         {
-            il.Emit(OpCodes.Ldloca_S, local);
-            il.Emit(OpCodes.Initobj, typeof(R));
-            il.Emit(OpCodes.Ldloca_S, local);
-        }
-        else
-        {
-            il.Emit(OpCodes.Newobj, typeof(R).GetConstructor([])!);
-        }
+            il.Emit(OpCodes.Ldarg_0);
+            Expressions.EmitLoad<T>(il, name);
+        });
 
-        foreach (var (from_name, to_name) in map)
+        foreach (var (from_name, to_name) in newmap ?? map)
         {
             il.Emit(OpCodes.Dup);
             il.Emit(OpCodes.Ldarg_0);
@@ -80,7 +106,7 @@ public static class ObjectMapper
         if (typeof(R).IsValueType)
         {
             il.Emit(OpCodes.Pop);
-            il.Emit(OpCodes.Ldloc, local);
+            il.Emit(OpCodes.Ldloc, local!);
         }
         il.Emit(OpCodes.Ret);
         return ilmethod.CreateDelegate<Func<T, R>>();
@@ -100,19 +126,18 @@ public static class ObjectMapper
 
         var ilmethod = new DynamicMethod("", typeof(R), [typeof(DataRow)]);
         var il = ilmethod.GetILGenerator();
-        var local = il.DeclareLocal(typeof(R));
-        if (typeof(R).IsValueType)
+        var (local, newmap) = EmitCreateMapperInstance<R>(il, map, (name, info) =>
         {
-            il.Emit(OpCodes.Ldloca_S, local);
-            il.Emit(OpCodes.Initobj, typeof(R));
-            il.Emit(OpCodes.Ldloca_S, local);
-        }
-        else
-        {
-            il.Emit(OpCodes.Newobj, typeof(R).GetConstructor([])!);
-        }
+            var load_type = table.Columns[name]!.DataType;
 
-        foreach (var (from_name, to_name) in map)
+            // stack[top] = (store_type)arg0[from_name];
+            il.Emit(OpCodes.Ldarg_0);
+            il.Emit(OpCodes.Ldstr, name);
+            il.Emit(OpCodes.Callvirt, get_item);
+            Expressions.EmitCastViaObject(il, info.ParameterType, load_type);
+        });
+
+        foreach (var (from_name, to_name) in newmap ?? map)
         {
             il.Emit(OpCodes.Dup);
             var store_type = Expressions.WhenEmitStorable<R>(to_name)!;
@@ -129,7 +154,7 @@ public static class ObjectMapper
         if (typeof(R).IsValueType)
         {
             il.Emit(OpCodes.Pop);
-            il.Emit(OpCodes.Ldloc, local);
+            il.Emit(OpCodes.Ldloc, local!);
         }
         il.Emit(OpCodes.Ret);
         return ilmethod.CreateDelegate<Func<DataRow, R>>();
@@ -146,19 +171,19 @@ public static class ObjectMapper
     {
         var ilmethod = new DynamicMethod("", typeof(R), [typeof(object[])]);
         var il = ilmethod.GetILGenerator();
-        var local = il.DeclareLocal(typeof(R));
-        if (typeof(R).IsValueType)
+        var (local, newmap) = EmitCreateMapperInstance<R>(il, map, (name, info) =>
         {
-            il.Emit(OpCodes.Ldloca_S, local);
-            il.Emit(OpCodes.Initobj, typeof(R));
-            il.Emit(OpCodes.Ldloca_S, local);
-        }
-        else
-        {
-            il.Emit(OpCodes.Newobj, typeof(R).GetConstructor([])!);
-        }
+            var index = reader.GetOrdinal(name);
+            var load_type = reader.GetFieldType(index);
 
-        foreach (var (from_name, to_name) in map)
+            // stack[top] = (store_type)arg0[index];
+            il.Emit(OpCodes.Ldarg_0);
+            il.Emit(OpCodes.Ldc_I4, index);
+            il.Emit(OpCodes.Ldelem_Ref);
+            Expressions.EmitCastViaObject(il, info.ParameterType, load_type);
+        });
+
+        foreach (var (from_name, to_name) in newmap ?? map)
         {
             il.Emit(OpCodes.Dup);
             var index = reader.GetOrdinal(from_name);
@@ -176,7 +201,7 @@ public static class ObjectMapper
         if (typeof(R).IsValueType)
         {
             il.Emit(OpCodes.Pop);
-            il.Emit(OpCodes.Ldloc, local);
+            il.Emit(OpCodes.Ldloc, local!);
         }
         il.Emit(OpCodes.Ret);
 

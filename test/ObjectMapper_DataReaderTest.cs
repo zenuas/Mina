@@ -35,6 +35,10 @@ public class ObjectMapper_DataReaderTest
         public DateTime? DateOrNull;
     }
 
+    public record class RecordData(int Prop, string Method, long Field);
+
+    public record struct RecordStructData(int Prop, string Method, long Field);
+
     public SqliteConnection con;
 
     public ObjectMapper_DataReaderTest()
@@ -108,6 +112,29 @@ public class ObjectMapper_DataReaderTest
         command.CommandText = $"SELECT * FROM Test3x3 ORDER BY 1";
         using var reader = command.ExecuteReader();
         var f = ObjectMapper.CreateMapper<StructData>(reader);
+        var d = f(reader).ToArray();
+        Assert.Equal(d.Length, 3);
+
+        Assert.Equal(d[0].Prop, 123);
+        Assert.Equal(d[0].Method, "test0");
+        Assert.Equal(d[0].Field, 456);
+
+        Assert.Equal(d[1].Prop, 124);
+        Assert.Equal(d[1].Method, "test1");
+        Assert.Equal(d[1].Field, 457);
+
+        Assert.Equal(d[2].Prop, 125);
+        Assert.Equal(d[2].Method, "test2");
+        Assert.Equal(d[2].Field, 458);
+    }
+
+    [Fact]
+    public void ToRecord()
+    {
+        using var command = con.CreateCommand();
+        command.CommandText = $"SELECT * FROM Test3x3 ORDER BY 1";
+        using var reader = command.ExecuteReader();
+        var f = ObjectMapper.CreateMapper<RecordData>(reader);
         var d = f(reader).ToArray();
         Assert.Equal(d.Length, 3);
 
