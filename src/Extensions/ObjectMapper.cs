@@ -91,7 +91,7 @@ public static class ObjectMapper
         var (local, newmap) = EmitCreateMapperInstance<R>(il, map, (name, _) =>
         {
             il.Emit(OpCodes.Ldarg_0);
-            Expressions.EmitLoad<T>(il, name);
+            Reflections.EmitLoad<T>(il, name);
         });
 
         foreach (var (from_name, to_name) in newmap ?? map)
@@ -99,9 +99,9 @@ public static class ObjectMapper
             il.Emit(OpCodes.Dup);
             il.Emit(OpCodes.Ldarg_0);
 
-            var load_type = Expressions.EmitLoad<T>(il, from_name);
+            var load_type = Reflections.EmitLoad<T>(il, from_name);
             if (load_type is null) throw new("source not found");
-            if (!Expressions.EmitStore<R>(il, to_name, load_type)) throw new("destination not found");
+            if (!Reflections.EmitStore<R>(il, to_name, load_type)) throw new("destination not found");
         }
         if (typeof(R).IsValueType)
         {
@@ -115,7 +115,7 @@ public static class ObjectMapper
     public static Func<DataRow, R> CreateMapper<R>(DataTable table) => CreateMapper<R>(table, table.Columns
         .GetIterator()
         .OfType<DataColumn>()
-        .Where(x => Expressions.WhenEmitStorable<R>(x.ColumnName) is { })
+        .Where(x => Reflections.WhenEmitStorable<R>(x.ColumnName) is { })
         .ToDictionary(x => x.ColumnName, x => x.ColumnName));
 
     public static Func<DataRow, R> CreateMapper<R>(DataTable table, IEnumerable<string> map) => CreateMapper<R>(table, map.ToDictionary(x => x));
@@ -134,22 +134,22 @@ public static class ObjectMapper
             il.Emit(OpCodes.Ldarg_0);
             il.Emit(OpCodes.Ldstr, name);
             il.Emit(OpCodes.Callvirt, get_item);
-            Expressions.EmitCastViaObject(il, info.ParameterType, load_type);
+            Reflections.EmitCastViaObject(il, info.ParameterType, load_type);
         });
 
         foreach (var (from_name, to_name) in newmap ?? map)
         {
             il.Emit(OpCodes.Dup);
-            var store_type = Expressions.WhenEmitStorable<R>(to_name)!;
+            var store_type = Reflections.WhenEmitStorable<R>(to_name)!;
             var load_type = table.Columns[from_name]!.DataType;
 
             // stack[top] = (store_type)arg0[from_name];
             il.Emit(OpCodes.Ldarg_0);
             il.Emit(OpCodes.Ldstr, from_name);
             il.Emit(OpCodes.Callvirt, get_item);
-            Expressions.EmitCastViaObject(il, store_type, load_type);
+            Reflections.EmitCastViaObject(il, store_type, load_type);
 
-            if (!Expressions.EmitStore<R>(il, to_name, store_type)) throw new("destination not found");
+            if (!Reflections.EmitStore<R>(il, to_name, store_type)) throw new("destination not found");
         }
         if (typeof(R).IsValueType)
         {
@@ -162,7 +162,7 @@ public static class ObjectMapper
 
     public static Func<IDataReader, IEnumerable<R>> CreateMapper<R>(IDataReader reader) => CreateMapper<R>(reader, Enumerable.Range(0, reader.FieldCount)
         .Select(x => reader.GetName(x))
-        .Where(x => Expressions.WhenEmitStorable<R>(x) is { })
+        .Where(x => Reflections.WhenEmitStorable<R>(x) is { })
         .ToDictionary(x => x));
 
     public static Func<IDataReader, IEnumerable<R>> CreateMapper<R>(IDataReader reader, IEnumerable<string> map) => CreateMapper<R>(reader, map.ToDictionary(x => x));
@@ -180,23 +180,23 @@ public static class ObjectMapper
             il.Emit(OpCodes.Ldarg_0);
             il.Emit(OpCodes.Ldc_I4, index);
             il.Emit(OpCodes.Ldelem_Ref);
-            Expressions.EmitCastViaObject(il, info.ParameterType, load_type);
+            Reflections.EmitCastViaObject(il, info.ParameterType, load_type);
         });
 
         foreach (var (from_name, to_name) in newmap ?? map)
         {
             il.Emit(OpCodes.Dup);
             var index = reader.GetOrdinal(from_name);
-            var store_type = Expressions.WhenEmitStorable<R>(to_name)!;
+            var store_type = Reflections.WhenEmitStorable<R>(to_name)!;
             var load_type = reader.GetFieldType(index);
 
             // stack[top] = (store_type)arg0[index];
             il.Emit(OpCodes.Ldarg_0);
             il.Emit(OpCodes.Ldc_I4, index);
             il.Emit(OpCodes.Ldelem_Ref);
-            Expressions.EmitCastViaObject(il, store_type, load_type);
+            Reflections.EmitCastViaObject(il, store_type, load_type);
 
-            if (!Expressions.EmitStore<R>(il, to_name, store_type)) throw new("destination not found");
+            if (!Reflections.EmitStore<R>(il, to_name, store_type)) throw new("destination not found");
         }
         if (typeof(R).IsValueType)
         {
