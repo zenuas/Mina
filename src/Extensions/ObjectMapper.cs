@@ -103,10 +103,10 @@ public static class ObjectMapper
             if (load_type is null) throw new("source not found");
             if (!Reflections.EmitStore<R>(il, to_name, load_type)) throw new("destination not found");
         }
-        if (typeof(R).IsValueType)
+        if (local is { })
         {
             il.Emit(OpCodes.Pop);
-            il.Emit(OpCodes.Ldloc, local!);
+            il.Emit(OpCodes.Ldloc, local);
         }
         il.Emit(OpCodes.Ret);
         return ilmethod.CreateDelegate<Func<T, R>>();
@@ -151,10 +151,10 @@ public static class ObjectMapper
 
             if (!Reflections.EmitStore<T>(il, to_name, store_type)) throw new("destination not found");
         }
-        if (typeof(T).IsValueType)
+        if (local is { })
         {
             il.Emit(OpCodes.Pop);
-            il.Emit(OpCodes.Ldloc, local!);
+            il.Emit(OpCodes.Ldloc, local);
         }
         il.Emit(OpCodes.Ret);
         return ilmethod.CreateDelegate<Func<DataRow, T>>();
@@ -198,10 +198,10 @@ public static class ObjectMapper
 
             if (!Reflections.EmitStore<T>(il, to_name, store_type)) throw new("destination not found");
         }
-        if (typeof(T).IsValueType)
+        if (local is { })
         {
             il.Emit(OpCodes.Pop);
-            il.Emit(OpCodes.Ldloc, local!);
+            il.Emit(OpCodes.Ldloc, local);
         }
         il.Emit(OpCodes.Ret);
 
