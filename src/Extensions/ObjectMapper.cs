@@ -114,9 +114,7 @@ public static class ObjectMapper
         return CreateMapper<T, R>(map, (il, name, type) =>
         {
             il.Emit(OpCodes.Ldarg_0);
-
-            var load_type = Reflections.EmitLoad<T>(il, name);
-            if (load_type is null) throw new("source not found");
+            _ = Reflections.EmitLoad<T>(il, name) ?? throw new("source not found");
         });
     }
 
