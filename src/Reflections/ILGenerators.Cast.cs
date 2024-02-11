@@ -16,13 +16,12 @@ public static partial class ILGenerators
         if (IsRequireAddressLoad(left_type, arg_type))
         {
             il.Ldarga(argn);
-            il.AnyCast(left_type, arg_type);
         }
         else
         {
             il.Ldarg(argn);
-            il.AnyCast(left_type, arg_type);
         }
+        il.AnyCast(left_type, arg_type);
     }
 
     public static void ChangeType(this ILGenerator il, Type type)
