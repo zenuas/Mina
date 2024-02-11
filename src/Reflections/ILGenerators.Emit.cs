@@ -112,5 +112,56 @@ public static partial class ILGenerators
     public static Label IfTrueElseGoto(this ILGenerator il, Label? else_label = null) => il.Goto(OpCodes.Brfalse, else_label);
     public static Label IfFalseElseGoto(this ILGenerator il, Label? else_label = null) => il.Goto(OpCodes.Brtrue, else_label);
 
+    public static Label IfIsInstanceThenGoto_S<T>(this ILGenerator il, Label? then_label = null, LocalBuilder? local = null) => il.IfIsInstanceGoto<T>(OpCodes.Brtrue_S, then_label, local);
+    public static Label IfIsInstanceElseGoto_S<T>(this ILGenerator il, Label? else_label = null, LocalBuilder? local = null) => il.IfIsInstanceGoto<T>(OpCodes.Brfalse_S, else_label, local);
+    public static Label IfIsNotInstanceThenGoto_S<T>(this ILGenerator il, Label? then_label = null, LocalBuilder? local = null) => il.IfIsInstanceGoto<T>(OpCodes.Brfalse_S, then_label, local);
+    public static Label IfIsNotInstanceElseGoto_S<T>(this ILGenerator il, Label? else_label = null, LocalBuilder? local = null) => il.IfIsInstanceGoto<T>(OpCodes.Brtrue_S, else_label, local);
+
+    public static Label IfIsInstanceThenGoto<T>(this ILGenerator il, Label? then_label = null, LocalBuilder? local = null) => il.IfIsInstanceGoto<T>(OpCodes.Brtrue, then_label, local);
+    public static Label IfIsInstanceElseGoto<T>(this ILGenerator il, Label? else_label = null, LocalBuilder? local = null) => il.IfIsInstanceGoto<T>(OpCodes.Brfalse, else_label, local);
+    public static Label IfIsNotInstanceThenGoto<T>(this ILGenerator il, Label? then_label = null, LocalBuilder? local = null) => il.IfIsInstanceGoto<T>(OpCodes.Brfalse, then_label, local);
+    public static Label IfIsNotInstanceElseGoto<T>(this ILGenerator il, Label? else_label = null, LocalBuilder? local = null) => il.IfIsInstanceGoto<T>(OpCodes.Brtrue, else_label, local);
+
+    public static Label IfIsInstanceGoto<T>(this ILGenerator il, OpCode br, Label? goto_label = null, LocalBuilder? local = null)
+    {
+        // if (local is T) goto goto_label;
+        if (local is { })
+        {
+            il.Ldloc(local);
+        }
+        else
+        {
+            il.Emit(OpCodes.Dup);
+        }
+        il.Isinst<T>();
+        return il.Goto(br, goto_label);
+    }
+
+    public static Label IfIsNullThenGoto_S(this ILGenerator il, Label? then_label = null, LocalBuilder? local = null) => il.IfIsNullGoto(OpCodes.Brtrue_S, then_label, local);
+    public static Label IfIsNullElseGoto_S(this ILGenerator il, Label? else_label = null, LocalBuilder? local = null) => il.IfIsNullGoto(OpCodes.Brfalse_S, else_label, local);
+    public static Label IfIsNotNullThenGoto_S(this ILGenerator il, Label? then_label = null, LocalBuilder? local = null) => il.IfIsNullGoto(OpCodes.Brfalse_S, then_label, local);
+    public static Label IfIsNotNullElseGoto_S(this ILGenerator il, Label? else_label = null, LocalBuilder? local = null) => il.IfIsNullGoto(OpCodes.Brtrue_S, else_label, local);
+
+    public static Label IfIsNullThenGoto(this ILGenerator il, Label? then_label = null, LocalBuilder? local = null) => il.IfIsNullGoto(OpCodes.Brtrue, then_label, local);
+    public static Label IfIsNullElseGoto(this ILGenerator il, Label? else_label = null, LocalBuilder? local = null) => il.IfIsNullGoto(OpCodes.Brfalse, else_label, local);
+    public static Label IfIsNotNullThenGoto(this ILGenerator il, Label? then_label = null, LocalBuilder? local = null) => il.IfIsNullGoto(OpCodes.Brfalse, then_label, local);
+    public static Label IfIsNotNullElseGoto(this ILGenerator il, Label? else_label = null, LocalBuilder? local = null) => il.IfIsNullGoto(OpCodes.Brtrue, else_label, local);
+
+    public static Label IfIsNullGoto(this ILGenerator il, OpCode br, Label? goto_label = null, LocalBuilder? local = null)
+    {
+        // if (local is null) goto goto_label;
+        if (local is { })
+        {
+            il.Ldloc(local);
+        }
+        else
+        {
+            il.Emit(OpCodes.Dup);
+        }
+        il.Emit(OpCodes.Ldnull);
+        il.Emit(OpCodes.Ceq);
+        return il.Goto(br, goto_label);
+    }
+
     public static void EmitWriteLine<T>(this ILGenerator il) => il.Call(typeof(Console).GetMethod(nameof(Console.WriteLine), [typeof(T)])!);
 }

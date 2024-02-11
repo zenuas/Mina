@@ -47,47 +47,6 @@ public static partial class ILGenerators
         return nullable;
     }
 
-    public static Label IfIsInstanceThenGoto<T>(this ILGenerator il, Label? then_label = null, LocalBuilder? local = null) => il.IfIsInstanceGoto<T>(OpCodes.Brtrue_S, then_label, local);
-    public static Label IfIsInstanceElseGoto<T>(this ILGenerator il, Label? else_label = null, LocalBuilder? local = null) => il.IfIsInstanceGoto<T>(OpCodes.Brfalse_S, else_label, local);
-    public static Label IfIsNotInstanceThenGoto<T>(this ILGenerator il, Label? then_label = null, LocalBuilder? local = null) => il.IfIsInstanceGoto<T>(OpCodes.Brfalse_S, then_label, local);
-    public static Label IfIsNotInstanceElseGoto<T>(this ILGenerator il, Label? else_label = null, LocalBuilder? local = null) => il.IfIsInstanceGoto<T>(OpCodes.Brtrue_S, else_label, local);
-
-    public static Label IfIsInstanceGoto<T>(this ILGenerator il, OpCode br, Label? goto_label = null, LocalBuilder? local = null)
-    {
-        // if (local is T) goto goto_label;
-        if (local is { })
-        {
-            il.Ldloc(local);
-        }
-        else
-        {
-            il.Emit(OpCodes.Dup);
-        }
-        il.Isinst<T>();
-        return il.Goto(br, goto_label);
-    }
-
-    public static Label IfIsNullThenGoto(this ILGenerator il, Label? then_label = null, LocalBuilder? local = null) => il.IfIsNullGoto(OpCodes.Brtrue_S, then_label, local);
-    public static Label IfIsNullElseGoto(this ILGenerator il, Label? else_label = null, LocalBuilder? local = null) => il.IfIsNullGoto(OpCodes.Brfalse_S, else_label, local);
-    public static Label IfIsNotNullThenGoto(this ILGenerator il, Label? then_label = null, LocalBuilder? local = null) => il.IfIsNullGoto(OpCodes.Brfalse_S, then_label, local);
-    public static Label IfIsNotNullElseGoto(this ILGenerator il, Label? else_label = null, LocalBuilder? local = null) => il.IfIsNullGoto(OpCodes.Brtrue_S, else_label, local);
-
-    public static Label IfIsNullGoto(this ILGenerator il, OpCode br, Label? goto_label = null, LocalBuilder? local = null)
-    {
-        // if (local is null) goto goto_label;
-        if (local is { })
-        {
-            il.Ldloc(local);
-        }
-        else
-        {
-            il.Emit(OpCodes.Dup);
-        }
-        il.Emit(OpCodes.Ldnull);
-        il.Emit(OpCodes.Ceq);
-        return il.Goto(br, goto_label);
-    }
-
     public static void NullableCastViaObject(this ILGenerator il, Type left_nullable, Type left_nullable_t, Type right_type)
     {
         var right_value = il.DeclareLocal(typeof(object));
@@ -96,10 +55,10 @@ public static partial class ILGenerators
         il.Stloc(right_value);
 
         // if (right_value is null) goto goto_label;
-        var goto_label = il.IfIsNullThenGoto(local: right_value);
+        var goto_label = il.IfIsNullThenGoto_S(local: right_value);
 
         // if (right_value is DBNull) goto goto_label;
-        _ = il.IfIsInstanceThenGoto<DBNull>(goto_label, right_value);
+        _ = il.IfIsInstanceThenGoto_S<DBNull>(goto_label, right_value);
 
         // then: nullable = Nullable<left_nullable_t>(right_value);
         var nullable = il.StoreNullable(left_nullable, left_nullable_t, right_value, right_type);
@@ -152,7 +111,7 @@ public static partial class ILGenerators
         else if (right_type_wrap_object.IsValueType)
         {
             // if (stack[top] is DBNull)
-            var else_label = il.IfIsInstanceElseGoto<DBNull>();
+            var else_label = il.IfIsInstanceElseGoto_S<DBNull>();
 
             // then: stack[top] = 0 or null;
             il.Emit(OpCodes.Pop);
@@ -221,10 +180,10 @@ public static partial class ILGenerators
             else
             {
                 // if (stack[top] is null) goto endif_label;
-                var endif_label = il.IfIsNullThenGoto();
+                var endif_label = il.IfIsNullThenGoto_S();
 
                 // if (stack[top] is DBNull)
-                var else_label = il.IfIsInstanceElseGoto<DBNull>();
+                var else_label = il.IfIsInstanceElseGoto_S<DBNull>();
 
                 // then: stack[top] = null;
                 il.Emit(OpCodes.Pop);
@@ -266,7 +225,7 @@ public static partial class ILGenerators
             else
             {
                 // if (stack[top] is string)
-                var else_label = il.IfIsInstanceElseGoto<string>();
+                var else_label = il.IfIsInstanceElseGoto_S<string>();
 
                 // then: stack[top] = (left_type)(string)stack[top];
                 il.AnyCast(left_type, typeof(string));
@@ -311,7 +270,7 @@ public static partial class ILGenerators
             else
             {
                 // if (stack[top] is null)
-                var else1_label = il.IfIsNullElseGoto();
+                var else1_label = il.IfIsNullElseGoto_S();
 
                 // then: stack[top] = 0;
                 il.Emit(OpCodes.Pop);
@@ -320,7 +279,7 @@ public static partial class ILGenerators
 
                 // if (stack[top] is DBNull)
                 il.MarkLabel(else1_label);
-                var else2_label = il.IfIsInstanceElseGoto<DBNull>();
+                var else2_label = il.IfIsInstanceElseGoto_S<DBNull>();
 
                 // then: stack[top] = 0;
                 il.Emit(OpCodes.Pop);
@@ -329,7 +288,7 @@ public static partial class ILGenerators
 
                 // if (stack[top] is string)
                 il.MarkLabel(else2_label);
-                var else3_label = il.IfIsInstanceElseGoto<string>();
+                var else3_label = il.IfIsInstanceElseGoto_S<string>();
 
                 // then: stack[top] = (left_type)(string)stack[top];
                 il.AnyCast(left_type, typeof(string));
