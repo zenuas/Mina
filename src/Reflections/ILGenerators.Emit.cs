@@ -139,7 +139,7 @@ public static partial class ILGenerators
     public static Label IfIsNotNullThenGoto(this ILGenerator il, Label? then_label = null) => il.IfIsNullGoto(OpCodes.Brfalse, then_label);
     public static Label IfIsNotNullElseGoto(this ILGenerator il, Label? else_label = null) => il.IfIsNullGoto(OpCodes.Brtrue, else_label);
 
-    public static Label IfIsNullGoto(this ILGenerator il, OpCode br, Label? goto_label = null, LocalBuilder? local = null)
+    public static Label IfIsNullGoto(this ILGenerator il, OpCode br, Label? goto_label = null)
     {
         // if (stack[top] is null) goto goto_label;
         il.Emit(OpCodes.Ldnull);
