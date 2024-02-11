@@ -98,16 +98,17 @@ public static partial class ILGenerators
     public static void Isinst<T>(this ILGenerator il) => il.Emit(OpCodes.Isinst, typeof(T));
     public static void Isinst(this ILGenerator il, Type t) => il.Emit(OpCodes.Isinst, t);
 
-    public static Label Br_S(this ILGenerator il, Label? goto_label = null) => (goto_label ?? il.DefineLabel()).Return(x => il.Emit(OpCodes.Br_S, x));
-    public static Label Br(this ILGenerator il, Label? goto_label = null) => (goto_label ?? il.DefineLabel()).Return(x => il.Emit(OpCodes.Br, x));
+    public static Label Goto(this ILGenerator il, OpCode op, Label? goto_label = null) => (goto_label ?? il.DefineLabel()).Return(x => il.Emit(op, x));
+    public static Label Br_S(this ILGenerator il, Label? goto_label = null) => il.Goto(OpCodes.Br_S, goto_label);
+    public static Label Br(this ILGenerator il, Label? goto_label = null) => il.Goto(OpCodes.Br, goto_label);
 
-    public static Label IfTrueThenGoto_S(this ILGenerator il, Label? then_label = null) => (then_label ?? il.DefineLabel()).Return(x => il.Emit(OpCodes.Brtrue_S, x));
-    public static Label IfFalseThenGoto_S(this ILGenerator il, Label? then_label = null) => (then_label ?? il.DefineLabel()).Return(x => il.Emit(OpCodes.Brfalse_S, x));
-    public static Label IfTrueElseGoto_S(this ILGenerator il, Label? else_label = null) => (else_label ?? il.DefineLabel()).Return(x => il.Emit(OpCodes.Brfalse_S, x));
-    public static Label IfFalseElseGoto_S(this ILGenerator il, Label? else_label = null) => (else_label ?? il.DefineLabel()).Return(x => il.Emit(OpCodes.Brtrue_S, x));
+    public static Label IfTrueThenGoto_S(this ILGenerator il, Label? then_label = null) => il.Goto(OpCodes.Brtrue_S, then_label);
+    public static Label IfFalseThenGoto_S(this ILGenerator il, Label? then_label = null) => il.Goto(OpCodes.Brfalse_S, then_label);
+    public static Label IfTrueElseGoto_S(this ILGenerator il, Label? else_label = null) => il.Goto(OpCodes.Brfalse_S, else_label);
+    public static Label IfFalseElseGoto_S(this ILGenerator il, Label? else_label = null) => il.Goto(OpCodes.Brtrue_S, else_label);
 
-    public static Label IfTrueThenGoto(this ILGenerator il, Label? then_label = null) => (then_label ?? il.DefineLabel()).Return(x => il.Emit(OpCodes.Brtrue, x));
-    public static Label IfFalseThenGoto(this ILGenerator il, Label? then_label = null) => (then_label ?? il.DefineLabel()).Return(x => il.Emit(OpCodes.Brfalse, x));
-    public static Label IfTrueElseGoto(this ILGenerator il, Label? else_label = null) => (else_label ?? il.DefineLabel()).Return(x => il.Emit(OpCodes.Brfalse, x));
-    public static Label IfFalseElseGoto(this ILGenerator il, Label? else_label = null) => (else_label ?? il.DefineLabel()).Return(x => il.Emit(OpCodes.Brtrue, x));
+    public static Label IfTrueThenGoto(this ILGenerator il, Label? then_label = null) => il.Goto(OpCodes.Brtrue, then_label);
+    public static Label IfFalseThenGoto(this ILGenerator il, Label? then_label = null) => il.Goto(OpCodes.Brfalse, then_label);
+    public static Label IfTrueElseGoto(this ILGenerator il, Label? else_label = null) => il.Goto(OpCodes.Brfalse, else_label);
+    public static Label IfFalseElseGoto(this ILGenerator il, Label? else_label = null) => il.Goto(OpCodes.Brtrue, else_label);
 }

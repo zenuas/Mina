@@ -49,7 +49,6 @@ public static partial class ILGenerators
 
     public static Label IfIsInstanceGoto<T>(this ILGenerator il, OpCode br, Label? goto_label = null, LocalBuilder? local = null)
     {
-        var label = goto_label ?? il.DefineLabel();
         // if (local is T) goto goto_label;
         if (local is { })
         {
@@ -60,8 +59,7 @@ public static partial class ILGenerators
             il.Emit(OpCodes.Dup);
         }
         il.Isinst<T>();
-        il.Emit(br, label);
-        return label;
+        return il.Goto(br, goto_label);
     }
 
     public static Label IfIsNullThenGoto(this ILGenerator il, Label? then_label = null, LocalBuilder? local = null) => il.IfIsNullGoto(OpCodes.Brtrue_S, then_label, local);
@@ -71,7 +69,6 @@ public static partial class ILGenerators
 
     public static Label IfIsNullGoto(this ILGenerator il, OpCode br, Label? goto_label = null, LocalBuilder? local = null)
     {
-        var label = goto_label ?? il.DefineLabel();
         // if (local is null) goto goto_label;
         if (local is { })
         {
@@ -83,8 +80,7 @@ public static partial class ILGenerators
         }
         il.Emit(OpCodes.Ldnull);
         il.Emit(OpCodes.Ceq);
-        il.Emit(br, label);
-        return label;
+        return il.Goto(br, goto_label);
     }
 
     public static void NullableCastViaObject(this ILGenerator il, Type left_nullable, Type left_nullable_t, Type right_type)
