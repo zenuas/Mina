@@ -55,7 +55,32 @@ public static class ObjectMapper
     {
         var ilmethod = new DynamicMethod("", typeof(R), [typeof(T)]);
         var il = ilmethod.GetILGenerator();
-        var (local, newmap) = EmitCreateMapperInstance<R>(il, map, loadf);
+        LocalBuilder? local = null;
+        Dictionary<string, string>? newmap = null;
+
+        if (typeof(R).IsValueType)
+        {
+            local = il.DeclareLocal(typeof(R));
+            il.Emit(OpCodes.Ldloca_S, local);
+            il.Emit(OpCodes.Initobj, typeof(R));
+            il.Emit(OpCodes.Ldloca_S, local);
+        }
+        else if (typeof(R).GetConstructor([]) is { } ctor0)
+        {
+            il.Emit(OpCodes.Newobj, ctor0);
+        }
+        else if (typeof(R).GetConstructors() is { } ctors && ctors.Where(x => x.GetParameters().All(y => map.ContainsValue(y.Name!))).FirstOrDefault() is { } ctor)
+        {
+            var ctor_params = ctor.GetParameters();
+            var ctor_map = map.Where(x => ctor_params.Contains(y => y.Name == x.Value)).ToDictionary(x => x.Value, x => x.Key);
+            ctor_params.Each(x => loadf(il, ctor_map[x.Name!], x.ParameterType));
+            il.Emit(OpCodes.Newobj, ctor);
+            newmap = map.Where(x => !ctor_params.Contains(y => y.Name == x.Value)).ToDictionary();
+        }
+        else
+        {
+            throw new InvalidOperationException();
+        }
 
         foreach (var (from_name, to_name) in newmap ?? map)
         {
@@ -74,37 +99,6 @@ public static class ObjectMapper
         }
         il.Emit(OpCodes.Ret);
         return ilmethod.CreateDelegate<Func<T, R>>();
-    }
-
-    public static (LocalBuilder? Local, Dictionary<string, string>? NewMap) EmitCreateMapperInstance<T>(ILGenerator il, Dictionary<string, string> map, Action<ILGenerator, string, Type> loadf)
-    {
-        LocalBuilder? local = null;
-        Dictionary<string, string>? newmap = null;
-
-        if (typeof(T).IsValueType)
-        {
-            local = il.DeclareLocal(typeof(T));
-            il.Emit(OpCodes.Ldloca_S, local);
-            il.Emit(OpCodes.Initobj, typeof(T));
-            il.Emit(OpCodes.Ldloca_S, local);
-        }
-        else if (typeof(T).GetConstructor([]) is { } ctor0)
-        {
-            il.Emit(OpCodes.Newobj, ctor0);
-        }
-        else if (typeof(T).GetConstructors() is { } ctors && ctors.Where(x => x.GetParameters().All(y => map.ContainsValue(y.Name!))).FirstOrDefault() is { } ctor)
-        {
-            var ctor_params = ctor.GetParameters();
-            var ctor_map = map.Where(x => ctor_params.Contains(y => y.Name == x.Value)).ToDictionary(x => x.Value, x => x.Key);
-            ctor_params.Each(x => loadf(il, ctor_map[x.Name!], x.ParameterType));
-            il.Emit(OpCodes.Newobj, ctor);
-            newmap = map.Where(x => !ctor_params.Contains(y => y.Name == x.Value)).ToDictionary();
-        }
-        else
-        {
-            throw new InvalidOperationException();
-        }
-        return (local, newmap);
     }
 
     public static Func<T, R> CreateMapper<T, R>(IEnumerable<string> map) => CreateMapper<T, R>(map.ToDictionary(x => x));
