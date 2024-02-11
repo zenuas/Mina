@@ -1,8 +1,8 @@
-﻿using System;
+﻿using Mina.Reflections;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Reflection;
 using System.Reflection.Emit;
 
 namespace Mina.Extensions;
@@ -61,9 +61,9 @@ public static class ObjectMapper
         if (typeof(R).IsValueType)
         {
             local = il.DeclareLocal(typeof(R));
-            il.Emit(OpCodes.Ldloca_S, local);
+            il.Ldloca(local);
             il.Emit(OpCodes.Initobj, typeof(R));
-            il.Emit(OpCodes.Ldloca_S, local);
+            il.Ldloca(local);
         }
         else if (typeof(R).GetConstructor([]) is { } ctor0)
         {
@@ -85,17 +85,17 @@ public static class ObjectMapper
         foreach (var (from_name, to_name) in newmap ?? map)
         {
             il.Emit(OpCodes.Dup);
-            var store_type = Reflections.WhenEmitStorable<R>(to_name)!;
+            var store_type = ILGenerators.WhenEmitStorable<R>(to_name)!;
 
             // stack[top] = (store_type)loadf(from_name);
             loadf(il, from_name, store_type);
 
-            if (!Reflections.EmitStore<R>(il, to_name, store_type)) throw new("destination not found");
+            if (!ILGenerators.EmitStore<R>(il, to_name, store_type)) throw new("destination not found");
         }
         if (local is { })
         {
             il.Emit(OpCodes.Pop);
-            il.Emit(OpCodes.Ldloc, local);
+            il.Ldloc(local);
         }
         il.Emit(OpCodes.Ret);
         return ilmethod.CreateDelegate<Func<T, R>>();
@@ -107,15 +107,15 @@ public static class ObjectMapper
     {
         return CreateMapper<T, R>(map, (il, name, type) =>
         {
-            il.Emit(OpCodes.Ldarg_0);
-            _ = Reflections.EmitLoad<T>(il, name) ?? throw new("source not found");
+            il.Ldarg(0);
+            _ = ILGenerators.EmitLoad<T>(il, name) ?? throw new("source not found");
         });
     }
 
     public static Func<DataRow, T> CreateMapper<T>(DataTable table) => CreateMapper<T>(table, table.Columns
         .GetIterator()
         .OfType<DataColumn>()
-        .Where(x => Reflections.WhenEmitStorable<T>(x.ColumnName) is { })
+        .Where(x => ILGenerators.WhenEmitStorable<T>(x.ColumnName) is { })
         .ToDictionary(x => x.ColumnName, x => x.ColumnName));
 
     public static Func<DataRow, T> CreateMapper<T>(DataTable table, IEnumerable<string> map) => CreateMapper<T>(table, map.ToDictionary(x => x));
@@ -129,16 +129,16 @@ public static class ObjectMapper
             var load_type = table.Columns[name]!.DataType;
 
             // stack[top] = (store_type)arg0[from_name];
-            il.Emit(OpCodes.Ldarg_0);
+            il.Ldarg(0);
             il.Emit(OpCodes.Ldstr, name);
             il.Emit(OpCodes.Callvirt, get_item);
-            Reflections.EmitCastViaObject(il, type, load_type);
+            ILGenerators.EmitCastViaObject(il, type, load_type);
         });
     }
 
     public static Func<IDataReader, IEnumerable<T>> CreateMapper<T>(IDataReader reader) => CreateMapper<T>(reader, Enumerable.Range(0, reader.FieldCount)
         .Select(x => reader.GetName(x))
-        .Where(x => Reflections.WhenEmitStorable<T>(x) is { })
+        .Where(x => ILGenerators.WhenEmitStorable<T>(x) is { })
         .ToDictionary(x => x));
 
     public static Func<IDataReader, IEnumerable<T>> CreateMapper<T>(IDataReader reader, IEnumerable<string> map) => CreateMapper<T>(reader, map.ToDictionary(x => x));
@@ -151,10 +151,10 @@ public static class ObjectMapper
             var load_type = reader.GetFieldType(index);
 
             // stack[top] = (store_type)arg0[index];
-            il.Emit(OpCodes.Ldarg_0);
+            il.Ldarg(0);
             il.Emit(OpCodes.Ldc_I4, index);
             il.Emit(OpCodes.Ldelem_Ref);
-            Reflections.EmitCastViaObject(il, type, load_type);
+            ILGenerators.EmitCastViaObject(il, type, load_type);
         });
         static IEnumerable<T> ReadMapper(IDataReader reader, Func<object[], T> mapper)
         {

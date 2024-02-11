@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Mina.Reflections;
+using System;
 using System.Numerics;
 using System.Reflection;
 using System.Reflection.Emit;
@@ -43,9 +44,9 @@ public static class Expressions
     {
         var ilmethod = new DynamicMethod("", typeof(R), [typeof(T)]);
         var il = ilmethod.GetILGenerator();
-        il.Emit(OpCodes.Ldarg_0);
-        Reflections.EmitCall(il, method);
-        Reflections.EmitCast(il, typeof(R), method.ReturnType);
+        il.Ldarg(0);
+        il.Call(method);
+        ILGenerators.EmitCast(il, typeof(R), method.ReturnType);
         il.Emit(OpCodes.Ret);
         return ilmethod.CreateDelegate<Func<T, R>>();
     }
@@ -56,10 +57,10 @@ public static class Expressions
 
         var ilmethod = new DynamicMethod("", typeof(R), [typeof(T), typeof(A)]);
         var il = ilmethod.GetILGenerator();
-        il.Emit(OpCodes.Ldarg_0);
-        Reflections.EmitLdarg(il, parameters[0].ParameterType, typeof(A), 1);
-        Reflections.EmitCall(il, method);
-        Reflections.EmitCast(il, typeof(R), method.ReturnType);
+        il.Ldarg(0);
+        ILGenerators.EmitLdarg(il, parameters[0].ParameterType, typeof(A), 1);
+        il.Call(method);
+        ILGenerators.EmitCast(il, typeof(R), method.ReturnType);
         il.Emit(OpCodes.Ret);
         return ilmethod.CreateDelegate<Func<T, A, R>>();
     }
@@ -70,11 +71,11 @@ public static class Expressions
 
         var ilmethod = new DynamicMethod("", typeof(R), [typeof(T), typeof(A1), typeof(A2)]);
         var il = ilmethod.GetILGenerator();
-        il.Emit(OpCodes.Ldarg_0);
-        Reflections.EmitLdarg(il, parameters[0].ParameterType, typeof(A1), 1);
-        Reflections.EmitLdarg(il, parameters[1].ParameterType, typeof(A2), 2);
-        Reflections.EmitCall(il, method);
-        Reflections.EmitCast(il, typeof(R), method.ReturnType);
+        il.Ldarg(0);
+        ILGenerators.EmitLdarg(il, parameters[0].ParameterType, typeof(A1), 1);
+        ILGenerators.EmitLdarg(il, parameters[1].ParameterType, typeof(A2), 2);
+        il.Call(method);
+        ILGenerators.EmitCast(il, typeof(R), method.ReturnType);
         il.Emit(OpCodes.Ret);
         return ilmethod.CreateDelegate<Func<T, A1, A2, R>>();
     }
@@ -83,8 +84,8 @@ public static class Expressions
     {
         var ilmethod = new DynamicMethod("", null, [typeof(T)]);
         var il = ilmethod.GetILGenerator();
-        il.Emit(OpCodes.Ldarg_0);
-        Reflections.EmitCall(il, method);
+        il.Ldarg(0);
+        il.Call(method);
         if (method.ReturnType != typeof(void)) il.Emit(OpCodes.Pop);
         il.Emit(OpCodes.Ret);
         return ilmethod.CreateDelegate<Action<T>>();
@@ -96,9 +97,9 @@ public static class Expressions
 
         var ilmethod = new DynamicMethod("", null, [typeof(T), typeof(A)]);
         var il = ilmethod.GetILGenerator();
-        il.Emit(OpCodes.Ldarg_0);
-        Reflections.EmitLdarg(il, parameters[0].ParameterType, typeof(A), 1);
-        Reflections.EmitCall(il, method);
+        il.Ldarg(0);
+        ILGenerators.EmitLdarg(il, parameters[0].ParameterType, typeof(A), 1);
+        il.Call(method);
         if (method.ReturnType != typeof(void)) il.Emit(OpCodes.Pop);
         il.Emit(OpCodes.Ret);
         return ilmethod.CreateDelegate<Action<T, A>>();
@@ -110,10 +111,10 @@ public static class Expressions
 
         var ilmethod = new DynamicMethod("", null, [typeof(T), typeof(A1), typeof(A2)]);
         var il = ilmethod.GetILGenerator();
-        il.Emit(OpCodes.Ldarg_0);
-        Reflections.EmitLdarg(il, parameters[0].ParameterType, typeof(A1), 1);
-        Reflections.EmitLdarg(il, parameters[1].ParameterType, typeof(A2), 2);
-        Reflections.EmitCall(il, method);
+        il.Ldarg(0);
+        ILGenerators.EmitLdarg(il, parameters[0].ParameterType, typeof(A1), 1);
+        ILGenerators.EmitLdarg(il, parameters[1].ParameterType, typeof(A2), 2);
+        il.Call(method);
         if (method.ReturnType != typeof(void)) il.Emit(OpCodes.Pop);
         il.Emit(OpCodes.Ret);
         return ilmethod.CreateDelegate<Action<T, A1, A2>>();
@@ -125,9 +126,9 @@ public static class Expressions
 
         var ilmethod = new DynamicMethod("", typeof(R), [typeof(T)]);
         var il = ilmethod.GetILGenerator();
-        il.Emit(OpCodes.Ldarg_0);
+        il.Ldarg(0);
         il.Emit(OpCodes.Ldfld, field);
-        Reflections.EmitCast(il, typeof(R), field.FieldType);
+        ILGenerators.EmitCast(il, typeof(R), field.FieldType);
         il.Emit(OpCodes.Ret);
         return ilmethod.CreateDelegate<Func<T, R>>();
     }
@@ -138,8 +139,8 @@ public static class Expressions
 
         var ilmethod = new DynamicMethod("", null, [typeof(T), typeof(A)]);
         var il = ilmethod.GetILGenerator();
-        il.Emit(OpCodes.Ldarg_0);
-        Reflections.EmitLdarg(il, field.FieldType, typeof(A), 1);
+        il.Ldarg(0);
+        ILGenerators.EmitLdarg(il, field.FieldType, typeof(A), 1);
         il.Emit(OpCodes.Stfld, field);
         il.Emit(OpCodes.Ret);
         return ilmethod.CreateDelegate<Action<T, A>>();

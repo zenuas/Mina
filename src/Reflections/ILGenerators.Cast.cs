@@ -1,40 +1,32 @@
-﻿using System;
+﻿using Mina.Extensions;
+using System;
 using System.Reflection;
 using System.Reflection.Emit;
 
-namespace Mina.Extensions;
+namespace Mina.Reflections;
 
-public static class Reflections
+public static partial class ILGenerators
 {
     public static void EmitLdarg(ILGenerator il, Type left_type, Type arg_type, int argn)
     {
         if (left_type == typeof(string) && arg_type.IsValueType)
         {
-            il.Emit(OpCodes.Ldarga_S, argn);
+            il.Ldarga(argn);
             EmitCast(il, left_type, arg_type);
         }
         else
         {
-            switch (argn)
-            {
-                case 0: il.Emit(OpCodes.Ldarg_0); break;
-                case 1: il.Emit(OpCodes.Ldarg_1); break;
-                case 2: il.Emit(OpCodes.Ldarg_2); break;
-                case 3: il.Emit(OpCodes.Ldarg_3); break;
-                default: il.Emit(OpCodes.Ldarg_S, argn); break;
-            }
+            il.Ldarg(argn);
             EmitCast(il, left_type, arg_type);
         }
     }
-
-    public static void EmitCall(ILGenerator il, MethodInfo method) => il.EmitCall(method.IsFinal || !method.IsVirtual ? OpCodes.Call : OpCodes.Callvirt, method, null);
 
     public static void EmitChangeType(ILGenerator il, Type type)
     {
         // stack[top] = (type)Convert.ChangeType(stack[top], type);
         il.Emit(OpCodes.Ldtoken, type);
-        EmitCall(il, typeof(Type).GetMethod(nameof(Type.GetTypeFromHandle))!);
-        EmitCall(il, typeof(Convert).GetMethod(nameof(Convert.ChangeType), [typeof(object), typeof(Type)])!);
+        il.Call(typeof(Type).GetMethod(nameof(Type.GetTypeFromHandle))!);
+        il.Call(typeof(Convert).GetMethod(nameof(Convert.ChangeType), [typeof(object), typeof(Type)])!);
         il.Emit(OpCodes.Unbox_Any, type);
     }
 
@@ -43,8 +35,8 @@ public static class Reflections
         var nullable = il.DeclareLocal(left_nullable);
 
         // nullable = Nullable<left_nullable_t>((left_nullable_t)(right_type)right_value);
-        il.Emit(OpCodes.Ldloca_S, nullable);
-        il.Emit(OpCodes.Ldloc, right_value);
+        il.Ldloca(nullable);
+        il.Ldloc(right_value);
         if (right_type is { }) EmitChangeType(il, right_type);
         EmitCast(il, left_nullable_t, right_type ?? right_value.LocalType);
         il.Emit(OpCodes.Call, left_nullable.GetConstructor([left_nullable_t])!);
@@ -62,7 +54,7 @@ public static class Reflections
         // if (local is T) goto goto_label;
         if (local is { })
         {
-            il.Emit(OpCodes.Ldloc, local);
+            il.Ldloc(local);
         }
         else
         {
@@ -82,7 +74,7 @@ public static class Reflections
         // if (local is null) goto goto_label;
         if (local is { })
         {
-            il.Emit(OpCodes.Ldloc, local);
+            il.Ldloc(local);
         }
         else
         {
@@ -99,7 +91,7 @@ public static class Reflections
         var endif_label = il.DefineLabel();
 
         // var right_value = stack[top];
-        il.Emit(OpCodes.Stloc, right_value);
+        il.Stloc(right_value);
 
         // if (right_value is null) goto goto_label;
         var goto_label = EmitIfIsNullThenGoto(il, local: right_value);
@@ -113,12 +105,12 @@ public static class Reflections
 
         // goto_label: nullable = Nullable<nullable_t>();
         il.MarkLabel(goto_label);
-        il.Emit(OpCodes.Ldloca_S, nullable);
+        il.Ldloca(nullable);
         il.Emit(OpCodes.Initobj, left_nullable);
 
         // endif: stack[top] = nullable;
         il.MarkLabel(endif_label);
-        il.Emit(OpCodes.Ldloc, nullable);
+        il.Ldloc(nullable);
     }
 
     public static void EmitNullableCast(ILGenerator il, Type left_nullable, Type left_nullable_t, Type right_nullable, Type right_nullable_t)
@@ -131,24 +123,24 @@ public static class Reflections
         il.Emit(OpCodes.Dup);
 
         // if (stack[top].HasValue)
-        EmitCall(il, right_nullable.GetProperty("HasValue")!.GetGetMethod()!);
+        il.Call(right_nullable.GetProperty("HasValue")!.GetGetMethod()!);
         il.Emit(OpCodes.Brfalse_S, else_label);
 
         // then: nullable = Nullable<left_nullable_t>(right_value = stack[top].GetValueOrDefault());
-        EmitCall(il, right_nullable.GetMethod("GetValueOrDefault", [])!);
-        il.Emit(OpCodes.Stloc, right_value);
+        il.Call(right_nullable.GetMethod("GetValueOrDefault", [])!);
+        il.Stloc(right_value);
         var nullable = EmitStoreNullable(il, left_nullable, left_nullable_t, right_value);
         il.Emit(OpCodes.Br_S, endif_label);
 
         // else: nullable = Nullable<nullable_t>();
         il.MarkLabel(else_label);
         il.Emit(OpCodes.Pop);
-        il.Emit(OpCodes.Ldloca_S, nullable);
+        il.Ldloca(nullable);
         il.Emit(OpCodes.Initobj, left_nullable);
 
         // endif: stack[top] = nullable;
         il.MarkLabel(endif_label);
-        il.Emit(OpCodes.Ldloc, nullable);
+        il.Ldloc(nullable);
     }
 
     public static void EmitCastViaObject(ILGenerator il, Type left_type, Type right_type_wrap_object)
@@ -168,7 +160,7 @@ public static class Reflections
             il.Emit(OpCodes.Pop);
             if (left_type.IsValueType)
             {
-                il.Emit(OpCodes.Ldc_I4_0);
+                il.Ldc_I4(0);
             }
             else
             {
@@ -207,14 +199,14 @@ public static class Reflections
                     il.Emit(OpCodes.Dup);
 
                     // if (stack[top].HasValue)
-                    EmitCall(il, right_type.GetProperty("HasValue")!.GetGetMethod()!);
+                    il.Call(right_type.GetProperty("HasValue")!.GetGetMethod()!);
                     il.Emit(OpCodes.Brfalse_S, else_label);
 
                     // then: stack[top] = stack[top].Value.ToString();
-                    EmitCall(il, right_type.GetProperty("Value")!.GetGetMethod()!);
-                    il.Emit(OpCodes.Stloc, right_value);
-                    il.Emit(OpCodes.Ldloca, right_value);
-                    EmitCall(il, right_nullable_t.GetMethod("ToString", [])!);
+                    il.Call(right_type.GetProperty("Value")!.GetGetMethod()!);
+                    il.Stloc(right_value);
+                    il.Ldloca(right_value);
+                    il.Call(right_nullable_t.GetMethod("ToString", [])!);
                     il.Emit(OpCodes.Br_S, endif_label);
 
                     // else: stack[top] = null;
@@ -227,7 +219,7 @@ public static class Reflections
                 else
                 {
                     // stack[top] = stack[top].ToString();
-                    EmitCall(il, right_type.GetMethod("ToString", [])!);
+                    il.Call(right_type.GetMethod("ToString", [])!);
                 }
             }
             else
@@ -245,7 +237,7 @@ public static class Reflections
 
                 // else: stack[top] = stack[top].ToString();
                 il.MarkLabel(else_label);
-                EmitCall(il, right_type.GetMethod("ToString", [])!);
+                il.Call(right_type.GetMethod("ToString", [])!);
 
                 il.MarkLabel(endif_label);
             }
@@ -261,13 +253,13 @@ public static class Reflections
                 // right_value = (value_type)stack[top];
                 var right_value = il.DeclareLocal(right_type);
                 EmitCast(il, left_nullable_t, right_type);
-                il.Emit(OpCodes.Stloc, right_value);
+                il.Stloc(right_value);
 
                 // nullable = Nullable<nullable_t>(right_value);
                 var nullable = EmitStoreNullable(il, left_type, left_nullable_t, right_value);
 
                 // stack[top] = nullable;
-                il.Emit(OpCodes.Ldloc, nullable);
+                il.Ldloc(nullable);
             }
             else if (right_type == typeof(string))
             {
@@ -298,7 +290,7 @@ public static class Reflections
             if (Nullable.GetUnderlyingType(right_type) is { } right_nullable_t)
             {
                 // stack[top] = (from_type)stack[top].GetValueOrDefault();
-                EmitCall(il, right_type.GetMethod("GetValueOrDefault", [])!);
+                il.Call(right_type.GetMethod("GetValueOrDefault", [])!);
                 EmitCast(il, left_type, right_nullable_t);
             }
             else if (right_type.IsValueType)
@@ -331,7 +323,7 @@ public static class Reflections
 
                 // then: stack[top] = 0;
                 il.Emit(OpCodes.Pop);
-                il.Emit(OpCodes.Ldc_I4_0);
+                il.Ldc_I4(0);
                 il.Emit(OpCodes.Br_S, endif_label);
 
                 // if (stack[top] is DBNull)
@@ -340,7 +332,7 @@ public static class Reflections
 
                 // then: stack[top] = 0;
                 il.Emit(OpCodes.Pop);
-                il.Emit(OpCodes.Ldc_I4_0);
+                il.Ldc_I4(0);
                 il.Emit(OpCodes.Br_S, endif_label);
 
                 // if (stack[top] is string)
@@ -374,12 +366,12 @@ public static class Reflections
     {
         if (typeof(T).GetProperty(name)?.GetMethod is { } get_prop)
         {
-            EmitCall(il, get_prop);
+            il.Call(get_prop);
             return get_prop.ReturnType;
         }
         else if (typeof(T).GetMethod(name) is { } get_method)
         {
-            EmitCall(il, get_method);
+            il.Call(get_method);
             return get_method.ReturnType;
         }
         else if (typeof(T).GetField(name) is { } load_field)
