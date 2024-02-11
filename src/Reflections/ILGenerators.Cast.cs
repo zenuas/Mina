@@ -358,7 +358,7 @@ public static partial class ILGenerators
         else if (typeof(T).GetField(name) is { } store_field)
         {
             il.AnyCast(store_field.FieldType, parameter_type);
-            il.Emit(OpCodes.Stfld, store_field);
+            il.Stfld(store_field);
             return true;
         }
         return false;
