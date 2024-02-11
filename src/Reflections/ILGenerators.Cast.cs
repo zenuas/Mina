@@ -7,7 +7,9 @@ public static partial class ILGenerators
 {
     public static void LdargCast(this ILGenerator il, Type left_type, Type arg_type, int argn)
     {
-        if (left_type == typeof(string) && arg_type.IsValueType)
+        if ((left_type == typeof(string) && arg_type.IsValueType) ||
+            (Nullable.GetUnderlyingType(left_type) is null && Nullable.GetUnderlyingType(arg_type) is { }) ||
+            (Nullable.GetUnderlyingType(left_type) is { } left_t && Nullable.GetUnderlyingType(arg_type) is { } arg_t && left_t != arg_t))
         {
             il.Ldarga(argn);
             il.AnyCast(left_type, arg_type);
