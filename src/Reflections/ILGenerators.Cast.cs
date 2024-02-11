@@ -62,7 +62,7 @@ public static partial class ILGenerators
         il.Ldloc(right_value);
         _ = il.IfIsInstanceThenGoto_S<DBNull>(goto_label);
 
-        // then: nullable = Nullable<left_nullable_t>(right_value);
+        // nullable = Nullable<left_nullable_t>(right_value);
         var nullable = il.StoreNullable(left_nullable, left_nullable_t, right_value, right_type);
         var endif_label = il.Br_S();
 
@@ -132,8 +132,8 @@ public static partial class ILGenerators
             il.MarkLabel(else_label);
             il.Unbox_Any(right_type_wrap_object);
 
+            // endif: statck[top] = (left_type)statck[top];
             il.MarkLabel(endif_label);
-
             il.AnyCast(left_type, right_type_wrap_object);
         }
         else
@@ -153,10 +153,8 @@ public static partial class ILGenerators
                 {
                     var right_value = il.DeclareLocal(right_nullable_t);
 
-                    // dup stack[top];
-                    il.Emit(OpCodes.Dup);
-
                     // if (stack[top].HasValue)
+                    il.Emit(OpCodes.Dup);
                     il.Call(right_type.GetProperty("HasValue")!.GetGetMethod()!);
                     var else_label = il.IfTrueElseGoto();
 
@@ -284,7 +282,7 @@ public static partial class ILGenerators
                 il.Ldc_I4(0);
                 var endif_label = il.Br_S();
 
-                // if (stack[top] is DBNull)
+                // else: if (stack[top] is DBNull)
                 il.MarkLabel(else1_label);
                 il.Emit(OpCodes.Dup);
                 var else2_label = il.IfIsInstanceElseGoto_S<DBNull>();
@@ -294,7 +292,7 @@ public static partial class ILGenerators
                 il.Ldc_I4(0);
                 il.Br_S(endif_label);
 
-                // if (stack[top] is string)
+                // else: if (stack[top] is string)
                 il.MarkLabel(else2_label);
                 il.Emit(OpCodes.Dup);
                 var else3_label = il.IfIsInstanceElseGoto_S<string>();
