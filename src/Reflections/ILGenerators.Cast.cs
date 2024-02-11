@@ -5,11 +5,14 @@ namespace Mina.Reflections;
 
 public static partial class ILGenerators
 {
+    public static bool IsRequireAddressLoad(Type left_type, Type right_type) =>
+        ((left_type == typeof(string) && right_type.IsValueType) ||
+        (Nullable.GetUnderlyingType(left_type) is null && Nullable.GetUnderlyingType(right_type) is { }) ||
+        (Nullable.GetUnderlyingType(left_type) is { } left_t && Nullable.GetUnderlyingType(right_type) is { } right_t && left_t != right_t));
+
     public static void LdargCast(this ILGenerator il, Type left_type, Type arg_type, int argn)
     {
-        if ((left_type == typeof(string) && arg_type.IsValueType) ||
-            (Nullable.GetUnderlyingType(left_type) is null && Nullable.GetUnderlyingType(arg_type) is { }) ||
-            (Nullable.GetUnderlyingType(left_type) is { } left_t && Nullable.GetUnderlyingType(arg_type) is { } arg_t && left_t != arg_t))
+        if (IsRequireAddressLoad(left_type, arg_type))
         {
             il.Ldarga(argn);
             il.AnyCast(left_type, arg_type);

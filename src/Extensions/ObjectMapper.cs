@@ -108,7 +108,14 @@ public static class ObjectMapper
         return CreateMapper<T, R>(map, (il, name, type) =>
         {
             il.Ldarg(0);
-            _ = il.LoadAnyProperty<T>(name) ?? throw new("source not found");
+            var load_type = il.LoadAnyProperty<T>(name) ?? throw new("source not found");
+            if (ILGenerators.IsRequireAddressLoad(type, load_type))
+            {
+                var local = il.DeclareLocal(load_type);
+                il.Stloc(local);
+                il.Ldloca(local);
+            }
+            il.AnyCast(type, load_type);
         });
     }
 

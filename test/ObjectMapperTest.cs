@@ -57,6 +57,14 @@ public class ObjectMapperTest
 
     public record struct RecordStructData(int Prop, string Method, long Field);
 
+    public class NullableData
+    {
+        public int Int { get; init; }
+        public int Long { get; init; }
+        public int? Inta { get; init; }
+        public long? Longa { get; init; }
+    }
+
     [Fact]
     public void ToProp()
     {
@@ -136,5 +144,137 @@ public class ObjectMapperTest
         Assert.Equal(d.Prop, 123);
         Assert.Equal(d.Method, "test");
         Assert.Equal(d.Field, 456);
+    }
+
+    [Fact]
+    public void Int_Int()
+    {
+        var v = new NullableData() { Int = 123 };
+        var f = ObjectMapper.CreateMapper<NullableData, NullableData>(new Dictionary<string, string>() {
+            { "Int", "Int" },
+        });
+        var d = f(v);
+        Assert.Equal(d.Int, 123);
+    }
+
+    [Fact]
+    public void Int_Inta()
+    {
+        var v = new NullableData() { Inta = 123 };
+        var f = ObjectMapper.CreateMapper<NullableData, NullableData>(new Dictionary<string, string>() {
+            { "Inta", "Int" },
+        });
+        var d = f(v);
+        Assert.Equal(d.Int, 123);
+    }
+
+    [Fact]
+    public void Int_IntaNull()
+    {
+        var v = new NullableData() { Inta = null };
+        var f = ObjectMapper.CreateMapper<NullableData, NullableData>(new Dictionary<string, string>() {
+            { "Inta", "Int" },
+        });
+        var d = f(v);
+        Assert.Equal(d.Int, 0);
+    }
+
+    [Fact]
+    public void Inta_Int()
+    {
+        var v = new NullableData() { Int = 123 };
+        var f = ObjectMapper.CreateMapper<NullableData, NullableData>(new Dictionary<string, string>() {
+            { "Int", "Inta" },
+        });
+        var d = f(v);
+        Assert.Equal(d.Inta, 123);
+    }
+
+    [Fact]
+    public void Inta_Inta()
+    {
+        var v = new NullableData() { Inta = 123 };
+        var f = ObjectMapper.CreateMapper<NullableData, NullableData>(new Dictionary<string, string>() {
+            { "Inta", "Inta" },
+        });
+        var d = f(v);
+        Assert.Equal(d.Inta, 123);
+    }
+
+    [Fact]
+    public void Inta_IntaNull()
+    {
+        var v = new NullableData() { Inta = null };
+        var f = ObjectMapper.CreateMapper<NullableData, NullableData>(new Dictionary<string, string>() {
+            { "Inta", "Inta" },
+        });
+        var d = f(v);
+        Assert.Equal(d.Inta, null);
+    }
+
+    [Fact]
+    public void Int_Long()
+    {
+        var v = new NullableData() { Long = 123 };
+        var f = ObjectMapper.CreateMapper<NullableData, NullableData>(new Dictionary<string, string>() {
+            { "Long", "Int" },
+        });
+        var d = f(v);
+        Assert.Equal(d.Int, 123);
+    }
+
+    [Fact]
+    public void Int_Longa()
+    {
+        var v = new NullableData() { Longa = 123 };
+        var f = ObjectMapper.CreateMapper<NullableData, NullableData>(new Dictionary<string, string>() {
+            { "Longa", "Int" },
+        });
+        var d = f(v);
+        Assert.Equal(d.Int, 123);
+    }
+
+    [Fact]
+    public void Int_LongaNull()
+    {
+        var v = new NullableData() { Longa = null };
+        var f = ObjectMapper.CreateMapper<NullableData, NullableData>(new Dictionary<string, string>() {
+            { "Longa", "Int" },
+        });
+        var d = f(v);
+        Assert.Equal(d.Int, 0);
+    }
+
+    [Fact]
+    public void Inta_Long()
+    {
+        var v = new NullableData() { Long = 123 };
+        var f = ObjectMapper.CreateMapper<NullableData, NullableData>(new Dictionary<string, string>() {
+            { "Long", "Inta" },
+        });
+        var d = f(v);
+        Assert.Equal(d.Inta, 123);
+    }
+
+    [Fact]
+    public void Inta_Longa()
+    {
+        var v = new NullableData() { Longa = 123 };
+        var f = ObjectMapper.CreateMapper<NullableData, NullableData>(new Dictionary<string, string>() {
+            { "Longa", "Inta" },
+        });
+        var d = f(v);
+        Assert.Equal(d.Inta, 123);
+    }
+
+    [Fact]
+    public void Inta_LongaNull()
+    {
+        var v = new NullableData() { Longa = null };
+        var f = ObjectMapper.CreateMapper<NullableData, NullableData>(new Dictionary<string, string>() {
+            { "Longa", "Inta" },
+        });
+        var d = f(v);
+        Assert.Equal(d.Inta, null);
     }
 }
