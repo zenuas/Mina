@@ -9,897 +9,897 @@ public class EmitCastTest
 {
     public class Data
     {
-        public int V { get; set; } = 999;
-        public int? Vn { get; set; } = 999;
-        public long W { get; set; } = 999;
-        public long? Wn { get; set; } = 999;
-        public DateTime D { get; set; } = DateTime.Parse("1950/12/31");
-        public DateTime? Dn { get; set; } = DateTime.Parse("1950/12/31");
-        public string S { get; set; } = "dummy";
-        public string? Sn { get; set; } = "dummy";
+        public int Int { get; set; } = 999;
+        public int? Inta { get; set; } = 999;
+        public long Long { get; set; } = 999;
+        public long? Longa { get; set; } = 999;
+        public DateTime Date { get; set; } = DateTime.Parse("1950/12/31");
+        public DateTime? Datea { get; set; } = DateTime.Parse("1950/12/31");
+        public string String { get; set; } = "dummy";
+        public string? Stringa { get; set; } = "dummy";
     }
 
     [Fact]
-    public void V_V()
+    public void Int_Int()
     {
         var ilmethod = new DynamicMethod("", null, [typeof(Data), typeof(int)]);
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.LdargCast(typeof(int), typeof(int), 1);
-        il.Call(typeof(Data).GetProperty("V")!.GetSetMethod()!);
+        il.Call(typeof(Data).GetProperty(nameof(Data.Int))!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, int>>();
 
         var x = new Data();
         int n = 123;
         f(x, n);
-        Assert.Equal(x.V, 123);
+        Assert.Equal(x.Int, 123);
     }
 
     [Fact]
-    public void V_Vn()
+    public void Int_Inta()
     {
         var ilmethod = new DynamicMethod("", null, [typeof(Data), typeof(int?)]);
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.LdargCast(typeof(int), typeof(int?), 1);
-        il.Call(typeof(Data).GetProperty("V")!.GetSetMethod()!);
+        il.Call(typeof(Data).GetProperty(nameof(Data.Int))!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, int?>>();
 
         var x = new Data();
         int? n = 123;
         f(x, n);
-        Assert.Equal(x.V, 123);
+        Assert.Equal(x.Int, 123);
     }
 
     [Fact]
-    public void V_Vx()
+    public void Int_IntaNull()
     {
         var ilmethod = new DynamicMethod("", null, [typeof(Data), typeof(int?)]);
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.LdargCast(typeof(int), typeof(int?), 1);
-        il.Call(typeof(Data).GetProperty("V")!.GetSetMethod()!);
+        il.Call(typeof(Data).GetProperty(nameof(Data.Int))!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, int?>>();
 
         var x = new Data();
         int? n = null;
         f(x, n);
-        Assert.Equal(x.V, 0);
+        Assert.Equal(x.Int, 0);
     }
 
     [Fact]
-    public void V_W()
+    public void Int_Long()
     {
         var ilmethod = new DynamicMethod("", null, [typeof(Data), typeof(long)]);
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.LdargCast(typeof(int), typeof(long), 1);
-        il.Call(typeof(Data).GetProperty("V")!.GetSetMethod()!);
+        il.Call(typeof(Data).GetProperty(nameof(Data.Int))!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, long>>();
 
         var x = new Data();
         long n = 123L;
         f(x, n);
-        Assert.Equal(x.V, 123);
+        Assert.Equal(x.Int, 123);
     }
 
     [Fact]
-    public void V_Wn()
+    public void Int_Longa()
     {
         var ilmethod = new DynamicMethod("", null, [typeof(Data), typeof(long?)]);
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.LdargCast(typeof(int), typeof(long?), 1);
-        il.Call(typeof(Data).GetProperty("V")!.GetSetMethod()!);
+        il.Call(typeof(Data).GetProperty(nameof(Data.Int))!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, long?>>();
 
         var x = new Data();
         long? n = 123;
         f(x, n);
-        Assert.Equal(x.V, 123);
+        Assert.Equal(x.Int, 123);
     }
 
     [Fact]
-    public void V_Wx()
+    public void Int_LongaNull()
     {
         var ilmethod = new DynamicMethod("", null, [typeof(Data), typeof(long?)]);
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.LdargCast(typeof(int), typeof(long?), 1);
-        il.Call(typeof(Data).GetProperty("V")!.GetSetMethod()!);
+        il.Call(typeof(Data).GetProperty(nameof(Data.Int))!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, long?>>();
 
         var x = new Data();
         long? n = null;
         f(x, n);
-        Assert.Equal(x.V, 0);
+        Assert.Equal(x.Int, 0);
     }
 
     [Fact]
-    public void V_Tv()
+    public void Int_ObjectInt()
     {
         var ilmethod = new DynamicMethod("", null, [typeof(Data), typeof(object)]);
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.LdargCast(typeof(int), typeof(object), 1);
-        il.Call(typeof(Data).GetProperty("V")!.GetSetMethod()!);
+        il.Call(typeof(Data).GetProperty(nameof(Data.Int))!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, object?>>();
 
         var x = new Data();
         object? n = 123;
         f(x, n);
-        Assert.Equal(x.V, 123);
+        Assert.Equal(x.Int, 123);
     }
 
     [Fact]
-    public void V_Tw()
+    public void Int_ObjectLong()
     {
         var ilmethod = new DynamicMethod("", null, [typeof(Data), typeof(object)]);
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.LdargCast(typeof(int), typeof(object), 1);
-        il.Call(typeof(Data).GetProperty("V")!.GetSetMethod()!);
+        il.Call(typeof(Data).GetProperty(nameof(Data.Int))!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, object?>>();
 
         var x = new Data();
         object? n = 123L;
         f(x, n);
-        Assert.Equal(x.V, 123);
+        Assert.Equal(x.Int, 123);
     }
 
     [Fact]
-    public void V_Tx()
+    public void Int_ObjectNull()
     {
         var ilmethod = new DynamicMethod("", null, [typeof(Data), typeof(object)]);
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.LdargCast(typeof(int), typeof(object), 1);
-        il.Call(typeof(Data).GetProperty("V")!.GetSetMethod()!);
+        il.Call(typeof(Data).GetProperty(nameof(Data.Int))!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, object?>>();
 
         var x = new Data();
         object? n = null;
         f(x, n);
-        Assert.Equal(x.V, 0);
+        Assert.Equal(x.Int, 0);
     }
 
     [Fact]
-    public void V_To()
+    public void Int_ObjectDBNull()
     {
         var ilmethod = new DynamicMethod("", null, [typeof(Data), typeof(object)]);
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.LdargCast(typeof(int), typeof(object), 1);
-        il.Call(typeof(Data).GetProperty("V")!.GetSetMethod()!);
+        il.Call(typeof(Data).GetProperty(nameof(Data.Int))!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, object?>>();
 
         var x = new Data();
         object? n = DBNull.Value;
         f(x, n);
-        Assert.Equal(x.V, 0);
+        Assert.Equal(x.Int, 0);
     }
 
     [Fact]
-    public void V_T0()
+    public void Int_Object0()
     {
         var ilmethod = new DynamicMethod("", null, [typeof(Data), typeof(object)]);
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.LdargCast(typeof(int), typeof(object), 1);
-        il.Call(typeof(Data).GetProperty("V")!.GetSetMethod()!);
+        il.Call(typeof(Data).GetProperty(nameof(Data.Int))!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, object?>>();
 
         var x = new Data();
         object? n = 0;
         f(x, n);
-        Assert.Equal(x.V, 0);
+        Assert.Equal(x.Int, 0);
     }
 
     [Fact]
-    public void V_Ts()
+    public void Int_ObjectString()
     {
         var ilmethod = new DynamicMethod("", null, [typeof(Data), typeof(object)]);
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.LdargCast(typeof(int), typeof(object), 1);
-        il.Call(typeof(Data).GetProperty("V")!.GetSetMethod()!);
+        il.Call(typeof(Data).GetProperty(nameof(Data.Int))!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, object?>>();
 
         var x = new Data();
         object? n = "123";
         f(x, n);
-        Assert.Equal(x.V, 123);
+        Assert.Equal(x.Int, 123);
     }
 
     [Fact]
-    public void V_S()
+    public void Int_String()
     {
         var ilmethod = new DynamicMethod("", null, [typeof(Data), typeof(string)]);
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.LdargCast(typeof(int), typeof(string), 1);
-        il.Call(typeof(Data).GetProperty("V")!.GetSetMethod()!);
+        il.Call(typeof(Data).GetProperty(nameof(Data.Int))!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, string>>();
 
         var x = new Data();
         string s = "123";
         f(x, s);
-        Assert.Equal(x.V, 123);
+        Assert.Equal(x.Int, 123);
     }
 
     [Fact]
-    public void Vn_V()
+    public void Inta_Int()
     {
         var ilmethod = new DynamicMethod("", null, [typeof(Data), typeof(int)]);
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.LdargCast(typeof(int?), typeof(int), 1);
-        il.Call(typeof(Data).GetProperty("Vn")!.GetSetMethod()!);
+        il.Call(typeof(Data).GetProperty(nameof(Data.Inta))!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, int>>();
 
         var x = new Data();
         int n = 123;
         f(x, n);
-        Assert.Equal(x.Vn, 123);
+        Assert.Equal(x.Inta, 123);
     }
 
     [Fact]
-    public void Vn_Vn()
+    public void Inta_Inta()
     {
         var ilmethod = new DynamicMethod("", null, [typeof(Data), typeof(int?)]);
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.LdargCast(typeof(int?), typeof(int?), 1);
-        il.Call(typeof(Data).GetProperty("Vn")!.GetSetMethod()!);
+        il.Call(typeof(Data).GetProperty(nameof(Data.Inta))!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, int?>>();
 
         var x = new Data();
         int? n = 123;
         f(x, n);
-        Assert.Equal(x.Vn, 123);
+        Assert.Equal(x.Inta, 123);
     }
 
     [Fact]
-    public void Vn_Vx()
+    public void Inta_IntaNull()
     {
         var ilmethod = new DynamicMethod("", null, [typeof(Data), typeof(int?)]);
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.LdargCast(typeof(int?), typeof(int?), 1);
-        il.Call(typeof(Data).GetProperty("Vn")!.GetSetMethod()!);
+        il.Call(typeof(Data).GetProperty(nameof(Data.Inta))!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, int?>>();
 
         var x = new Data();
         int? n = null;
         f(x, n);
-        Assert.Equal(x.Vn, null);
+        Assert.Equal(x.Inta, null);
     }
 
     [Fact]
-    public void Vn_W()
+    public void Inta_Long()
     {
         var ilmethod = new DynamicMethod("", null, [typeof(Data), typeof(long)]);
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.LdargCast(typeof(int?), typeof(long), 1);
-        il.Call(typeof(Data).GetProperty("Vn")!.GetSetMethod()!);
+        il.Call(typeof(Data).GetProperty(nameof(Data.Inta))!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, long>>();
 
         var x = new Data();
         long n = 123L;
         f(x, n);
-        Assert.Equal(x.Vn, 123);
+        Assert.Equal(x.Inta, 123);
     }
 
     [Fact]
-    public void Vn_Wn()
+    public void Inta_Longa()
     {
         var ilmethod = new DynamicMethod("", null, [typeof(Data), typeof(long?)]);
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.LdargCast(typeof(int?), typeof(long?), 1);
-        il.Call(typeof(Data).GetProperty("Vn")!.GetSetMethod()!);
+        il.Call(typeof(Data).GetProperty(nameof(Data.Inta))!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, long?>>();
 
         var x = new Data();
         long? n = 123;
         f(x, n);
-        Assert.Equal(x.Vn, 123);
+        Assert.Equal(x.Inta, 123);
     }
 
     [Fact]
-    public void Vn_Wx()
+    public void Inta_LongaNull()
     {
         var ilmethod = new DynamicMethod("", null, [typeof(Data), typeof(long?)]);
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.LdargCast(typeof(int?), typeof(long?), 1);
-        il.Call(typeof(Data).GetProperty("Vn")!.GetSetMethod()!);
+        il.Call(typeof(Data).GetProperty(nameof(Data.Inta))!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, long?>>();
 
         var x = new Data();
         long? n = null;
         f(x, n);
-        Assert.Equal(x.Vn, null);
+        Assert.Equal(x.Inta, null);
     }
 
     [Fact]
-    public void Vn_Tv()
+    public void Inta_ObjectInt()
     {
         var ilmethod = new DynamicMethod("", null, [typeof(Data), typeof(object)]);
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.LdargCast(typeof(int?), typeof(object), 1);
-        il.Call(typeof(Data).GetProperty("Vn")!.GetSetMethod()!);
+        il.Call(typeof(Data).GetProperty(nameof(Data.Inta))!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, object?>>();
 
         var x = new Data();
         object? n = 123;
         f(x, n);
-        Assert.Equal(x.Vn, 123);
+        Assert.Equal(x.Inta, 123);
     }
 
     [Fact]
-    public void Vn_Tw()
+    public void Inta_ObjectLong()
     {
         var ilmethod = new DynamicMethod("", null, [typeof(Data), typeof(object)]);
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.LdargCast(typeof(int?), typeof(object), 1);
-        il.Call(typeof(Data).GetProperty("Vn")!.GetSetMethod()!);
+        il.Call(typeof(Data).GetProperty(nameof(Data.Inta))!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, object?>>();
 
         var x = new Data();
         object? n = 123L;
         f(x, n);
-        Assert.Equal(x.Vn, 123);
+        Assert.Equal(x.Inta, 123);
     }
 
     [Fact]
-    public void Vn_Tx()
+    public void Inta_ObjectNull()
     {
         var ilmethod = new DynamicMethod("", null, [typeof(Data), typeof(object)]);
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.LdargCast(typeof(int?), typeof(object), 1);
-        il.Call(typeof(Data).GetProperty("Vn")!.GetSetMethod()!);
+        il.Call(typeof(Data).GetProperty(nameof(Data.Inta))!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, object?>>();
 
         var x = new Data();
         object? n = null;
         f(x, n);
-        Assert.Equal(x.Vn, null);
+        Assert.Equal(x.Inta, null);
     }
 
     [Fact]
-    public void Vn_To()
+    public void Inta_ObjectDBNull()
     {
         var ilmethod = new DynamicMethod("", null, [typeof(Data), typeof(object)]);
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.LdargCast(typeof(int?), typeof(object), 1);
-        il.Call(typeof(Data).GetProperty("Vn")!.GetSetMethod()!);
+        il.Call(typeof(Data).GetProperty(nameof(Data.Inta))!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, object?>>();
 
         var x = new Data();
         object? n = DBNull.Value;
         f(x, n);
-        Assert.Equal(x.Vn, null);
+        Assert.Equal(x.Inta, null);
     }
 
     [Fact]
-    public void Vn_T0()
+    public void Inta_Object0()
     {
         var ilmethod = new DynamicMethod("", null, [typeof(Data), typeof(object)]);
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.LdargCast(typeof(int?), typeof(object), 1);
-        il.Call(typeof(Data).GetProperty("Vn")!.GetSetMethod()!);
+        il.Call(typeof(Data).GetProperty(nameof(Data.Inta))!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, object?>>();
 
         var x = new Data();
         object? n = 0;
         f(x, n);
-        Assert.Equal(x.Vn, 0);
+        Assert.Equal(x.Inta, 0);
     }
 
     [Fact]
-    public void Vn_Ts()
+    public void Inta_ObjectString()
     {
         var ilmethod = new DynamicMethod("", null, [typeof(Data), typeof(object)]);
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.LdargCast(typeof(int?), typeof(object), 1);
-        il.Call(typeof(Data).GetProperty("Vn")!.GetSetMethod()!);
+        il.Call(typeof(Data).GetProperty(nameof(Data.Inta))!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, object?>>();
 
         var x = new Data();
         object? n = "123";
         f(x, n);
-        Assert.Equal(x.Vn, 123);
+        Assert.Equal(x.Inta, 123);
     }
 
     [Fact]
-    public void Vn_S()
+    public void Inta_String()
     {
         var ilmethod = new DynamicMethod("", null, [typeof(Data), typeof(string)]);
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.LdargCast(typeof(int?), typeof(string), 1);
-        il.Call(typeof(Data).GetProperty("Vn")!.GetSetMethod()!);
+        il.Call(typeof(Data).GetProperty(nameof(Data.Inta))!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, string>>();
 
         var x = new Data();
         string s = "123";
         f(x, s);
-        Assert.Equal(x.Vn, 123);
+        Assert.Equal(x.Inta, 123);
     }
 
     [Fact]
-    public void D_D()
+    public void Date_Date()
     {
         var ilmethod = new DynamicMethod("", null, [typeof(Data), typeof(DateTime)]);
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.LdargCast(typeof(DateTime), typeof(DateTime), 1);
-        il.Call(typeof(Data).GetProperty("D")!.GetSetMethod()!);
+        il.Call(typeof(Data).GetProperty(nameof(Data.Date))!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, DateTime>>();
 
         var x = new Data();
         DateTime n = DateTime.Parse("2000/01/01");
         f(x, n);
-        Assert.Equal(x.D, DateTime.Parse("2000/01/01"));
+        Assert.Equal(x.Date, DateTime.Parse("2000/01/01"));
     }
 
     [Fact]
-    public void D_Dn()
+    public void Date_Dateatea()
     {
         var ilmethod = new DynamicMethod("", null, [typeof(Data), typeof(DateTime?)]);
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.LdargCast(typeof(DateTime), typeof(DateTime?), 1);
-        il.Call(typeof(Data).GetProperty("D")!.GetSetMethod()!);
+        il.Call(typeof(Data).GetProperty(nameof(Data.Date))!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, DateTime?>>();
 
         var x = new Data();
         DateTime? n = DateTime.Parse("2000/01/01");
         f(x, n);
-        Assert.Equal(x.D, DateTime.Parse("2000/01/01"));
+        Assert.Equal(x.Date, DateTime.Parse("2000/01/01"));
     }
 
     [Fact]
-    public void D_Dx()
+    public void Date_DateateaNull()
     {
         var ilmethod = new DynamicMethod("", null, [typeof(Data), typeof(DateTime?)]);
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.LdargCast(typeof(DateTime), typeof(DateTime?), 1);
-        il.Call(typeof(Data).GetProperty("D")!.GetSetMethod()!);
+        il.Call(typeof(Data).GetProperty(nameof(Data.Date))!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, DateTime?>>();
 
         var x = new Data();
         DateTime? n = null;
         f(x, n);
-        Assert.Equal(x.D, default);
+        Assert.Equal(x.Date, default);
     }
 
     [Fact]
-    public void D_Td()
+    public void Date_ObjectDate()
     {
         var ilmethod = new DynamicMethod("", null, [typeof(Data), typeof(object)]);
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.LdargCast(typeof(DateTime), typeof(object), 1);
-        il.Call(typeof(Data).GetProperty("D")!.GetSetMethod()!);
+        il.Call(typeof(Data).GetProperty(nameof(Data.Date))!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, object?>>();
 
         var x = new Data();
         object? n = DateTime.Parse("2000/01/01");
         f(x, n);
-        Assert.Equal(x.D, DateTime.Parse("2000/01/01"));
+        Assert.Equal(x.Date, DateTime.Parse("2000/01/01"));
     }
 
     [Fact]
-    public void D_Tx()
+    public void Date_ObjectNull()
     {
         var ilmethod = new DynamicMethod("", null, [typeof(Data), typeof(object)]);
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.LdargCast(typeof(DateTime), typeof(object), 1);
-        il.Call(typeof(Data).GetProperty("D")!.GetSetMethod()!);
+        il.Call(typeof(Data).GetProperty(nameof(Data.Date))!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, object?>>();
 
         var x = new Data();
         object? n = null;
         f(x, n);
-        Assert.Equal(x.D, default);
+        Assert.Equal(x.Date, default);
     }
 
     [Fact]
-    public void D_To()
+    public void Date_ObjectDBNull()
     {
         var ilmethod = new DynamicMethod("", null, [typeof(Data), typeof(object)]);
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.LdargCast(typeof(DateTime), typeof(object), 1);
-        il.Call(typeof(Data).GetProperty("D")!.GetSetMethod()!);
+        il.Call(typeof(Data).GetProperty(nameof(Data.Date))!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, object?>>();
 
         var x = new Data();
         object? n = DBNull.Value;
         f(x, n);
-        Assert.Equal(x.D, default);
+        Assert.Equal(x.Date, default);
     }
 
     [Fact]
-    public void D_Ts()
+    public void Date_ObjectString()
     {
         var ilmethod = new DynamicMethod("", null, [typeof(Data), typeof(object)]);
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.LdargCast(typeof(DateTime), typeof(object), 1);
-        il.Call(typeof(Data).GetProperty("D")!.GetSetMethod()!);
+        il.Call(typeof(Data).GetProperty(nameof(Data.Date))!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, object?>>();
 
         var x = new Data();
         object? n = "2000/01/01";
         f(x, n);
-        Assert.Equal(x.D, DateTime.Parse("2000/01/01"));
+        Assert.Equal(x.Date, DateTime.Parse("2000/01/01"));
     }
 
     [Fact]
-    public void D_S()
+    public void Date_String()
     {
         var ilmethod = new DynamicMethod("", null, [typeof(Data), typeof(string)]);
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.LdargCast(typeof(DateTime), typeof(string), 1);
-        il.Call(typeof(Data).GetProperty("D")!.GetSetMethod()!);
+        il.Call(typeof(Data).GetProperty(nameof(Data.Date))!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, string>>();
 
         var x = new Data();
         string n = "2000/01/01";
         f(x, n);
-        Assert.Equal(x.D, DateTime.Parse("2000/01/01"));
+        Assert.Equal(x.Date, DateTime.Parse("2000/01/01"));
     }
 
     [Fact]
-    public void Dn_D()
+    public void Datea_Date()
     {
         var ilmethod = new DynamicMethod("", null, [typeof(Data), typeof(DateTime)]);
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.LdargCast(typeof(DateTime?), typeof(DateTime), 1);
-        il.Call(typeof(Data).GetProperty("Dn")!.GetSetMethod()!);
+        il.Call(typeof(Data).GetProperty(nameof(Data.Datea))!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, DateTime>>();
 
         var x = new Data();
         DateTime n = DateTime.Parse("2000/01/01");
         f(x, n);
-        Assert.Equal(x.Dn, DateTime.Parse("2000/01/01"));
+        Assert.Equal(x.Datea, DateTime.Parse("2000/01/01"));
     }
 
     [Fact]
-    public void Dn_Dn()
+    public void Datea_Dateatea()
     {
         var ilmethod = new DynamicMethod("", null, [typeof(Data), typeof(DateTime?)]);
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.LdargCast(typeof(DateTime?), typeof(DateTime?), 1);
-        il.Call(typeof(Data).GetProperty("Dn")!.GetSetMethod()!);
+        il.Call(typeof(Data).GetProperty(nameof(Data.Datea))!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, DateTime?>>();
 
         var x = new Data();
         DateTime? n = DateTime.Parse("2000/01/01");
         f(x, n);
-        Assert.Equal(x.Dn, DateTime.Parse("2000/01/01"));
+        Assert.Equal(x.Datea, DateTime.Parse("2000/01/01"));
     }
 
     [Fact]
-    public void Dn_Dx()
+    public void Datea_DateateaNull()
     {
         var ilmethod = new DynamicMethod("", null, [typeof(Data), typeof(DateTime?)]);
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.LdargCast(typeof(DateTime?), typeof(DateTime?), 1);
-        il.Call(typeof(Data).GetProperty("Dn")!.GetSetMethod()!);
+        il.Call(typeof(Data).GetProperty(nameof(Data.Datea))!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, DateTime?>>();
 
         var x = new Data();
         DateTime? n = null;
         f(x, n);
-        Assert.Equal(x.Dn, default);
+        Assert.Equal(x.Datea, default);
     }
 
     [Fact]
-    public void Dn_Td()
+    public void Datea_ObjectDate()
     {
         var ilmethod = new DynamicMethod("", null, [typeof(Data), typeof(object)]);
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.LdargCast(typeof(DateTime?), typeof(object), 1);
-        il.Call(typeof(Data).GetProperty("Dn")!.GetSetMethod()!);
+        il.Call(typeof(Data).GetProperty(nameof(Data.Datea))!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, object?>>();
 
         var x = new Data();
         object? n = DateTime.Parse("2000/01/01");
         f(x, n);
-        Assert.Equal(x.Dn, DateTime.Parse("2000/01/01"));
+        Assert.Equal(x.Datea, DateTime.Parse("2000/01/01"));
     }
 
     [Fact]
-    public void Dn_Tx()
+    public void Datea_ObjectNull()
     {
         var ilmethod = new DynamicMethod("", null, [typeof(Data), typeof(object)]);
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.LdargCast(typeof(DateTime?), typeof(object), 1);
-        il.Call(typeof(Data).GetProperty("Dn")!.GetSetMethod()!);
+        il.Call(typeof(Data).GetProperty(nameof(Data.Datea))!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, object?>>();
 
         var x = new Data();
         object? n = null;
         f(x, n);
-        Assert.Equal(x.Dn, null);
+        Assert.Equal(x.Datea, null);
     }
 
     [Fact]
-    public void Dn_To()
+    public void Datea_ObjectDBNull()
     {
         var ilmethod = new DynamicMethod("", null, [typeof(Data), typeof(object)]);
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.LdargCast(typeof(DateTime?), typeof(object), 1);
-        il.Call(typeof(Data).GetProperty("Dn")!.GetSetMethod()!);
+        il.Call(typeof(Data).GetProperty(nameof(Data.Datea))!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, object?>>();
 
         var x = new Data();
         object? n = DBNull.Value;
         f(x, n);
-        Assert.Equal(x.Dn, null);
+        Assert.Equal(x.Datea, null);
     }
 
     [Fact]
-    public void Dn_Ts()
+    public void Datea_ObjectString()
     {
         var ilmethod = new DynamicMethod("", null, [typeof(Data), typeof(object)]);
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.LdargCast(typeof(DateTime?), typeof(object), 1);
-        il.Call(typeof(Data).GetProperty("Dn")!.GetSetMethod()!);
+        il.Call(typeof(Data).GetProperty(nameof(Data.Datea))!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, object?>>();
 
         var x = new Data();
         object? n = "2000/01/01";
         f(x, n);
-        Assert.Equal(x.Dn, DateTime.Parse("2000/01/01"));
+        Assert.Equal(x.Datea, DateTime.Parse("2000/01/01"));
     }
 
     [Fact]
-    public void Dn_S()
+    public void Datea_String()
     {
         var ilmethod = new DynamicMethod("", null, [typeof(Data), typeof(string)]);
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.LdargCast(typeof(DateTime?), typeof(string), 1);
-        il.Call(typeof(Data).GetProperty("Dn")!.GetSetMethod()!);
+        il.Call(typeof(Data).GetProperty(nameof(Data.Datea))!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, string>>();
 
         var x = new Data();
         string n = "2000/01/01";
         f(x, n);
-        Assert.Equal(x.Dn, DateTime.Parse("2000/01/01"));
+        Assert.Equal(x.Datea, DateTime.Parse("2000/01/01"));
     }
 
     [Fact]
-    public void S_S()
+    public void String_String()
     {
         var ilmethod = new DynamicMethod("", null, [typeof(Data), typeof(string)]);
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.LdargCast(typeof(string), typeof(string), 1);
-        il.Call(typeof(Data).GetProperty("S")!.GetSetMethod()!);
+        il.Call(typeof(Data).GetProperty(nameof(Data.String))!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, string>>();
 
         var x = new Data();
         string n = "abc";
         f(x, n);
-        Assert.Equal(x.S, "abc");
+        Assert.Equal(x.String, "abc");
     }
 
     [Fact]
-    public void S_Ss()
+    public void String_Stringtringa()
     {
         var ilmethod = new DynamicMethod("", null, [typeof(Data), typeof(string)]);
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.LdargCast(typeof(string), typeof(string), 1);
-        il.Call(typeof(Data).GetProperty("S")!.GetSetMethod()!);
+        il.Call(typeof(Data).GetProperty(nameof(Data.String))!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, string?>>();
 
         var x = new Data();
         string? n = "abc";
         f(x, n);
-        Assert.Equal(x.S, "abc");
+        Assert.Equal(x.String, "abc");
     }
 
     [Fact]
-    public void S_Sx()
+    public void String_StringtringaNull()
     {
         var ilmethod = new DynamicMethod("", null, [typeof(Data), typeof(string)]);
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.LdargCast(typeof(string), typeof(string), 1);
-        il.Call(typeof(Data).GetProperty("S")!.GetSetMethod()!);
+        il.Call(typeof(Data).GetProperty(nameof(Data.String))!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, string?>>();
 
         var x = new Data();
         string? n = null;
         f(x, n);
-        Assert.Equal(x.S, null);
+        Assert.Equal(x.String, null);
     }
 
     [Fact]
-    public void S_V()
+    public void String_Int()
     {
         var ilmethod = new DynamicMethod("", null, [typeof(Data), typeof(int)]);
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.LdargCast(typeof(string), typeof(int), 1);
-        il.Call(typeof(Data).GetProperty("S")!.GetSetMethod()!);
+        il.Call(typeof(Data).GetProperty(nameof(Data.String))!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, int>>();
 
         var x = new Data();
         int n = 123;
         f(x, n);
-        Assert.Equal(x.S, "123");
+        Assert.Equal(x.String, "123");
     }
 
     [Fact]
-    public void S_Vn()
+    public void String_Inta()
     {
         var ilmethod = new DynamicMethod("", null, [typeof(Data), typeof(int?)]);
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.LdargCast(typeof(string), typeof(int?), 1);
-        il.Call(typeof(Data).GetProperty("S")!.GetSetMethod()!);
+        il.Call(typeof(Data).GetProperty(nameof(Data.String))!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, int?>>();
 
         var x = new Data();
         int? n = 123;
         f(x, n);
-        Assert.Equal(x.S, "123");
+        Assert.Equal(x.String, "123");
     }
 
     [Fact]
-    public void S_Vx()
+    public void String_IntaNull()
     {
         var ilmethod = new DynamicMethod("", null, [typeof(Data), typeof(int?)]);
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.LdargCast(typeof(string), typeof(int?), 1);
-        il.Call(typeof(Data).GetProperty("S")!.GetSetMethod()!);
+        il.Call(typeof(Data).GetProperty(nameof(Data.String))!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, int?>>();
 
         var x = new Data();
         int? n = null;
         f(x, n);
-        Assert.Equal(x.S, null);
+        Assert.Equal(x.String, null);
     }
 
     [Fact]
-    public void S_Tx()
+    public void String_ObjectNull()
     {
         var ilmethod = new DynamicMethod("", null, [typeof(Data), typeof(object)]);
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.LdargCast(typeof(string), typeof(object), 1);
-        il.Call(typeof(Data).GetProperty("S")!.GetSetMethod()!);
+        il.Call(typeof(Data).GetProperty(nameof(Data.String))!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, object?>>();
 
         var x = new Data();
         object? n = null;
         f(x, n);
-        Assert.Equal(x.S, null);
+        Assert.Equal(x.String, null);
     }
 
     [Fact]
-    public void S_To()
+    public void String_ObjectDBNull()
     {
         var ilmethod = new DynamicMethod("", null, [typeof(Data), typeof(object)]);
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.LdargCast(typeof(string), typeof(object), 1);
-        il.Call(typeof(Data).GetProperty("S")!.GetSetMethod()!);
+        il.Call(typeof(Data).GetProperty(nameof(Data.String))!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, object?>>();
 
         var x = new Data();
         object? n = DBNull.Value;
         f(x, n);
-        Assert.Equal(x.S, null);
+        Assert.Equal(x.String, null);
     }
 
     [Fact]
-    public void S_Ts()
+    public void String_ObjectString()
     {
         var ilmethod = new DynamicMethod("", null, [typeof(Data), typeof(object)]);
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.LdargCast(typeof(string), typeof(object), 1);
-        il.Call(typeof(Data).GetProperty("S")!.GetSetMethod()!);
+        il.Call(typeof(Data).GetProperty(nameof(Data.String))!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, object?>>();
 
         var x = new Data();
         object? n = "abc";
         f(x, n);
-        Assert.Equal(x.S, "abc");
+        Assert.Equal(x.String, "abc");
     }
 
     [Fact]
-    public void S_Tn()
+    public void String_ObjectInt()
     {
         var ilmethod = new DynamicMethod("", null, [typeof(Data), typeof(object)]);
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.LdargCast(typeof(string), typeof(object), 1);
-        il.Call(typeof(Data).GetProperty("S")!.GetSetMethod()!);
+        il.Call(typeof(Data).GetProperty(nameof(Data.String))!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, object?>>();
 
         var x = new Data();
         object? n = 123;
         f(x, n);
-        Assert.Equal(x.S, "123");
+        Assert.Equal(x.String, "123");
     }
 }
