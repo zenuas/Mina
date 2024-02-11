@@ -62,19 +62,19 @@ public static class ObjectMapper
         {
             local = il.DeclareLocal(typeof(R));
             il.Ldloca(local);
-            il.Emit(OpCodes.Initobj, typeof(R));
+            il.Initobj<R>();
             il.Ldloca(local);
         }
         else if (typeof(R).GetConstructor([]) is { } ctor0)
         {
-            il.Emit(OpCodes.Newobj, ctor0);
+            il.Newobj(ctor0);
         }
         else if (typeof(R).GetConstructors() is { } ctors && ctors.Where(x => x.GetParameters().All(y => map.ContainsValue(y.Name!))).FirstOrDefault() is { } ctor)
         {
             var ctor_params = ctor.GetParameters();
             var ctor_map = map.Where(x => ctor_params.Contains(y => y.Name == x.Value)).ToDictionary(x => x.Value, x => x.Key);
             ctor_params.Each(x => loadf(il, ctor_map[x.Name!], x.ParameterType));
-            il.Emit(OpCodes.Newobj, ctor);
+            il.Newobj(ctor);
             newmap = map.Where(x => !ctor_params.Contains(y => y.Name == x.Value)).ToDictionary();
         }
         else
@@ -130,8 +130,8 @@ public static class ObjectMapper
 
             // stack[top] = (store_type)arg0[from_name];
             il.Ldarg(0);
-            il.Emit(OpCodes.Ldstr, name);
-            il.Emit(OpCodes.Callvirt, get_item);
+            il.Ldstr(name);
+            il.Call(get_item);
             il.CastViaObject(type, load_type);
         });
     }

@@ -22,10 +22,10 @@ public static partial class ILGenerators
     public static void ChangeType(this ILGenerator il, Type type)
     {
         // stack[top] = (type)Convert.ChangeType(stack[top], type);
-        il.Emit(OpCodes.Ldtoken, type);
+        il.Ldtoken(type);
         il.Call(typeof(Type).GetMethod(nameof(Type.GetTypeFromHandle))!);
         il.Call(typeof(Convert).GetMethod(nameof(Convert.ChangeType), [typeof(object), typeof(Type)])!);
-        il.Emit(OpCodes.Unbox_Any, type);
+        il.Unbox_Any(type);
     }
 
     public static LocalBuilder StoreNullable(this ILGenerator il, Type left_nullable, Type left_nullable_t, LocalBuilder right_value, Type? right_type = null)
@@ -37,7 +37,7 @@ public static partial class ILGenerators
         il.Ldloc(right_value);
         if (right_type is { }) il.ChangeType(right_type);
         il.AnyCast(left_nullable_t, right_type ?? right_value.LocalType);
-        il.Emit(OpCodes.Call, left_nullable.GetConstructor([left_nullable_t])!);
+        il.Call(left_nullable.GetConstructor([left_nullable_t])!);
 
         return nullable;
     }
@@ -107,7 +107,7 @@ public static partial class ILGenerators
         // goto_label: nullable = Nullable<nullable_t>();
         il.MarkLabel(goto_label);
         il.Ldloca(nullable);
-        il.Emit(OpCodes.Initobj, left_nullable);
+        il.Initobj(left_nullable);
 
         // endif: stack[top] = nullable;
         il.MarkLabel(endif_label);
@@ -135,7 +135,7 @@ public static partial class ILGenerators
         il.MarkLabel(else_label);
         il.Emit(OpCodes.Pop);
         il.Ldloca(nullable);
-        il.Emit(OpCodes.Initobj, left_nullable);
+        il.Initobj(left_nullable);
 
         // endif: stack[top] = nullable;
         il.MarkLabel(endif_label);
@@ -167,7 +167,7 @@ public static partial class ILGenerators
 
             // else: stack[top] = (load_type)stack[top];
             il.MarkLabel(else_label);
-            il.Emit(OpCodes.Unbox_Any, right_type_wrap_object);
+            il.Unbox_Any(right_type_wrap_object);
 
             il.MarkLabel(endif_label);
 
@@ -344,12 +344,12 @@ public static partial class ILGenerators
         else if (!left_type.IsValueType && right_type.IsValueType)
         {
             // stack[top] = (object)stack[top];
-            il.Emit(OpCodes.Box, right_type);
+            il.Box(right_type);
         }
         else
         {
             // stack[top] = (left_type)stack[top];
-            il.Emit(OpCodes.Castclass, left_type);
+            il.Castclass(left_type);
         }
     }
 
@@ -367,7 +367,7 @@ public static partial class ILGenerators
         }
         else if (typeof(T).GetField(name) is { } load_field)
         {
-            il.Emit(OpCodes.Ldfld, load_field);
+            il.Ldfld(load_field);
             return load_field.FieldType;
         }
         return null;
@@ -378,13 +378,13 @@ public static partial class ILGenerators
         if (typeof(T).GetProperty(name)?.SetMethod is { } set_prop && set_prop.GetParameters() is { } prop_param && prop_param.Length == 1)
         {
             il.AnyCast(prop_param[0].ParameterType, parameter_type);
-            il.Emit(OpCodes.Call, set_prop);
+            il.Call(set_prop);
             return true;
         }
         else if (typeof(T).GetMethod(name) is { } set_method && set_method.GetParameters() is { } method_param && method_param.Length == 1)
         {
             il.AnyCast(method_param[0].ParameterType, parameter_type);
-            il.Emit(OpCodes.Call, set_method);
+            il.Call(set_method);
             if (set_method.ReturnType != typeof(void)) il.Emit(OpCodes.Pop);
             return true;
         }

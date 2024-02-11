@@ -73,10 +73,29 @@ public static partial class ILGenerators
         }
     }
 
+    public static void Ldstr(this ILGenerator il, string s) => il.Emit(OpCodes.Ldstr, s);
+
+    public static void Ldtoken<T>(this ILGenerator il) => il.Emit(OpCodes.Ldtoken, typeof(T));
+    public static void Ldtoken(this ILGenerator il, Type t) => il.Emit(OpCodes.Ldtoken, t);
+
+    public static void Box<T>(this ILGenerator il) => il.Emit(OpCodes.Box, typeof(T));
+    public static void Box(this ILGenerator il, Type t) => il.Emit(OpCodes.Box, t);
+    public static void Unbox_Any<T>(this ILGenerator il) => il.Emit(OpCodes.Unbox_Any, typeof(T));
+    public static void Unbox_Any(this ILGenerator il, Type t) => il.Emit(OpCodes.Unbox_Any, t);
+    public static void Castclass<T>(this ILGenerator il) => il.Emit(OpCodes.Castclass, typeof(T));
+    public static void Castclass(this ILGenerator il, Type t) => il.Emit(OpCodes.Castclass, t);
+
+    public static void Ldfld(this ILGenerator il, FieldInfo field) => il.Emit(OpCodes.Ldfld, field);
+    public static void Ldflda(this ILGenerator il, FieldInfo field) => il.Emit(OpCodes.Ldflda, field);
+    public static void Stfld(this ILGenerator il, FieldInfo field) => il.Emit(OpCodes.Stfld, field);
+
     public static void Call(this ILGenerator il, MethodInfo method) => il.EmitCall(method.IsFinal || !method.IsVirtual ? OpCodes.Call : OpCodes.Callvirt, method, null);
+    public static void Call(this ILGenerator il, ConstructorInfo ctor) => il.Emit(OpCodes.Call, ctor);
+    public static void Newobj(this ILGenerator il, ConstructorInfo ctor) => il.Emit(OpCodes.Newobj, ctor);
+    public static void Initobj<T>(this ILGenerator il) => il.Emit(OpCodes.Initobj, typeof(T));
+    public static void Initobj(this ILGenerator il, Type t) => il.Emit(OpCodes.Initobj, t);
 
     public static void Isinst<T>(this ILGenerator il) => il.Emit(OpCodes.Isinst, typeof(T));
-
     public static void Isinst(this ILGenerator il, Type t) => il.Emit(OpCodes.Isinst, t);
 
     public static Label Br_S(this ILGenerator il, Label? goto_label = null) => (goto_label ?? il.DefineLabel()).Return(x => il.Emit(OpCodes.Br_S, x));

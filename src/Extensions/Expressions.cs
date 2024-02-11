@@ -127,7 +127,7 @@ public static class Expressions
         var ilmethod = new DynamicMethod("", typeof(R), [typeof(T)]);
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
-        il.Emit(OpCodes.Ldfld, field);
+        il.Ldfld(field);
         il.AnyCast(typeof(R), field.FieldType);
         il.Emit(OpCodes.Ret);
         return ilmethod.CreateDelegate<Func<T, R>>();
@@ -141,7 +141,7 @@ public static class Expressions
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.LdargCast(field.FieldType, typeof(A), 1);
-        il.Emit(OpCodes.Stfld, field);
+        il.Stfld(field);
         il.Emit(OpCodes.Ret);
         return ilmethod.CreateDelegate<Action<T, A>>();
     }
@@ -150,7 +150,7 @@ public static class Expressions
     {
         var ilmethod = new DynamicMethod("", typeof(T), []);
         var il = ilmethod.GetILGenerator();
-        il.Emit(OpCodes.Newobj, ctor);
+        il.Newobj(ctor);
         il.Emit(OpCodes.Ret);
         return ilmethod.CreateDelegate<Func<T>>();
     }
