@@ -111,4 +111,6 @@ public static partial class ILGenerators
     public static Label IfFalseThenGoto(this ILGenerator il, Label? then_label = null) => il.Goto(OpCodes.Brfalse, then_label);
     public static Label IfTrueElseGoto(this ILGenerator il, Label? else_label = null) => il.Goto(OpCodes.Brfalse, else_label);
     public static Label IfFalseElseGoto(this ILGenerator il, Label? else_label = null) => il.Goto(OpCodes.Brtrue, else_label);
+
+    public static void EmitWriteLine<T>(this ILGenerator il) => il.Call(typeof(Console).GetMethod(nameof(Console.WriteLine), [typeof(T)])!);
 }
