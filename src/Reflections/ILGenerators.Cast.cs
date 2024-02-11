@@ -1,27 +1,25 @@
-﻿using Mina.Extensions;
-using System;
-using System.Reflection;
+﻿using System;
 using System.Reflection.Emit;
 
 namespace Mina.Reflections;
 
 public static partial class ILGenerators
 {
-    public static void EmitLdarg(ILGenerator il, Type left_type, Type arg_type, int argn)
+    public static void LdargCast(this ILGenerator il, Type left_type, Type arg_type, int argn)
     {
         if (left_type == typeof(string) && arg_type.IsValueType)
         {
             il.Ldarga(argn);
-            EmitCast(il, left_type, arg_type);
+            il.AnyCast(left_type, arg_type);
         }
         else
         {
             il.Ldarg(argn);
-            EmitCast(il, left_type, arg_type);
+            il.AnyCast(left_type, arg_type);
         }
     }
 
-    public static void EmitChangeType(ILGenerator il, Type type)
+    public static void ChangeType(this ILGenerator il, Type type)
     {
         // stack[top] = (type)Convert.ChangeType(stack[top], type);
         il.Emit(OpCodes.Ldtoken, type);
@@ -30,27 +28,28 @@ public static partial class ILGenerators
         il.Emit(OpCodes.Unbox_Any, type);
     }
 
-    public static LocalBuilder EmitStoreNullable(ILGenerator il, Type left_nullable, Type left_nullable_t, LocalBuilder right_value, Type? right_type = null)
+    public static LocalBuilder StoreNullable(this ILGenerator il, Type left_nullable, Type left_nullable_t, LocalBuilder right_value, Type? right_type = null)
     {
         var nullable = il.DeclareLocal(left_nullable);
 
         // nullable = Nullable<left_nullable_t>((left_nullable_t)(right_type)right_value);
         il.Ldloca(nullable);
         il.Ldloc(right_value);
-        if (right_type is { }) EmitChangeType(il, right_type);
-        EmitCast(il, left_nullable_t, right_type ?? right_value.LocalType);
+        if (right_type is { }) il.ChangeType(right_type);
+        il.AnyCast(left_nullable_t, right_type ?? right_value.LocalType);
         il.Emit(OpCodes.Call, left_nullable.GetConstructor([left_nullable_t])!);
 
         return nullable;
     }
 
-    public static Label EmitIfIsInstanceThenGoto<T>(ILGenerator il, Label? then_label = null, LocalBuilder? local = null) => (then_label ?? il.DefineLabel()).Return(x => EmitIfIsInstanceGoto<T>(il, OpCodes.Brtrue_S, x, local));
-    public static Label EmitIfIsInstanceElseGoto<T>(ILGenerator il, Label? else_label = null, LocalBuilder? local = null) => (else_label ?? il.DefineLabel()).Return(x => EmitIfIsInstanceGoto<T>(il, OpCodes.Brfalse_S, x, local));
-    public static Label EmitIfIsNotInstanceThenGoto<T>(ILGenerator il, Label? then_label = null, LocalBuilder? local = null) => (then_label ?? il.DefineLabel()).Return(x => EmitIfIsInstanceGoto<T>(il, OpCodes.Brfalse_S, x, local));
-    public static Label EmitIfIsNotInstanceElseGoto<T>(ILGenerator il, Label? else_label = null, LocalBuilder? local = null) => (else_label ?? il.DefineLabel()).Return(x => EmitIfIsInstanceGoto<T>(il, OpCodes.Brtrue_S, x, local));
+    public static Label IfIsInstanceThenGoto<T>(this ILGenerator il, Label? then_label = null, LocalBuilder? local = null) => il.IfIsInstanceGoto<T>(OpCodes.Brtrue_S, then_label, local);
+    public static Label IfIsInstanceElseGoto<T>(this ILGenerator il, Label? else_label = null, LocalBuilder? local = null) => il.IfIsInstanceGoto<T>(OpCodes.Brfalse_S, else_label, local);
+    public static Label IfIsNotInstanceThenGoto<T>(this ILGenerator il, Label? then_label = null, LocalBuilder? local = null) => il.IfIsInstanceGoto<T>(OpCodes.Brfalse_S, then_label, local);
+    public static Label IfIsNotInstanceElseGoto<T>(this ILGenerator il, Label? else_label = null, LocalBuilder? local = null) => il.IfIsInstanceGoto<T>(OpCodes.Brtrue_S, else_label, local);
 
-    public static void EmitIfIsInstanceGoto<T>(ILGenerator il, OpCode br, Label goto_label, LocalBuilder? local = null)
+    public static Label IfIsInstanceGoto<T>(this ILGenerator il, OpCode br, Label? goto_label = null, LocalBuilder? local = null)
     {
+        var label = goto_label ?? il.DefineLabel();
         // if (local is T) goto goto_label;
         if (local is { })
         {
@@ -61,16 +60,18 @@ public static partial class ILGenerators
             il.Emit(OpCodes.Dup);
         }
         il.Isinst<T>();
-        il.Emit(br, goto_label);
+        il.Emit(br, label);
+        return label;
     }
 
-    public static Label EmitIfIsNullThenGoto(ILGenerator il, Label? then_label = null, LocalBuilder? local = null) => (then_label ?? il.DefineLabel()).Return(x => EmitIfIsNullGoto(il, OpCodes.Brtrue_S, x, local));
-    public static Label EmitIfIsNullElseGoto(ILGenerator il, Label? else_label = null, LocalBuilder? local = null) => (else_label ?? il.DefineLabel()).Return(x => EmitIfIsNullGoto(il, OpCodes.Brfalse_S, x, local));
-    public static Label EmitIfIsNotNullThenGoto(ILGenerator il, Label? then_label = null, LocalBuilder? local = null) => (then_label ?? il.DefineLabel()).Return(x => EmitIfIsNullGoto(il, OpCodes.Brfalse_S, x, local));
-    public static Label EmitIfIsNotNullElseGoto(ILGenerator il, Label? else_label = null, LocalBuilder? local = null) => (else_label ?? il.DefineLabel()).Return(x => EmitIfIsNullGoto(il, OpCodes.Brtrue_S, x, local));
+    public static Label IfIsNullThenGoto(this ILGenerator il, Label? then_label = null, LocalBuilder? local = null) => il.IfIsNullGoto(OpCodes.Brtrue_S, then_label, local);
+    public static Label IfIsNullElseGoto(this ILGenerator il, Label? else_label = null, LocalBuilder? local = null) => il.IfIsNullGoto(OpCodes.Brfalse_S, else_label, local);
+    public static Label IfIsNotNullThenGoto(this ILGenerator il, Label? then_label = null, LocalBuilder? local = null) => il.IfIsNullGoto(OpCodes.Brfalse_S, then_label, local);
+    public static Label IfIsNotNullElseGoto(this ILGenerator il, Label? else_label = null, LocalBuilder? local = null) => il.IfIsNullGoto(OpCodes.Brtrue_S, else_label, local);
 
-    public static void EmitIfIsNullGoto(ILGenerator il, OpCode br, Label goto_label, LocalBuilder? local = null)
+    public static Label IfIsNullGoto(this ILGenerator il, OpCode br, Label? goto_label = null, LocalBuilder? local = null)
     {
+        var label = goto_label ?? il.DefineLabel();
         // if (local is null) goto goto_label;
         if (local is { })
         {
@@ -82,10 +83,11 @@ public static partial class ILGenerators
         }
         il.Emit(OpCodes.Ldnull);
         il.Emit(OpCodes.Ceq);
-        il.Emit(br, goto_label);
+        il.Emit(br, label);
+        return label;
     }
 
-    public static void EmitNullableCastViaObject(ILGenerator il, Type left_nullable, Type left_nullable_t, Type right_type)
+    public static void NullableCastViaObject(this ILGenerator il, Type left_nullable, Type left_nullable_t, Type right_type)
     {
         var right_value = il.DeclareLocal(typeof(object));
 
@@ -93,13 +95,13 @@ public static partial class ILGenerators
         il.Stloc(right_value);
 
         // if (right_value is null) goto goto_label;
-        var goto_label = EmitIfIsNullThenGoto(il, local: right_value);
+        var goto_label = il.IfIsNullThenGoto(local: right_value);
 
         // if (right_value is DBNull) goto goto_label;
-        _ = EmitIfIsInstanceThenGoto<DBNull>(il, goto_label, right_value);
+        _ = il.IfIsInstanceThenGoto<DBNull>(goto_label, right_value);
 
         // then: nullable = Nullable<left_nullable_t>(right_value);
-        var nullable = EmitStoreNullable(il, left_nullable, left_nullable_t, right_value, right_type);
+        var nullable = il.StoreNullable(left_nullable, left_nullable_t, right_value, right_type);
         var endif_label = il.Br_S();
 
         // goto_label: nullable = Nullable<nullable_t>();
@@ -112,7 +114,7 @@ public static partial class ILGenerators
         il.Ldloc(nullable);
     }
 
-    public static void EmitNullableCast(ILGenerator il, Type left_nullable, Type left_nullable_t, Type right_nullable, Type right_nullable_t)
+    public static void NullableCast(this ILGenerator il, Type left_nullable, Type left_nullable_t, Type right_nullable, Type right_nullable_t)
     {
         var right_value = il.DeclareLocal(right_nullable_t);
 
@@ -126,7 +128,7 @@ public static partial class ILGenerators
         // then: nullable = Nullable<left_nullable_t>(right_value = stack[top].GetValueOrDefault());
         il.Call(right_nullable.GetMethod("GetValueOrDefault", [])!);
         il.Stloc(right_value);
-        var nullable = EmitStoreNullable(il, left_nullable, left_nullable_t, right_value);
+        var nullable = il.StoreNullable(left_nullable, left_nullable_t, right_value);
         var endif_label = il.Br_S();
 
         // else: nullable = Nullable<nullable_t>();
@@ -140,16 +142,16 @@ public static partial class ILGenerators
         il.Ldloc(nullable);
     }
 
-    public static void EmitCastViaObject(ILGenerator il, Type left_type, Type right_type_wrap_object)
+    public static void CastViaObject(this ILGenerator il, Type left_type, Type right_type_wrap_object)
     {
         if (Nullable.GetUnderlyingType(left_type) is { } value_type)
         {
-            EmitNullableCastViaObject(il, left_type, value_type, right_type_wrap_object);
+            il.NullableCastViaObject(left_type, value_type, right_type_wrap_object);
         }
         else if (right_type_wrap_object.IsValueType)
         {
             // if (stack[top] is DBNull)
-            var else_label = EmitIfIsInstanceElseGoto<DBNull>(il);
+            var else_label = il.IfIsInstanceElseGoto<DBNull>();
 
             // then: stack[top] = 0 or null;
             il.Emit(OpCodes.Pop);
@@ -169,15 +171,15 @@ public static partial class ILGenerators
 
             il.MarkLabel(endif_label);
 
-            EmitCast(il, left_type, right_type_wrap_object);
+            il.AnyCast(left_type, right_type_wrap_object);
         }
         else
         {
-            EmitCast(il, left_type, typeof(object));
+            il.AnyCast(left_type, typeof(object));
         }
     }
 
-    public static void EmitCast(ILGenerator il, Type left_type, Type right_type)
+    public static void AnyCast(this ILGenerator il, Type left_type, Type right_type)
     {
         if (left_type == right_type) return;
         if (left_type == typeof(string))
@@ -218,10 +220,10 @@ public static partial class ILGenerators
             else
             {
                 // if (stack[top] is null) goto endif_label;
-                var endif_label = EmitIfIsNullThenGoto(il);
+                var endif_label = il.IfIsNullThenGoto();
 
                 // if (stack[top] is DBNull)
-                var else_label = EmitIfIsInstanceElseGoto<DBNull>(il);
+                var else_label = il.IfIsInstanceElseGoto<DBNull>();
 
                 // then: stack[top] = null;
                 il.Emit(OpCodes.Pop);
@@ -239,17 +241,17 @@ public static partial class ILGenerators
         {
             if (Nullable.GetUnderlyingType(right_type) is { } right_nullable_t)
             {
-                EmitNullableCast(il, left_type, left_nullable_t, right_type, right_nullable_t);
+                il.NullableCast(left_type, left_nullable_t, right_type, right_nullable_t);
             }
             else if (right_type.IsValueType)
             {
                 // right_value = (value_type)stack[top];
                 var right_value = il.DeclareLocal(right_type);
-                EmitCast(il, left_nullable_t, right_type);
+                il.AnyCast(left_nullable_t, right_type);
                 il.Stloc(right_value);
 
                 // nullable = Nullable<nullable_t>(right_value);
-                var nullable = EmitStoreNullable(il, left_type, left_nullable_t, right_value);
+                var nullable = il.StoreNullable(left_type, left_nullable_t, right_value);
 
                 // stack[top] = nullable;
                 il.Ldloc(nullable);
@@ -257,21 +259,21 @@ public static partial class ILGenerators
             else if (right_type == typeof(string))
             {
                 // stack[top] = (left_type)(left_nullable_t)stack[top];
-                EmitChangeType(il, left_nullable_t);
-                EmitCast(il, left_type, left_nullable_t);
+                il.ChangeType(left_nullable_t);
+                il.AnyCast(left_type, left_nullable_t);
             }
             else
             {
                 // if (stack[top] is string)
-                var else_label = EmitIfIsInstanceElseGoto<string>(il);
+                var else_label = il.IfIsInstanceElseGoto<string>();
 
                 // then: stack[top] = (left_type)(string)stack[top];
-                EmitCast(il, left_type, typeof(string));
+                il.AnyCast(left_type, typeof(string));
                 var endif_label = il.Br_S();
 
                 // else: stack[top] = (left_type)stack[top];
                 il.MarkLabel(else_label);
-                EmitNullableCastViaObject(il, left_type, left_nullable_t, left_nullable_t);
+                il.NullableCastViaObject(left_type, left_nullable_t, left_nullable_t);
 
                 il.MarkLabel(endif_label);
             }
@@ -282,7 +284,7 @@ public static partial class ILGenerators
             {
                 // stack[top] = (from_type)stack[top].GetValueOrDefault();
                 il.Call(right_type.GetMethod("GetValueOrDefault", [])!);
-                EmitCast(il, left_type, right_nullable_t);
+                il.AnyCast(left_type, right_nullable_t);
             }
             else if (right_type.IsValueType)
             {
@@ -303,12 +305,12 @@ public static partial class ILGenerators
             else if (right_type == typeof(string))
             {
                 // stack[top] = (left_type)stack[top]);
-                EmitChangeType(il, left_type);
+                il.ChangeType(left_type);
             }
             else
             {
                 // if (stack[top] is null)
-                var else1_label = EmitIfIsNullElseGoto(il);
+                var else1_label = il.IfIsNullElseGoto();
 
                 // then: stack[top] = 0;
                 il.Emit(OpCodes.Pop);
@@ -317,7 +319,7 @@ public static partial class ILGenerators
 
                 // if (stack[top] is DBNull)
                 il.MarkLabel(else1_label);
-                var else2_label = EmitIfIsInstanceElseGoto<DBNull>(il);
+                var else2_label = il.IfIsInstanceElseGoto<DBNull>();
 
                 // then: stack[top] = 0;
                 il.Emit(OpCodes.Pop);
@@ -326,15 +328,15 @@ public static partial class ILGenerators
 
                 // if (stack[top] is string)
                 il.MarkLabel(else2_label);
-                var else3_label = EmitIfIsInstanceElseGoto<string>(il);
+                var else3_label = il.IfIsInstanceElseGoto<string>();
 
                 // then: stack[top] = (left_type)(string)stack[top];
-                EmitCast(il, left_type, typeof(string));
+                il.AnyCast(left_type, typeof(string));
                 il.Br_S(endif_label);
 
                 // else: stack[top] = (left_type)stack[top];
                 il.MarkLabel(else3_label);
-                EmitChangeType(il, left_type);
+                il.ChangeType(left_type);
 
                 il.MarkLabel(endif_label);
             }
@@ -351,7 +353,7 @@ public static partial class ILGenerators
         }
     }
 
-    public static Type? EmitLoad<T>(ILGenerator il, string name)
+    public static Type? LoadAnyProperty<T>(this ILGenerator il, string name)
     {
         if (typeof(T).GetProperty(name)?.GetMethod is { } get_prop)
         {
@@ -371,31 +373,31 @@ public static partial class ILGenerators
         return null;
     }
 
-    public static bool EmitStore<T>(ILGenerator il, string name, Type parameter_type)
+    public static bool StoreAnyProperty<T>(this ILGenerator il, string name, Type parameter_type)
     {
         if (typeof(T).GetProperty(name)?.SetMethod is { } set_prop && set_prop.GetParameters() is { } prop_param && prop_param.Length == 1)
         {
-            EmitCast(il, prop_param[0].ParameterType, parameter_type);
+            il.AnyCast(prop_param[0].ParameterType, parameter_type);
             il.Emit(OpCodes.Call, set_prop);
             return true;
         }
         else if (typeof(T).GetMethod(name) is { } set_method && set_method.GetParameters() is { } method_param && method_param.Length == 1)
         {
-            EmitCast(il, method_param[0].ParameterType, parameter_type);
+            il.AnyCast(method_param[0].ParameterType, parameter_type);
             il.Emit(OpCodes.Call, set_method);
             if (set_method.ReturnType != typeof(void)) il.Emit(OpCodes.Pop);
             return true;
         }
         else if (typeof(T).GetField(name) is { } store_field)
         {
-            EmitCast(il, store_field.FieldType, parameter_type);
+            il.AnyCast(store_field.FieldType, parameter_type);
             il.Emit(OpCodes.Stfld, store_field);
             return true;
         }
         return false;
     }
 
-    public static Type? WhenEmitStorable<T>(string name)
+    public static Type? WhenStoreAnyPropertyType<T>(string name)
     {
         if (typeof(T).GetProperty(name)?.SetMethod is { } set_prop && set_prop.GetParameters() is { } prop_param && prop_param.Length == 1)
         {

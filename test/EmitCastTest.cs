@@ -26,7 +26,7 @@ public class EmitCastTest
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.Ldarg(1);
-        ILGenerators.EmitCast(il, typeof(int), typeof(int));
+        il.AnyCast(typeof(int), typeof(int));
         il.Call(typeof(Data).GetProperty("V")!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, int>>();
@@ -44,7 +44,7 @@ public class EmitCastTest
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.Ldarga(1);
-        ILGenerators.EmitCast(il, typeof(int), typeof(int?));
+        il.AnyCast(typeof(int), typeof(int?));
         il.Call(typeof(Data).GetProperty("V")!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, int?>>();
@@ -62,7 +62,7 @@ public class EmitCastTest
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.Ldarga(1);
-        ILGenerators.EmitCast(il, typeof(int), typeof(int?));
+        il.AnyCast(typeof(int), typeof(int?));
         il.Call(typeof(Data).GetProperty("V")!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, int?>>();
@@ -80,7 +80,7 @@ public class EmitCastTest
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.Ldarg(1);
-        ILGenerators.EmitCast(il, typeof(int), typeof(long));
+        il.AnyCast(typeof(int), typeof(long));
         il.Call(typeof(Data).GetProperty("V")!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, long>>();
@@ -98,7 +98,7 @@ public class EmitCastTest
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.Ldarga(1);
-        ILGenerators.EmitCast(il, typeof(int), typeof(long?));
+        il.AnyCast(typeof(int), typeof(long?));
         il.Call(typeof(Data).GetProperty("V")!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, long?>>();
@@ -116,7 +116,7 @@ public class EmitCastTest
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.Ldarga(1);
-        ILGenerators.EmitCast(il, typeof(int), typeof(long?));
+        il.AnyCast(typeof(int), typeof(long?));
         il.Call(typeof(Data).GetProperty("V")!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, long?>>();
@@ -134,7 +134,7 @@ public class EmitCastTest
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.Ldarg(1);
-        ILGenerators.EmitCast(il, typeof(int), typeof(object));
+        il.AnyCast(typeof(int), typeof(object));
         il.Call(typeof(Data).GetProperty("V")!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, object?>>();
@@ -152,7 +152,7 @@ public class EmitCastTest
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.Ldarg(1);
-        ILGenerators.EmitCast(il, typeof(int), typeof(object));
+        il.AnyCast(typeof(int), typeof(object));
         il.Call(typeof(Data).GetProperty("V")!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, object?>>();
@@ -170,7 +170,7 @@ public class EmitCastTest
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.Ldarg(1);
-        ILGenerators.EmitCast(il, typeof(int), typeof(object));
+        il.AnyCast(typeof(int), typeof(object));
         il.Call(typeof(Data).GetProperty("V")!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, object?>>();
@@ -188,7 +188,7 @@ public class EmitCastTest
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.Ldarg(1);
-        ILGenerators.EmitCast(il, typeof(int), typeof(object));
+        il.AnyCast(typeof(int), typeof(object));
         il.Call(typeof(Data).GetProperty("V")!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, object?>>();
@@ -206,7 +206,7 @@ public class EmitCastTest
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.Ldarg(1);
-        ILGenerators.EmitCast(il, typeof(int), typeof(object));
+        il.AnyCast(typeof(int), typeof(object));
         il.Call(typeof(Data).GetProperty("V")!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, object?>>();
@@ -224,7 +224,7 @@ public class EmitCastTest
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.Ldarg(1);
-        ILGenerators.EmitCast(il, typeof(int), typeof(object));
+        il.AnyCast(typeof(int), typeof(object));
         il.Call(typeof(Data).GetProperty("V")!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, object?>>();
@@ -242,7 +242,7 @@ public class EmitCastTest
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.Ldarg(1);
-        ILGenerators.EmitCast(il, typeof(int), typeof(string));
+        il.AnyCast(typeof(int), typeof(string));
         il.Call(typeof(Data).GetProperty("V")!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, string>>();
@@ -260,7 +260,7 @@ public class EmitCastTest
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.Ldarg(1);
-        ILGenerators.EmitCast(il, typeof(int?), typeof(int));
+        il.AnyCast(typeof(int?), typeof(int));
         il.Call(typeof(Data).GetProperty("Vn")!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, int>>();
@@ -278,7 +278,7 @@ public class EmitCastTest
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.Ldarg(1);
-        ILGenerators.EmitCast(il, typeof(int?), typeof(int?));
+        il.AnyCast(typeof(int?), typeof(int?));
         il.Call(typeof(Data).GetProperty("Vn")!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, int?>>();
@@ -296,7 +296,7 @@ public class EmitCastTest
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.Ldarg(1);
-        ILGenerators.EmitCast(il, typeof(int?), typeof(int?));
+        il.AnyCast(typeof(int?), typeof(int?));
         il.Call(typeof(Data).GetProperty("Vn")!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, int?>>();
@@ -314,7 +314,7 @@ public class EmitCastTest
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.Ldarg(1);
-        ILGenerators.EmitCast(il, typeof(int?), typeof(long));
+        il.AnyCast(typeof(int?), typeof(long));
         il.Call(typeof(Data).GetProperty("Vn")!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, long>>();
@@ -332,7 +332,7 @@ public class EmitCastTest
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.Ldarga(1);
-        ILGenerators.EmitCast(il, typeof(int?), typeof(long?));
+        il.AnyCast(typeof(int?), typeof(long?));
         il.Call(typeof(Data).GetProperty("Vn")!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, long?>>();
@@ -350,7 +350,7 @@ public class EmitCastTest
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.Ldarga(1);
-        ILGenerators.EmitCast(il, typeof(int?), typeof(long?));
+        il.AnyCast(typeof(int?), typeof(long?));
         il.Call(typeof(Data).GetProperty("Vn")!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, long?>>();
@@ -368,7 +368,7 @@ public class EmitCastTest
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.Ldarg(1);
-        ILGenerators.EmitCast(il, typeof(int?), typeof(object));
+        il.AnyCast(typeof(int?), typeof(object));
         il.Call(typeof(Data).GetProperty("Vn")!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, object?>>();
@@ -386,7 +386,7 @@ public class EmitCastTest
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.Ldarg(1);
-        ILGenerators.EmitCast(il, typeof(int?), typeof(object));
+        il.AnyCast(typeof(int?), typeof(object));
         il.Call(typeof(Data).GetProperty("Vn")!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, object?>>();
@@ -404,7 +404,7 @@ public class EmitCastTest
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.Ldarg(1);
-        ILGenerators.EmitCast(il, typeof(int?), typeof(object));
+        il.AnyCast(typeof(int?), typeof(object));
         il.Call(typeof(Data).GetProperty("Vn")!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, object?>>();
@@ -422,7 +422,7 @@ public class EmitCastTest
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.Ldarg(1);
-        ILGenerators.EmitCast(il, typeof(int?), typeof(object));
+        il.AnyCast(typeof(int?), typeof(object));
         il.Call(typeof(Data).GetProperty("Vn")!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, object?>>();
@@ -440,7 +440,7 @@ public class EmitCastTest
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.Ldarg(1);
-        ILGenerators.EmitCast(il, typeof(int?), typeof(object));
+        il.AnyCast(typeof(int?), typeof(object));
         il.Call(typeof(Data).GetProperty("Vn")!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, object?>>();
@@ -458,7 +458,7 @@ public class EmitCastTest
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.Ldarg(1);
-        ILGenerators.EmitCast(il, typeof(int?), typeof(object));
+        il.AnyCast(typeof(int?), typeof(object));
         il.Call(typeof(Data).GetProperty("Vn")!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, object?>>();
@@ -476,7 +476,7 @@ public class EmitCastTest
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.Ldarg(1);
-        ILGenerators.EmitCast(il, typeof(int?), typeof(string));
+        il.AnyCast(typeof(int?), typeof(string));
         il.Call(typeof(Data).GetProperty("Vn")!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, string>>();
@@ -494,7 +494,7 @@ public class EmitCastTest
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.Ldarg(1);
-        ILGenerators.EmitCast(il, typeof(DateTime), typeof(DateTime));
+        il.AnyCast(typeof(DateTime), typeof(DateTime));
         il.Call(typeof(Data).GetProperty("D")!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, DateTime>>();
@@ -512,7 +512,7 @@ public class EmitCastTest
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.Ldarga(1);
-        ILGenerators.EmitCast(il, typeof(DateTime), typeof(DateTime?));
+        il.AnyCast(typeof(DateTime), typeof(DateTime?));
         il.Call(typeof(Data).GetProperty("D")!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, DateTime?>>();
@@ -530,7 +530,7 @@ public class EmitCastTest
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.Ldarga(1);
-        ILGenerators.EmitCast(il, typeof(DateTime), typeof(DateTime?));
+        il.AnyCast(typeof(DateTime), typeof(DateTime?));
         il.Call(typeof(Data).GetProperty("D")!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, DateTime?>>();
@@ -548,7 +548,7 @@ public class EmitCastTest
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.Ldarg(1);
-        ILGenerators.EmitCast(il, typeof(DateTime), typeof(object));
+        il.AnyCast(typeof(DateTime), typeof(object));
         il.Call(typeof(Data).GetProperty("D")!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, object?>>();
@@ -566,7 +566,7 @@ public class EmitCastTest
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.Ldarg(1);
-        ILGenerators.EmitCast(il, typeof(DateTime), typeof(object));
+        il.AnyCast(typeof(DateTime), typeof(object));
         il.Call(typeof(Data).GetProperty("D")!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, object?>>();
@@ -584,7 +584,7 @@ public class EmitCastTest
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.Ldarg(1);
-        ILGenerators.EmitCast(il, typeof(DateTime), typeof(object));
+        il.AnyCast(typeof(DateTime), typeof(object));
         il.Call(typeof(Data).GetProperty("D")!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, object?>>();
@@ -602,7 +602,7 @@ public class EmitCastTest
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.Ldarg(1);
-        ILGenerators.EmitCast(il, typeof(DateTime), typeof(object));
+        il.AnyCast(typeof(DateTime), typeof(object));
         il.Call(typeof(Data).GetProperty("D")!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, object?>>();
@@ -620,7 +620,7 @@ public class EmitCastTest
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.Ldarg(1);
-        ILGenerators.EmitCast(il, typeof(DateTime), typeof(string));
+        il.AnyCast(typeof(DateTime), typeof(string));
         il.Call(typeof(Data).GetProperty("D")!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, string>>();
@@ -638,7 +638,7 @@ public class EmitCastTest
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.Ldarg(1);
-        ILGenerators.EmitCast(il, typeof(DateTime?), typeof(DateTime));
+        il.AnyCast(typeof(DateTime?), typeof(DateTime));
         il.Call(typeof(Data).GetProperty("Dn")!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, DateTime>>();
@@ -656,7 +656,7 @@ public class EmitCastTest
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.Ldarg(1);
-        ILGenerators.EmitCast(il, typeof(DateTime?), typeof(DateTime?));
+        il.AnyCast(typeof(DateTime?), typeof(DateTime?));
         il.Call(typeof(Data).GetProperty("Dn")!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, DateTime?>>();
@@ -674,7 +674,7 @@ public class EmitCastTest
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.Ldarg(1);
-        ILGenerators.EmitCast(il, typeof(DateTime?), typeof(DateTime?));
+        il.AnyCast(typeof(DateTime?), typeof(DateTime?));
         il.Call(typeof(Data).GetProperty("Dn")!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, DateTime?>>();
@@ -692,7 +692,7 @@ public class EmitCastTest
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.Ldarg(1);
-        ILGenerators.EmitCast(il, typeof(DateTime?), typeof(object));
+        il.AnyCast(typeof(DateTime?), typeof(object));
         il.Call(typeof(Data).GetProperty("Dn")!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, object?>>();
@@ -710,7 +710,7 @@ public class EmitCastTest
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.Ldarg(1);
-        ILGenerators.EmitCast(il, typeof(DateTime?), typeof(object));
+        il.AnyCast(typeof(DateTime?), typeof(object));
         il.Call(typeof(Data).GetProperty("Dn")!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, object?>>();
@@ -728,7 +728,7 @@ public class EmitCastTest
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.Ldarg(1);
-        ILGenerators.EmitCast(il, typeof(DateTime?), typeof(object));
+        il.AnyCast(typeof(DateTime?), typeof(object));
         il.Call(typeof(Data).GetProperty("Dn")!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, object?>>();
@@ -746,7 +746,7 @@ public class EmitCastTest
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.Ldarg(1);
-        ILGenerators.EmitCast(il, typeof(DateTime?), typeof(object));
+        il.AnyCast(typeof(DateTime?), typeof(object));
         il.Call(typeof(Data).GetProperty("Dn")!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, object?>>();
@@ -764,7 +764,7 @@ public class EmitCastTest
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.Ldarg(1);
-        ILGenerators.EmitCast(il, typeof(DateTime?), typeof(string));
+        il.AnyCast(typeof(DateTime?), typeof(string));
         il.Call(typeof(Data).GetProperty("Dn")!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, string>>();
@@ -782,7 +782,7 @@ public class EmitCastTest
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.Ldarg(1);
-        ILGenerators.EmitCast(il, typeof(string), typeof(string));
+        il.AnyCast(typeof(string), typeof(string));
         il.Call(typeof(Data).GetProperty("S")!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, string>>();
@@ -800,7 +800,7 @@ public class EmitCastTest
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.Ldarg(1);
-        ILGenerators.EmitCast(il, typeof(string), typeof(string));
+        il.AnyCast(typeof(string), typeof(string));
         il.Call(typeof(Data).GetProperty("S")!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, string?>>();
@@ -818,7 +818,7 @@ public class EmitCastTest
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.Ldarg(1);
-        ILGenerators.EmitCast(il, typeof(string), typeof(string));
+        il.AnyCast(typeof(string), typeof(string));
         il.Call(typeof(Data).GetProperty("S")!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, string?>>();
@@ -836,7 +836,7 @@ public class EmitCastTest
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.Ldarga(1);
-        ILGenerators.EmitCast(il, typeof(string), typeof(int));
+        il.AnyCast(typeof(string), typeof(int));
         il.Call(typeof(Data).GetProperty("S")!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, int>>();
@@ -854,7 +854,7 @@ public class EmitCastTest
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.Ldarga(1);
-        ILGenerators.EmitCast(il, typeof(string), typeof(int?));
+        il.AnyCast(typeof(string), typeof(int?));
         il.Call(typeof(Data).GetProperty("S")!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, int?>>();
@@ -872,7 +872,7 @@ public class EmitCastTest
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.Ldarga(1);
-        ILGenerators.EmitCast(il, typeof(string), typeof(int?));
+        il.AnyCast(typeof(string), typeof(int?));
         il.Call(typeof(Data).GetProperty("S")!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, int?>>();
@@ -890,7 +890,7 @@ public class EmitCastTest
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.Ldarg(1);
-        ILGenerators.EmitCast(il, typeof(string), typeof(object));
+        il.AnyCast(typeof(string), typeof(object));
         il.Call(typeof(Data).GetProperty("S")!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, object?>>();
@@ -908,7 +908,7 @@ public class EmitCastTest
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.Ldarg(1);
-        ILGenerators.EmitCast(il, typeof(string), typeof(object));
+        il.AnyCast(typeof(string), typeof(object));
         il.Call(typeof(Data).GetProperty("S")!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, object?>>();
@@ -926,7 +926,7 @@ public class EmitCastTest
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.Ldarg(1);
-        ILGenerators.EmitCast(il, typeof(string), typeof(object));
+        il.AnyCast(typeof(string), typeof(object));
         il.Call(typeof(Data).GetProperty("S")!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, object?>>();
@@ -944,7 +944,7 @@ public class EmitCastTest
         var il = ilmethod.GetILGenerator();
         il.Ldarg(0);
         il.Ldarg(1);
-        ILGenerators.EmitCast(il, typeof(string), typeof(object));
+        il.AnyCast(typeof(string), typeof(object));
         il.Call(typeof(Data).GetProperty("S")!.GetSetMethod()!);
         il.Emit(OpCodes.Ret);
         var f = ilmethod.CreateDelegate<Action<Data, object?>>();

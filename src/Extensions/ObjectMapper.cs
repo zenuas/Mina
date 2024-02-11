@@ -85,12 +85,12 @@ public static class ObjectMapper
         foreach (var (from_name, to_name) in newmap ?? map)
         {
             il.Emit(OpCodes.Dup);
-            var store_type = ILGenerators.WhenEmitStorable<R>(to_name)!;
+            var store_type = ILGenerators.WhenStoreAnyPropertyType<R>(to_name)!;
 
             // stack[top] = (store_type)loadf(from_name);
             loadf(il, from_name, store_type);
 
-            if (!ILGenerators.EmitStore<R>(il, to_name, store_type)) throw new("destination not found");
+            if (!il.StoreAnyProperty<R>(to_name, store_type)) throw new("destination not found");
         }
         if (local is { })
         {
@@ -108,14 +108,14 @@ public static class ObjectMapper
         return CreateMapper<T, R>(map, (il, name, type) =>
         {
             il.Ldarg(0);
-            _ = ILGenerators.EmitLoad<T>(il, name) ?? throw new("source not found");
+            _ = il.LoadAnyProperty<T>(name) ?? throw new("source not found");
         });
     }
 
     public static Func<DataRow, T> CreateMapper<T>(DataTable table) => CreateMapper<T>(table, table.Columns
         .GetIterator()
         .OfType<DataColumn>()
-        .Where(x => ILGenerators.WhenEmitStorable<T>(x.ColumnName) is { })
+        .Where(x => ILGenerators.WhenStoreAnyPropertyType<T>(x.ColumnName) is { })
         .ToDictionary(x => x.ColumnName, x => x.ColumnName));
 
     public static Func<DataRow, T> CreateMapper<T>(DataTable table, IEnumerable<string> map) => CreateMapper<T>(table, map.ToDictionary(x => x));
@@ -132,13 +132,13 @@ public static class ObjectMapper
             il.Ldarg(0);
             il.Emit(OpCodes.Ldstr, name);
             il.Emit(OpCodes.Callvirt, get_item);
-            ILGenerators.EmitCastViaObject(il, type, load_type);
+            il.CastViaObject(type, load_type);
         });
     }
 
     public static Func<IDataReader, IEnumerable<T>> CreateMapper<T>(IDataReader reader) => CreateMapper<T>(reader, Enumerable.Range(0, reader.FieldCount)
         .Select(x => reader.GetName(x))
-        .Where(x => ILGenerators.WhenEmitStorable<T>(x) is { })
+        .Where(x => ILGenerators.WhenStoreAnyPropertyType<T>(x) is { })
         .ToDictionary(x => x));
 
     public static Func<IDataReader, IEnumerable<T>> CreateMapper<T>(IDataReader reader, IEnumerable<string> map) => CreateMapper<T>(reader, map.ToDictionary(x => x));
@@ -152,9 +152,9 @@ public static class ObjectMapper
 
             // stack[top] = (store_type)arg0[index];
             il.Ldarg(0);
-            il.Emit(OpCodes.Ldc_I4, index);
+            il.Ldc_I4(index);
             il.Emit(OpCodes.Ldelem_Ref);
-            ILGenerators.EmitCastViaObject(il, type, load_type);
+            il.CastViaObject(type, load_type);
         });
         static IEnumerable<T> ReadMapper(IDataReader reader, Func<object[], T> mapper)
         {
