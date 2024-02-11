@@ -51,7 +51,32 @@ public static class ObjectMapper
         .GetFields()
         .ToDictionary(x => x.Name, x => Expressions.SetField<T, dynamic>(x.Name));
 
-    public static (LocalBuilder? Local, Dictionary<string, string>? NewMap) EmitCreateMapperInstance<T>(ILGenerator il, Dictionary<string, string> map, Action<string, ParameterInfo> loadf)
+    public static Func<T, R> CreateMapper<T, R>(Dictionary<string, string> map, Action<ILGenerator, string, Type> loadf)
+    {
+        var ilmethod = new DynamicMethod("", typeof(R), [typeof(T)]);
+        var il = ilmethod.GetILGenerator();
+        var (local, newmap) = EmitCreateMapperInstance<R>(il, map, loadf);
+
+        foreach (var (from_name, to_name) in newmap ?? map)
+        {
+            il.Emit(OpCodes.Dup);
+            var store_type = Reflections.WhenEmitStorable<R>(to_name)!;
+
+            // stack[top] = (store_type)loadf(from_name);
+            loadf(il, from_name, store_type);
+
+            if (!Reflections.EmitStore<R>(il, to_name, store_type)) throw new("destination not found");
+        }
+        if (local is { })
+        {
+            il.Emit(OpCodes.Pop);
+            il.Emit(OpCodes.Ldloc, local);
+        }
+        il.Emit(OpCodes.Ret);
+        return ilmethod.CreateDelegate<Func<T, R>>();
+    }
+
+    public static (LocalBuilder? Local, Dictionary<string, string>? NewMap) EmitCreateMapperInstance<T>(ILGenerator il, Dictionary<string, string> map, Action<ILGenerator, string, Type> loadf)
     {
         LocalBuilder? local = null;
         Dictionary<string, string>? newmap = null;
@@ -71,7 +96,7 @@ public static class ObjectMapper
         {
             var ctor_params = ctor.GetParameters();
             var ctor_map = map.Where(x => ctor_params.Contains(y => y.Name == x.Value)).ToDictionary(x => x.Value, x => x.Key);
-            ctor_params.Each(x => loadf(ctor_map[x.Name!], x));
+            ctor_params.Each(x => loadf(il, ctor_map[x.Name!], x.ParameterType));
             il.Emit(OpCodes.Newobj, ctor);
             newmap = map.Where(x => !ctor_params.Contains(y => y.Name == x.Value)).ToDictionary();
         }
@@ -86,30 +111,13 @@ public static class ObjectMapper
 
     public static Func<T, R> CreateMapper<T, R>(Dictionary<string, string> map)
     {
-        var ilmethod = new DynamicMethod("", typeof(R), [typeof(T)]);
-        var il = ilmethod.GetILGenerator();
-        var (local, newmap) = EmitCreateMapperInstance<R>(il, map, (name, _) =>
+        return CreateMapper<T, R>(map, (il, name, type) =>
         {
             il.Emit(OpCodes.Ldarg_0);
-            Reflections.EmitLoad<T>(il, name);
-        });
 
-        foreach (var (from_name, to_name) in newmap ?? map)
-        {
-            il.Emit(OpCodes.Dup);
-            il.Emit(OpCodes.Ldarg_0);
-
-            var load_type = Reflections.EmitLoad<T>(il, from_name);
+            var load_type = Reflections.EmitLoad<T>(il, name);
             if (load_type is null) throw new("source not found");
-            if (!Reflections.EmitStore<R>(il, to_name, load_type)) throw new("destination not found");
-        }
-        if (local is { })
-        {
-            il.Emit(OpCodes.Pop);
-            il.Emit(OpCodes.Ldloc, local);
-        }
-        il.Emit(OpCodes.Ret);
-        return ilmethod.CreateDelegate<Func<T, R>>();
+        });
     }
 
     public static Func<DataRow, T> CreateMapper<T>(DataTable table) => CreateMapper<T>(table, table.Columns
@@ -124,9 +132,7 @@ public static class ObjectMapper
     {
         var get_item = typeof(DataRow).GetProperty("Item", [typeof(string)])!.GetMethod!;
 
-        var ilmethod = new DynamicMethod("", typeof(T), [typeof(DataRow)]);
-        var il = ilmethod.GetILGenerator();
-        var (local, newmap) = EmitCreateMapperInstance<T>(il, map, (name, info) =>
+        return CreateMapper<DataRow, T>(map, (il, name, type) =>
         {
             var load_type = table.Columns[name]!.DataType;
 
@@ -134,30 +140,8 @@ public static class ObjectMapper
             il.Emit(OpCodes.Ldarg_0);
             il.Emit(OpCodes.Ldstr, name);
             il.Emit(OpCodes.Callvirt, get_item);
-            Reflections.EmitCastViaObject(il, info.ParameterType, load_type);
+            Reflections.EmitCastViaObject(il, type, load_type);
         });
-
-        foreach (var (from_name, to_name) in newmap ?? map)
-        {
-            il.Emit(OpCodes.Dup);
-            var store_type = Reflections.WhenEmitStorable<T>(to_name)!;
-            var load_type = table.Columns[from_name]!.DataType;
-
-            // stack[top] = (store_type)arg0[from_name];
-            il.Emit(OpCodes.Ldarg_0);
-            il.Emit(OpCodes.Ldstr, from_name);
-            il.Emit(OpCodes.Callvirt, get_item);
-            Reflections.EmitCastViaObject(il, store_type, load_type);
-
-            if (!Reflections.EmitStore<T>(il, to_name, store_type)) throw new("destination not found");
-        }
-        if (local is { })
-        {
-            il.Emit(OpCodes.Pop);
-            il.Emit(OpCodes.Ldloc, local);
-        }
-        il.Emit(OpCodes.Ret);
-        return ilmethod.CreateDelegate<Func<DataRow, T>>();
     }
 
     public static Func<IDataReader, IEnumerable<T>> CreateMapper<T>(IDataReader reader) => CreateMapper<T>(reader, Enumerable.Range(0, reader.FieldCount)
@@ -169,9 +153,7 @@ public static class ObjectMapper
 
     public static Func<IDataReader, IEnumerable<T>> CreateMapper<T>(IDataReader reader, Dictionary<string, string> map)
     {
-        var ilmethod = new DynamicMethod("", typeof(T), [typeof(object[])]);
-        var il = ilmethod.GetILGenerator();
-        var (local, newmap) = EmitCreateMapperInstance<T>(il, map, (name, info) =>
+        var f = CreateMapper<object[], T>(map, (il, name, type) =>
         {
             var index = reader.GetOrdinal(name);
             var load_type = reader.GetFieldType(index);
@@ -180,31 +162,8 @@ public static class ObjectMapper
             il.Emit(OpCodes.Ldarg_0);
             il.Emit(OpCodes.Ldc_I4, index);
             il.Emit(OpCodes.Ldelem_Ref);
-            Reflections.EmitCastViaObject(il, info.ParameterType, load_type);
+            Reflections.EmitCastViaObject(il, type, load_type);
         });
-
-        foreach (var (from_name, to_name) in newmap ?? map)
-        {
-            il.Emit(OpCodes.Dup);
-            var index = reader.GetOrdinal(from_name);
-            var store_type = Reflections.WhenEmitStorable<T>(to_name)!;
-            var load_type = reader.GetFieldType(index);
-
-            // stack[top] = (store_type)arg0[index];
-            il.Emit(OpCodes.Ldarg_0);
-            il.Emit(OpCodes.Ldc_I4, index);
-            il.Emit(OpCodes.Ldelem_Ref);
-            Reflections.EmitCastViaObject(il, store_type, load_type);
-
-            if (!Reflections.EmitStore<T>(il, to_name, store_type)) throw new("destination not found");
-        }
-        if (local is { })
-        {
-            il.Emit(OpCodes.Pop);
-            il.Emit(OpCodes.Ldloc, local);
-        }
-        il.Emit(OpCodes.Ret);
-
         static IEnumerable<T> ReadMapper(IDataReader reader, Func<object[], T> mapper)
         {
             var buffer = new object[reader.FieldCount];
@@ -214,6 +173,6 @@ public static class ObjectMapper
                 yield return mapper(buffer);
             }
         }
-        return (arg) => ReadMapper(arg, ilmethod.CreateDelegate<Func<object[], T>>());
+        return (arg) => ReadMapper(arg, f);
     }
 }
