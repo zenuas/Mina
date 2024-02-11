@@ -55,10 +55,12 @@ public static partial class ILGenerators
         il.Stloc(right_value);
 
         // if (right_value is null) goto goto_label;
-        var goto_label = il.IfIsNullThenGoto_S(local: right_value);
+        il.Ldloc(right_value);
+        var goto_label = il.IfIsNullThenGoto_S();
 
         // if (right_value is DBNull) goto goto_label;
-        _ = il.IfIsInstanceThenGoto_S<DBNull>(goto_label, right_value);
+        il.Ldloc(right_value);
+        _ = il.IfIsInstanceThenGoto_S<DBNull>(goto_label);
 
         // then: nullable = Nullable<left_nullable_t>(right_value);
         var nullable = il.StoreNullable(left_nullable, left_nullable_t, right_value, right_type);
@@ -111,6 +113,7 @@ public static partial class ILGenerators
         else if (right_type_wrap_object.IsValueType)
         {
             // if (stack[top] is DBNull)
+            il.Emit(OpCodes.Dup);
             var else_label = il.IfIsInstanceElseGoto_S<DBNull>();
 
             // then: stack[top] = 0 or null;
@@ -180,9 +183,11 @@ public static partial class ILGenerators
             else
             {
                 // if (stack[top] is null) goto endif_label;
+                il.Emit(OpCodes.Dup);
                 var endif_label = il.IfIsNullThenGoto_S();
 
                 // if (stack[top] is DBNull)
+                il.Emit(OpCodes.Dup);
                 var else_label = il.IfIsInstanceElseGoto_S<DBNull>();
 
                 // then: stack[top] = null;
@@ -225,6 +230,7 @@ public static partial class ILGenerators
             else
             {
                 // if (stack[top] is string)
+                il.Emit(OpCodes.Dup);
                 var else_label = il.IfIsInstanceElseGoto_S<string>();
 
                 // then: stack[top] = (left_type)(string)stack[top];
@@ -270,6 +276,7 @@ public static partial class ILGenerators
             else
             {
                 // if (stack[top] is null)
+                il.Emit(OpCodes.Dup);
                 var else1_label = il.IfIsNullElseGoto_S();
 
                 // then: stack[top] = 0;
@@ -279,6 +286,7 @@ public static partial class ILGenerators
 
                 // if (stack[top] is DBNull)
                 il.MarkLabel(else1_label);
+                il.Emit(OpCodes.Dup);
                 var else2_label = il.IfIsInstanceElseGoto_S<DBNull>();
 
                 // then: stack[top] = 0;
@@ -288,6 +296,7 @@ public static partial class ILGenerators
 
                 // if (stack[top] is string)
                 il.MarkLabel(else2_label);
+                il.Emit(OpCodes.Dup);
                 var else3_label = il.IfIsInstanceElseGoto_S<string>();
 
                 // then: stack[top] = (left_type)(string)stack[top];
