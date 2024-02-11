@@ -60,7 +60,7 @@ public static partial class ILGenerators
         {
             il.Emit(OpCodes.Dup);
         }
-        il.Emit(OpCodes.Isinst, typeof(T));
+        il.Isinst<T>();
         il.Emit(br, goto_label);
     }
 
@@ -88,7 +88,6 @@ public static partial class ILGenerators
     public static void EmitNullableCastViaObject(ILGenerator il, Type left_nullable, Type left_nullable_t, Type right_type)
     {
         var right_value = il.DeclareLocal(typeof(object));
-        var endif_label = il.DefineLabel();
 
         // var right_value = stack[top];
         il.Stloc(right_value);
@@ -101,7 +100,7 @@ public static partial class ILGenerators
 
         // then: nullable = Nullable<left_nullable_t>(right_value);
         var nullable = EmitStoreNullable(il, left_nullable, left_nullable_t, right_value, right_type);
-        il.Emit(OpCodes.Br_S, endif_label);
+        var endif_label = il.Br_S();
 
         // goto_label: nullable = Nullable<nullable_t>();
         il.MarkLabel(goto_label);
@@ -116,21 +115,19 @@ public static partial class ILGenerators
     public static void EmitNullableCast(ILGenerator il, Type left_nullable, Type left_nullable_t, Type right_nullable, Type right_nullable_t)
     {
         var right_value = il.DeclareLocal(right_nullable_t);
-        var else_label = il.DefineLabel();
-        var endif_label = il.DefineLabel();
 
         // dup stack[top];
         il.Emit(OpCodes.Dup);
 
         // if (stack[top].HasValue)
         il.Call(right_nullable.GetProperty("HasValue")!.GetGetMethod()!);
-        il.Emit(OpCodes.Brfalse_S, else_label);
+        var else_label = il.IfTrueElseGoto();
 
         // then: nullable = Nullable<left_nullable_t>(right_value = stack[top].GetValueOrDefault());
         il.Call(right_nullable.GetMethod("GetValueOrDefault", [])!);
         il.Stloc(right_value);
         var nullable = EmitStoreNullable(il, left_nullable, left_nullable_t, right_value);
-        il.Emit(OpCodes.Br_S, endif_label);
+        var endif_label = il.Br_S();
 
         // else: nullable = Nullable<nullable_t>();
         il.MarkLabel(else_label);
@@ -151,8 +148,6 @@ public static partial class ILGenerators
         }
         else if (right_type_wrap_object.IsValueType)
         {
-            var endif_label = il.DefineLabel();
-
             // if (stack[top] is DBNull)
             var else_label = EmitIfIsInstanceElseGoto<DBNull>(il);
 
@@ -166,7 +161,7 @@ public static partial class ILGenerators
             {
                 il.Emit(OpCodes.Ldnull);
             }
-            il.Emit(OpCodes.Br_S, endif_label);
+            var endif_label = il.Br_S();
 
             // else: stack[top] = (load_type)stack[top];
             il.MarkLabel(else_label);
@@ -191,8 +186,6 @@ public static partial class ILGenerators
             {
                 if (Nullable.GetUnderlyingType(right_type) is { } right_nullable_t)
                 {
-                    var else_label = il.DefineLabel();
-                    var endif_label = il.DefineLabel();
                     var right_value = il.DeclareLocal(right_nullable_t);
 
                     // dup stack[top];
@@ -200,14 +193,14 @@ public static partial class ILGenerators
 
                     // if (stack[top].HasValue)
                     il.Call(right_type.GetProperty("HasValue")!.GetGetMethod()!);
-                    il.Emit(OpCodes.Brfalse_S, else_label);
+                    var else_label = il.IfTrueElseGoto();
 
                     // then: stack[top] = stack[top].Value.ToString();
                     il.Call(right_type.GetProperty("Value")!.GetGetMethod()!);
                     il.Stloc(right_value);
                     il.Ldloca(right_value);
                     il.Call(right_nullable_t.GetMethod("ToString", [])!);
-                    il.Emit(OpCodes.Br_S, endif_label);
+                    var endif_label = il.Br_S();
 
                     // else: stack[top] = null;
                     il.MarkLabel(else_label);
@@ -233,7 +226,7 @@ public static partial class ILGenerators
                 // then: stack[top] = null;
                 il.Emit(OpCodes.Pop);
                 il.Emit(OpCodes.Ldnull);
-                il.Emit(OpCodes.Br_S, endif_label);
+                il.Br_S(endif_label);
 
                 // else: stack[top] = stack[top].ToString();
                 il.MarkLabel(else_label);
@@ -269,14 +262,12 @@ public static partial class ILGenerators
             }
             else
             {
-                var endif_label = il.DefineLabel();
-
                 // if (stack[top] is string)
                 var else_label = EmitIfIsInstanceElseGoto<string>(il);
 
                 // then: stack[top] = (left_type)(string)stack[top];
                 EmitCast(il, left_type, typeof(string));
-                il.Emit(OpCodes.Br_S, endif_label);
+                var endif_label = il.Br_S();
 
                 // else: stack[top] = (left_type)stack[top];
                 il.MarkLabel(else_label);
@@ -316,15 +307,13 @@ public static partial class ILGenerators
             }
             else
             {
-                var endif_label = il.DefineLabel();
-
                 // if (stack[top] is null)
                 var else1_label = EmitIfIsNullElseGoto(il);
 
                 // then: stack[top] = 0;
                 il.Emit(OpCodes.Pop);
                 il.Ldc_I4(0);
-                il.Emit(OpCodes.Br_S, endif_label);
+                var endif_label = il.Br_S();
 
                 // if (stack[top] is DBNull)
                 il.MarkLabel(else1_label);
@@ -333,7 +322,7 @@ public static partial class ILGenerators
                 // then: stack[top] = 0;
                 il.Emit(OpCodes.Pop);
                 il.Ldc_I4(0);
-                il.Emit(OpCodes.Br_S, endif_label);
+                il.Br_S(endif_label);
 
                 // if (stack[top] is string)
                 il.MarkLabel(else2_label);
@@ -341,7 +330,7 @@ public static partial class ILGenerators
 
                 // then: stack[top] = (left_type)(string)stack[top];
                 EmitCast(il, left_type, typeof(string));
-                il.Emit(OpCodes.Br_S, endif_label);
+                il.Br_S(endif_label);
 
                 // else: stack[top] = (left_type)stack[top];
                 il.MarkLabel(else3_label);

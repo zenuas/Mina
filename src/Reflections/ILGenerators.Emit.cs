@@ -1,4 +1,6 @@
-﻿using System.Reflection;
+﻿using Mina.Extensions;
+using System;
+using System.Reflection;
 using System.Reflection.Emit;
 
 namespace Mina.Reflections;
@@ -72,4 +74,21 @@ public static partial class ILGenerators
     }
 
     public static void Call(this ILGenerator il, MethodInfo method) => il.EmitCall(method.IsFinal || !method.IsVirtual ? OpCodes.Call : OpCodes.Callvirt, method, null);
+
+    public static void Isinst<T>(this ILGenerator il) => il.Emit(OpCodes.Isinst, typeof(T));
+
+    public static void Isinst(this ILGenerator il, Type t) => il.Emit(OpCodes.Isinst, t);
+
+    public static Label Br_S(this ILGenerator il, Label? goto_label = null) => (goto_label ?? il.DefineLabel()).Return(x => il.Emit(OpCodes.Br_S, x));
+    public static Label Br(this ILGenerator il, Label? goto_label = null) => (goto_label ?? il.DefineLabel()).Return(x => il.Emit(OpCodes.Br, x));
+
+    public static Label IfTrueThenGoto_S(this ILGenerator il, Label? then_label = null) => (then_label ?? il.DefineLabel()).Return(x => il.Emit(OpCodes.Brtrue_S, x));
+    public static Label IfFalseThenGoto_S(this ILGenerator il, Label? then_label = null) => (then_label ?? il.DefineLabel()).Return(x => il.Emit(OpCodes.Brfalse_S, x));
+    public static Label IfTrueElseGoto_S(this ILGenerator il, Label? else_label = null) => (else_label ?? il.DefineLabel()).Return(x => il.Emit(OpCodes.Brfalse_S, x));
+    public static Label IfFalseElseGoto_S(this ILGenerator il, Label? else_label = null) => (else_label ?? il.DefineLabel()).Return(x => il.Emit(OpCodes.Brtrue_S, x));
+
+    public static Label IfTrueThenGoto(this ILGenerator il, Label? then_label = null) => (then_label ?? il.DefineLabel()).Return(x => il.Emit(OpCodes.Brtrue, x));
+    public static Label IfFalseThenGoto(this ILGenerator il, Label? then_label = null) => (then_label ?? il.DefineLabel()).Return(x => il.Emit(OpCodes.Brfalse, x));
+    public static Label IfTrueElseGoto(this ILGenerator il, Label? else_label = null) => (else_label ?? il.DefineLabel()).Return(x => il.Emit(OpCodes.Brfalse, x));
+    public static Label IfFalseElseGoto(this ILGenerator il, Label? else_label = null) => (else_label ?? il.DefineLabel()).Return(x => il.Emit(OpCodes.Brtrue, x));
 }
