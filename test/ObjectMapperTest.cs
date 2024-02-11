@@ -1,172 +1,140 @@
 ﻿using Mina.Extensions;
+using System.Collections.Generic;
 using Xunit;
 
 namespace Mina.Test;
 
 public class ObjectMapperTest
 {
-    public int PropInt1 { get; init; } = 1;
-    public int PropInt2 { get; init; } = 2;
-    public string PropStringAAA { get; init; } = "AAA";
-    public string PropStringBBB { get; init; } = "BBB";
+    public int Prop { get; set; } = 1;
+    public string Method() => "test";
+    public long Field = 2;
 
-    public string FieldStr = "zzz";
-    public int FieldInt = 1;
+    public class PropData
+    {
+        public int Prop { get; set; }
+        public string Method { get; set; } = "";
+        public long Field { get; set; }
+    }
+
+    public class MethodData
+    {
+        public int _Prop;
+        public string _Method = "";
+        public long _Field;
+
+        public int Prop(int x) => _Prop = x;
+        public string Method(string x) => _Method = x;
+        public long Field(long x) => _Field = x;
+    }
+
+    public class MethodVoidData
+    {
+        public int _Prop;
+        public string _Method = "";
+        public long _Field;
+
+        public void Prop(int x) => _Prop = x;
+        public void Method(string x) => _Method = x;
+        public void Field(long x) => _Field = x;
+    }
+
+    public class FieldData
+    {
+        public int Prop;
+        public string Method = "";
+        public long Field;
+    }
+
+    public struct StructData
+    {
+        public int Prop;
+        public string Method;
+        public long Field;
+    }
+
+    public record class RecordData(int Prop, string Method, long Field);
+
+    public record struct RecordStructData(int Prop, string Method, long Field);
 
     [Fact]
-    public void GetMap()
+    public void ToProp()
     {
-        var receiver1 = new ObjectMapperTest();
-        var receiver2 = new ObjectMapperTest() { PropInt1 = 10, PropInt2 = 20, PropStringAAA = "XXX", PropStringBBB = "YYY" };
-        var map_int = ObjectMapper.CreateGetMapper<ObjectMapperTest, int>();
-        var map_str = ObjectMapper.CreateGetMapper<ObjectMapperTest, string>();
-
-        Assert.Equal(map_int["PropInt1"](receiver1), 1);
-        Assert.Equal(map_int["PropInt2"](receiver1), 2);
-        Assert.Equal(map_str["PropStringAAA"](receiver1), "AAA");
-        Assert.Equal(map_str["PropStringBBB"](receiver1), "BBB");
-
-        Assert.Equal(map_int["PropInt1"](receiver2), 10);
-        Assert.Equal(map_int["PropInt2"](receiver2), 20);
-        Assert.Equal(map_str["PropStringAAA"](receiver2), "XXX");
-        Assert.Equal(map_str["PropStringBBB"](receiver2), "YYY");
+        var v = new ObjectMapperTest() { Prop = 123, Field = 456 };
+        var f = ObjectMapper.CreateMapper<ObjectMapperTest, PropData>(["Prop", "Method", "Field"]);
+        var d = f(v);
+        Assert.Equal(d.Prop, 123);
+        Assert.Equal(d.Method, "test");
+        Assert.Equal(d.Field, 456);
     }
 
     [Fact]
-    public void DynamicGetMap()
+    public void ToMethod()
     {
-        var receiver1 = new ObjectMapperTest();
-        var receiver2 = new ObjectMapperTest() { PropInt1 = 10, PropInt2 = 20, PropStringAAA = "XXX", PropStringBBB = "YYY" };
-        var map_dynamic = ObjectMapper.CreateGetMapper<ObjectMapperTest>();
-
-        Assert.Equal(map_dynamic["PropInt1"](receiver1), 1);
-        Assert.Equal(map_dynamic["PropInt2"](receiver1), 2);
-        Assert.Equal(map_dynamic["PropStringAAA"](receiver1), "AAA");
-        Assert.Equal(map_dynamic["PropStringBBB"](receiver1), "BBB");
-
-        Assert.Equal(map_dynamic["PropInt1"](receiver2), 10);
-        Assert.Equal(map_dynamic["PropInt2"](receiver2), 20);
-        Assert.Equal(map_dynamic["PropStringAAA"](receiver2), "XXX");
-        Assert.Equal(map_dynamic["PropStringBBB"](receiver2), "YYY");
+        var v = new ObjectMapperTest() { Prop = 123, Field = 456 };
+        var f = ObjectMapper.CreateMapper<ObjectMapperTest, MethodData>(["Prop", "Method", "Field"]);
+        var d = f(v);
+        Assert.Equal(d._Prop, 123);
+        Assert.Equal(d._Method, "test");
+        Assert.Equal(d._Field, 456);
     }
 
     [Fact]
-    public void SetMap()
+    public void ToMethodVoid()
     {
-        var receiver1 = new ObjectMapperTest();
-        var receiver2 = new ObjectMapperTest() { PropInt1 = 10, PropInt2 = 20, PropStringAAA = "XXX", PropStringBBB = "YYY" };
-        var map_int = ObjectMapper.CreateSetMapper<ObjectMapperTest, int>();
-        var map_str = ObjectMapper.CreateSetMapper<ObjectMapperTest, string>();
-
-        map_int["PropInt1"](receiver1, 2);
-        map_int["PropInt2"](receiver1, 4);
-        map_str["PropStringAAA"](receiver1, "aa");
-        map_str["PropStringBBB"](receiver1, "bb");
-        Assert.Equal(receiver1.PropInt1, 2);
-        Assert.Equal(receiver1.PropInt2, 4);
-        Assert.Equal(receiver1.PropStringAAA, "aa");
-        Assert.Equal(receiver1.PropStringBBB, "bb");
-
-        map_int["PropInt1"](receiver2, 20);
-        map_int["PropInt2"](receiver2, 40);
-        map_str["PropStringAAA"](receiver2, "a-a");
-        map_str["PropStringBBB"](receiver2, "b-b");
-        Assert.Equal(receiver2.PropInt1, 20);
-        Assert.Equal(receiver2.PropInt2, 40);
-        Assert.Equal(receiver2.PropStringAAA, "a-a");
-        Assert.Equal(receiver2.PropStringBBB, "b-b");
+        var v = new ObjectMapperTest() { Prop = 123, Field = 456 };
+        var f = ObjectMapper.CreateMapper<ObjectMapperTest, MethodVoidData>(["Prop", "Method", "Field"]);
+        var d = f(v);
+        Assert.Equal(d._Prop, 123);
+        Assert.Equal(d._Method, "test");
+        Assert.Equal(d._Field, 456);
     }
 
     [Fact]
-    public void DynamicSetMap()
+    public void ToMethodVoid2()
     {
-        var receiver1 = new ObjectMapperTest();
-        var receiver2 = new ObjectMapperTest() { PropInt1 = 10, PropInt2 = 20, PropStringAAA = "XXX", PropStringBBB = "YYY" };
-        var map_dynamic = ObjectMapper.CreateSetMapper<ObjectMapperTest>();
-
-        map_dynamic["PropInt1"](receiver1, 2);
-        map_dynamic["PropInt2"](receiver1, 4);
-        map_dynamic["PropStringAAA"](receiver1, "aa");
-        map_dynamic["PropStringBBB"](receiver1, "bb");
-        Assert.Equal(receiver1.PropInt1, 2);
-        Assert.Equal(receiver1.PropInt2, 4);
-        Assert.Equal(receiver1.PropStringAAA, "aa");
-        Assert.Equal(receiver1.PropStringBBB, "bb");
-
-        map_dynamic["PropInt1"](receiver2, 20);
-        map_dynamic["PropInt2"](receiver2, 40);
-        map_dynamic["PropStringAAA"](receiver2, "a-a");
-        map_dynamic["PropStringBBB"](receiver2, "b-b");
-        Assert.Equal(receiver2.PropInt1, 20);
-        Assert.Equal(receiver2.PropInt2, 40);
-        Assert.Equal(receiver2.PropStringAAA, "a-a");
-        Assert.Equal(receiver2.PropStringBBB, "b-b");
+        var v = new ObjectMapperTest() { Prop = 123, Field = 456 };
+        var f = ObjectMapper.CreateMapper<ObjectMapperTest, MethodVoidData>(new Dictionary<string, string>() {
+            { "Prop", "_Field" },
+            { "Method", "_Method" },
+            { "Field", "_Prop" }
+        });
+        var d = f(v);
+        Assert.Equal(d._Prop, 456);
+        Assert.Equal(d._Method, "test");
+        Assert.Equal(d._Field, 123);
     }
 
     [Fact]
-    public void TupleGetMap()
+    public void ToField()
     {
-        var receiver = (StringAAA: "aa", Int1: 10);
-        var map_str = ObjectMapper.CreateFieldGetMapper<(string StringAAA, int Int1), string>();
-        var map_int = ObjectMapper.CreateFieldGetMapper<(string StringAAA, int Int1), int>();
-
-        Assert.Equal(map_str["Item1"](receiver), "aa");
-        Assert.Equal(map_int["Item2"](receiver), 10);
+        var v = new ObjectMapperTest() { Prop = 123, Field = 456 };
+        var f = ObjectMapper.CreateMapper<ObjectMapperTest, FieldData>(["Prop", "Method", "Field"]);
+        var d = f(v);
+        Assert.Equal(d.Prop, 123);
+        Assert.Equal(d.Method, "test");
+        Assert.Equal(d.Field, 456);
     }
 
     [Fact]
-    public void TupleDynamicGetMap()
+    public void ToStruct()
     {
-        var receiver = (StringAAA: "aa", Int1: 10);
-        var map_dynamic = ObjectMapper.CreateFieldGetMapper<(string StringAAA, int Int1)>();
-
-        Assert.Equal(map_dynamic["Item1"](receiver), "aa");
-        Assert.Equal(map_dynamic["Item2"](receiver), 10);
+        var v = new ObjectMapperTest() { Prop = 123, Field = 456 };
+        var f = ObjectMapper.CreateMapper<ObjectMapperTest, StructData>(["Prop", "Method", "Field"]);
+        var d = f(v);
+        Assert.Equal(d.Prop, 123);
+        Assert.Equal(d.Method, "test");
+        Assert.Equal(d.Field, 456);
     }
 
     [Fact]
-    public void FieldGetMap()
+    public void ToRecord()
     {
-        var receiver = new ObjectMapperTest() { FieldStr = "abc", FieldInt = 123 };
-        var map_str = ObjectMapper.CreateFieldGetMapper<ObjectMapperTest, string>();
-        var map_int = ObjectMapper.CreateFieldGetMapper<ObjectMapperTest, int>();
-
-        Assert.Equal(map_str["FieldStr"](receiver), "abc");
-        Assert.Equal(map_int["FieldInt"](receiver), 123);
-    }
-
-    [Fact]
-    public void FieldDynamicGetMap()
-    {
-        var receiver = new ObjectMapperTest() { FieldStr = "abc", FieldInt = 123 };
-        var map_dynamic = ObjectMapper.CreateFieldGetMapper<ObjectMapperTest>();
-
-        Assert.Equal(map_dynamic["FieldStr"](receiver), "abc");
-        Assert.Equal(map_dynamic["FieldInt"](receiver), 123);
-    }
-
-    [Fact]
-    public void FieldSetMap()
-    {
-        var receiver = new ObjectMapperTest();
-        var map_str = ObjectMapper.CreateFieldSetMapper<ObjectMapperTest, string>();
-        var map_int = ObjectMapper.CreateFieldSetMapper<ObjectMapperTest, int>();
-
-        map_str["FieldStr"](receiver, "abc");
-        map_int["FieldInt"](receiver, 123);
-        Assert.Equal(receiver.FieldStr, "abc");
-        Assert.Equal(receiver.FieldInt, 123);
-    }
-
-    [Fact]
-    public void FieldDynamicSetMap()
-    {
-        var receiver = new ObjectMapperTest();
-        var map_dynamic = ObjectMapper.CreateFieldSetMapper<ObjectMapperTest>();
-
-        map_dynamic["FieldStr"](receiver, "abc");
-        map_dynamic["FieldInt"](receiver, 123);
-        Assert.Equal(receiver.FieldStr, "abc");
-        Assert.Equal(receiver.FieldInt, 123);
+        var v = new ObjectMapperTest() { Prop = 123, Field = 456 };
+        var f = ObjectMapper.CreateMapper<ObjectMapperTest, RecordData>(["Prop", "Method", "Field"]);
+        var d = f(v);
+        Assert.Equal(d.Prop, 123);
+        Assert.Equal(d.Method, "test");
+        Assert.Equal(d.Field, 456);
     }
 }

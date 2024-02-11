@@ -6,7 +6,7 @@ using Xunit;
 
 namespace Mina.Test;
 
-public class CreateDataTableMapperTest
+public class DataTableMapperTest
 {
     public class FieldData
     {
@@ -29,7 +29,7 @@ public class CreateDataTableMapperTest
     public DataTable table3x3 = new();
     public DataTable table4x3 = new();
 
-    public CreateDataTableMapperTest()
+    public DataTableMapperTest()
     {
         table3x3.Columns.Add("Prop", typeof(int));
         table3x3.Columns.Add("Method", typeof(string));
