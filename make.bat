@@ -45,3 +45,7 @@
 :bench
 	dotnet run --project bench/Mina.Benchmark.csproj --no-launch-profile -c Release %*
 	@exit /b %ERRORLEVEL%
+
+:setenv
+	@for /f "delims=" %%x in (%~2) do @set %1=%%x
+	@exit /b %ERRORLEVEL%
