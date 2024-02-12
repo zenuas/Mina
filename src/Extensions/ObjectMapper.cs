@@ -60,8 +60,7 @@ public static class ObjectMapper
 
         if (typeof(R).IsValueType)
         {
-            local = il.DeclareLocal(typeof(R));
-            il.Ldloca(local);
+            local = il.Ldloca<R>();
             il.Initobj<R>();
             il.Ldloca(local);
         }

@@ -35,10 +35,8 @@ public static partial class ILGenerators
 
     public static LocalBuilder StoreNullable(this ILGenerator il, Type left_nullable, Type left_nullable_t, LocalBuilder right_value, Type? right_type = null)
     {
-        var nullable = il.DeclareLocal(left_nullable);
-
         // nullable = Nullable<left_nullable_t>((left_nullable_t)(right_type)right_value);
-        il.Ldloca(nullable);
+        var nullable = il.Ldloca(left_nullable);
         il.Ldloc(right_value);
         if (right_type is { }) il.ChangeType(right_type);
         il.AnyCast(left_nullable_t, right_type ?? right_value.LocalType);

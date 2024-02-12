@@ -39,6 +39,10 @@ public static partial class ILGenerators
 
     public static void Ldloca(this ILGenerator il, LocalBuilder local) => il.Emit(OpCodes.Ldloca, local);
 
+    public static LocalBuilder Ldloca<T>(this ILGenerator il) => il.Ldloca(typeof(T));
+
+    public static LocalBuilder Ldloca(this ILGenerator il, Type t) => il.DeclareLocal(t).Return(x => il.Emit(OpCodes.Ldloca, x));
+
     public static void Starg(this ILGenerator il, int argn) => il.Emit(argn <= 255 ? OpCodes.Starg_S : OpCodes.Starg, argn);
 
     public static void Stloc(this ILGenerator il, int argn)
