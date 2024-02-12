@@ -47,10 +47,8 @@ public static partial class ILGenerators
 
     public static void NullableCastViaObject(this ILGenerator il, Type left_nullable, Type left_nullable_t, Type right_type)
     {
-        var right_value = il.DeclareLocal(typeof(object));
-
         // var right_value = stack[top];
-        il.Stloc(right_value);
+        var right_value = il.Stloc<object>();
 
         // if (right_value is null) goto goto_label;
         il.Ldloc(right_value);
@@ -76,8 +74,6 @@ public static partial class ILGenerators
 
     public static void NullableCast(this ILGenerator il, Type left_nullable, Type left_nullable_t, Type right_nullable, Type right_nullable_t)
     {
-        var right_value = il.DeclareLocal(right_nullable_t);
-
         // dup stack[top];
         il.Emit(OpCodes.Dup);
 
@@ -87,7 +83,7 @@ public static partial class ILGenerators
 
         // then: nullable = Nullable<left_nullable_t>(right_value = stack[top].GetValueOrDefault());
         il.Call(right_nullable.GetMethod("GetValueOrDefault", [])!);
-        il.Stloc(right_value);
+        var right_value = il.Stloc(right_nullable_t);
         var nullable = il.StoreNullable(left_nullable, left_nullable_t, right_value);
         var endif_label = il.Br_S();
 
@@ -149,8 +145,6 @@ public static partial class ILGenerators
             {
                 if (Nullable.GetUnderlyingType(right_type) is { } right_nullable_t)
                 {
-                    var right_value = il.DeclareLocal(right_nullable_t);
-
                     // if (stack[top].HasValue)
                     il.Emit(OpCodes.Dup);
                     il.Call(right_type.GetProperty("HasValue")!.GetGetMethod()!);
@@ -158,7 +152,7 @@ public static partial class ILGenerators
 
                     // then: stack[top] = stack[top].Value.ToString();
                     il.Call(right_type.GetProperty("Value")!.GetGetMethod()!);
-                    il.Stloc(right_value);
+                    var right_value = il.Stloc(right_nullable_t);
                     il.Ldloca(right_value);
                     il.Call(right_nullable_t.GetMethod("ToString", [])!);
                     var endif_label = il.Br_S();
@@ -207,9 +201,8 @@ public static partial class ILGenerators
             else if (right_type.IsValueType)
             {
                 // right_value = (value_type)stack[top];
-                var right_value = il.DeclareLocal(right_type);
                 il.AnyCast(left_nullable_t, right_type);
-                il.Stloc(right_value);
+                var right_value = il.Stloc(right_type);
 
                 // nullable = Nullable<nullable_t>(right_value);
                 var nullable = il.StoreNullable(left_type, left_nullable_t, right_value);

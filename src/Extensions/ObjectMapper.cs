@@ -110,8 +110,7 @@ public static class ObjectMapper
             var load_type = il.LoadAnyProperty<T>(name) ?? throw new("source not found");
             if (ILGenerators.IsRequireAddressLoad(type, load_type))
             {
-                var local = il.DeclareLocal(load_type);
-                il.Stloc(local);
+                var local = il.Stloc(load_type);
                 il.Ldloca(local);
             }
             il.AnyCast(type, load_type);

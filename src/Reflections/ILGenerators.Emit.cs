@@ -7,6 +7,9 @@ namespace Mina.Reflections;
 
 public static partial class ILGenerators
 {
+    public static LocalBuilder DeclareLocal<T>(this ILGenerator il) => il.DeclareLocal(typeof(T));
+    public static LocalBuilder DeclareLocal<T>(this ILGenerator il, bool pinned) => il.DeclareLocal(typeof(T), pinned);
+
     public static void Ldarg(this ILGenerator il, int argn)
     {
         switch (argn)
@@ -36,12 +39,9 @@ public static partial class ILGenerators
     public static void Ldloc(this ILGenerator il, LocalBuilder local) => il.Emit(OpCodes.Ldloc, local);
 
     public static void Ldloca(this ILGenerator il, int argn) => il.Emit(argn <= 255 ? OpCodes.Ldloca_S : OpCodes.Ldloca, argn);
-
     public static void Ldloca(this ILGenerator il, LocalBuilder local) => il.Emit(OpCodes.Ldloca, local);
-
     public static LocalBuilder Ldloca<T>(this ILGenerator il) => il.Ldloca(typeof(T));
-
-    public static LocalBuilder Ldloca(this ILGenerator il, Type t) => il.DeclareLocal(t).Return(x => il.Emit(OpCodes.Ldloca, x));
+    public static LocalBuilder Ldloca(this ILGenerator il, Type t) => il.DeclareLocal(t).Return(il.Ldloca);
 
     public static void Starg(this ILGenerator il, int argn) => il.Emit(argn <= 255 ? OpCodes.Starg_S : OpCodes.Starg, argn);
 
@@ -58,6 +58,8 @@ public static partial class ILGenerators
     }
 
     public static void Stloc(this ILGenerator il, LocalBuilder local) => il.Emit(OpCodes.Stloc, local);
+    public static LocalBuilder Stloc<T>(this ILGenerator il) => il.Stloc(typeof(T));
+    public static LocalBuilder Stloc(this ILGenerator il, Type t) => il.DeclareLocal(t).Return(il.Stloc);
 
     public static void Ldc_I4(this ILGenerator il, int n)
     {
