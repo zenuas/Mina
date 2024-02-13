@@ -4,6 +4,12 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>disable</ImplicitUsings>
     <Nullable>enable</Nullable>
+
+    <PackageId>Zenu.$(AssemblyName)</PackageId>
+    <Authors>zenuas@gmail.com</Authors>
+    <Description>Mina is library</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/zenuas/Mina.git</RepositoryUrl>
   </PropertyGroup>
 
 </Project>

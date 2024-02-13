@@ -46,6 +46,15 @@
 	dotnet run --project bench/Mina.Benchmark.csproj --no-launch-profile -c Release %*
 	@exit /b %ERRORLEVEL%
 
+:publish
+	@call :setenv VERSION_NAME "powershell -Command Get-Date -Format yyyy.M.d"
+	@call :setenv BUILD_NAME   "powershell -Command Get-Date -Format HHmm"
+	@set      VERSION=%VERSION_NAME%-build-%BUILD_NAME%
+	@set PACKAGE_NAME=Zenu.Mina.%VERSION%.nupkg
+	dotnet pack --nologo -v q src/Mina.csproj -c Release -o . -p:PackageVersion=%VERSION%
+	dotnet nuget push %PACKAGE_NAME% --api-key %NUGET_APIKEY% --source https://api.nuget.org/v3/index.json
+	@exit /b %ERRORLEVEL%
+
 :setenv
-	@for /f "delims=" %%x in (%~2) do @set %1=%%x
+	@for /f "usebackq delims=" %%x in (`%~2`) do @set %1=%%x
 	@exit /b %ERRORLEVEL%
