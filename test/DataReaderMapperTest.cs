@@ -1,5 +1,5 @@
 ﻿using Microsoft.Data.Sqlite;
-using Mina.Extensions;
+using Mina.Mapper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -88,7 +88,7 @@ public class DataReaderMapperTest
         using var command = con.CreateCommand();
         command.CommandText = $"SELECT * FROM Test3x3 ORDER BY 1";
         using var reader = command.ExecuteReader();
-        var f = ObjectMapper.CreateMapper<FieldData>(reader);
+        var f = DataReaderMapper.CreateMapper<FieldData>(reader);
         var d = f(reader).ToArray();
         Assert.Equal(d.Length, 3);
 
@@ -111,7 +111,7 @@ public class DataReaderMapperTest
         using var command = con.CreateCommand();
         command.CommandText = $"SELECT * FROM Test3x3 ORDER BY 1";
         using var reader = command.ExecuteReader();
-        var f = ObjectMapper.CreateMapper<StructData>(reader);
+        var f = DataReaderMapper.CreateMapper<StructData>(reader);
         var d = f(reader).ToArray();
         Assert.Equal(d.Length, 3);
 
@@ -134,7 +134,7 @@ public class DataReaderMapperTest
         using var command = con.CreateCommand();
         command.CommandText = $"SELECT * FROM Test3x3 ORDER BY 1";
         using var reader = command.ExecuteReader();
-        var f = ObjectMapper.CreateMapper<RecordData>(reader);
+        var f = DataReaderMapper.CreateMapper<RecordData>(reader);
         var d = f(reader).ToArray();
         Assert.Equal(d.Length, 3);
 
@@ -157,7 +157,7 @@ public class DataReaderMapperTest
         using var command = con.CreateCommand();
         command.CommandText = $"SELECT * FROM Test3x3 ORDER BY 1";
         using var reader = command.ExecuteReader();
-        var f = ObjectMapper.CreateMapper<FieldData>(reader, ["Prop", "Method"]);
+        var f = DataReaderMapper.CreateMapper<FieldData>(reader, ["Prop", "Method"]);
         var d = f(reader).ToArray();
         Assert.Equal(d.Length, 3);
 
@@ -180,7 +180,7 @@ public class DataReaderMapperTest
         using var command = con.CreateCommand();
         command.CommandText = $"SELECT * FROM Test3x3 ORDER BY 1";
         using var reader = command.ExecuteReader();
-        var f = ObjectMapper.CreateMapper<FieldData>(reader, new Dictionary<string, string>() {
+        var f = DataReaderMapper.CreateMapper<FieldData>(reader, new Dictionary<string, string>() {
             { "Prop", "Field" },
             { "Method", "Method" },
             { "Field", "Prop" },
@@ -207,7 +207,7 @@ public class DataReaderMapperTest
         using var command = con.CreateCommand();
         command.CommandText = $"SELECT * FROM Test4x3 ORDER BY 1";
         using var reader = command.ExecuteReader();
-        var f = ObjectMapper.CreateMapper<FieldData>(reader);
+        var f = DataReaderMapper.CreateMapper<FieldData>(reader);
         var d = f(reader).ToArray();
         Assert.Equal(d.Length, 3);
 
@@ -230,7 +230,7 @@ public class DataReaderMapperTest
         using var command = con.CreateCommand();
         command.CommandText = $"SELECT * FROM Test2Null ORDER BY 1";
         using var reader = command.ExecuteReader();
-        var f = ObjectMapper.CreateMapper<NullableData>(reader);
+        var f = DataReaderMapper.CreateMapper<NullableData>(reader);
         var d = f(reader).ToArray();
         Assert.Equal(d.Length, 2);
 
@@ -247,7 +247,7 @@ public class DataReaderMapperTest
         using var command = con.CreateCommand();
         command.CommandText = $"SELECT * FROM Date2Null ORDER BY 1";
         using var reader = command.ExecuteReader();
-        var f = ObjectMapper.CreateMapper<DateData>(reader);
+        var f = DataReaderMapper.CreateMapper<DateData>(reader);
         var d = f(reader).ToArray();
         Assert.Equal(d.Length, 2);
 
@@ -264,6 +264,6 @@ public class DataReaderMapperTest
         using var command = con.CreateCommand();
         command.CommandText = $"SELECT * FROM Test4x3 ORDER BY 1";
         using var reader = command.ExecuteReader();
-        _ = Assert.Throws<ArgumentOutOfRangeException>(() => ObjectMapper.CreateMapper<FieldData>(reader, ["Foo"]));
+        _ = Assert.Throws<ArgumentOutOfRangeException>(() => DataReaderMapper.CreateMapper<FieldData>(reader, ["Foo"]));
     }
 }

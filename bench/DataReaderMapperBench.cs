@@ -1,7 +1,7 @@
 ﻿using BenchmarkDotNet.Attributes;
 using Dapper;
 using Microsoft.Data.Sqlite;
-using Mina.Extensions;
+using Mina.Mapper;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -71,7 +71,7 @@ CREATE TABLE Test
         using var command = con.CreateCommand();
         command.CommandText = $"SELECT * FROM Test ORDER BY 1";
         using var reader = command.ExecuteReader();
-        var f = ObjectMapper.CreateMapper<TestData>(reader);
+        var f = DataReaderMapper.CreateMapper<TestData>(reader);
         var xs = f(reader).ToArray();
     }
 
@@ -83,7 +83,7 @@ CREATE TABLE Test
         using var command = con.CreateCommand();
         command.CommandText = $"SELECT * FROM Test ORDER BY 1";
         using var reader = command.ExecuteReader();
-        var f = CachedObjectMapperAll_cache_ ??= ObjectMapper.CreateMapper<TestData>(reader);
+        var f = CachedObjectMapperAll_cache_ ??= DataReaderMapper.CreateMapper<TestData>(reader);
         var xs = f(reader).ToArray();
     }
 

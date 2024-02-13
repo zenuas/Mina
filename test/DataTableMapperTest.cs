@@ -1,4 +1,4 @@
-﻿using Mina.Extensions;
+﻿using Mina.Mapper;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -63,7 +63,7 @@ public class DataTableMapperTest
     [Fact]
     public void ToClass()
     {
-        var f = ObjectMapper.CreateMapper<FieldData>(table3x3);
+        var f = DataTableMapper.CreateMapper<FieldData>(table3x3);
         var d1 = f(table3x3.Rows[0]);
         Assert.Equal(d1.Prop, 123);
         Assert.Equal(d1.Method, "test0");
@@ -83,7 +83,7 @@ public class DataTableMapperTest
     [Fact]
     public void ToStruct()
     {
-        var f = ObjectMapper.CreateMapper<StructData>(table3x3);
+        var f = DataTableMapper.CreateMapper<StructData>(table3x3);
         var d1 = f(table3x3.Rows[0]);
         Assert.Equal(d1.Prop, 123);
         Assert.Equal(d1.Method, "test0");
@@ -103,7 +103,7 @@ public class DataTableMapperTest
     [Fact]
     public void ToRecord()
     {
-        var f = ObjectMapper.CreateMapper<RecordData>(table3x3);
+        var f = DataTableMapper.CreateMapper<RecordData>(table3x3);
         var d1 = f(table3x3.Rows[0]);
         Assert.Equal(d1.Prop, 123);
         Assert.Equal(d1.Method, "test0");
@@ -123,7 +123,7 @@ public class DataTableMapperTest
     [Fact]
     public void FilterMap()
     {
-        var f = ObjectMapper.CreateMapper<FieldData>(table3x3, ["Prop", "Method"]);
+        var f = DataTableMapper.CreateMapper<FieldData>(table3x3, ["Prop", "Method"]);
         var d1 = f(table3x3.Rows[0]);
         Assert.Equal(d1.Prop, 123);
         Assert.Equal(d1.Method, "test0");
@@ -143,7 +143,7 @@ public class DataTableMapperTest
     [Fact]
     public void SelectMap()
     {
-        var f = ObjectMapper.CreateMapper<FieldData>(table3x3, new Dictionary<string, string>() {
+        var f = DataTableMapper.CreateMapper<FieldData>(table3x3, new Dictionary<string, string>() {
             { "Prop", "Field" },
             { "Method", "Method" },
             { "Field", "Prop" },
@@ -167,7 +167,7 @@ public class DataTableMapperTest
     [Fact]
     public void Column4ToField3()
     {
-        var f = ObjectMapper.CreateMapper<FieldData>(table4x3);
+        var f = DataTableMapper.CreateMapper<FieldData>(table4x3);
         var d1 = f(table4x3.Rows[0]);
         Assert.Equal(d1.Prop, 123);
         Assert.Equal(d1.Method, "test0");
@@ -187,6 +187,6 @@ public class DataTableMapperTest
     [Fact]
     public void Error()
     {
-        _ = Assert.Throws<NullReferenceException>(() => ObjectMapper.CreateMapper<FieldData>(table3x3, ["Foo"]));
+        _ = Assert.Throws<NullReferenceException>(() => DataTableMapper.CreateMapper<FieldData>(table3x3, ["Foo"]));
     }
 }

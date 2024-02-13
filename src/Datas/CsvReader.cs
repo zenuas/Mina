@@ -1,4 +1,5 @@
 ﻿using Mina.Extensions;
+using Mina.Mapper;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -63,7 +64,7 @@ public static class CsvReader
 
     public static IEnumerable<T> ReadMapper<T>(TextReader input, Func<int, string?> index_to_fieldname) where T : class
     {
-        var mapper = ObjectMapper.CreateSetMapper<T, string>(false);
+        var mapper = InstanceMapper.CreateSetMapper<T, string>(false);
         var ctor = Expressions.GetNew<T>();
         while (true)
         {

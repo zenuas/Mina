@@ -1,5 +1,5 @@
 ﻿using BenchmarkDotNet.Attributes;
-using Mina.Extensions;
+using Mina.Mapper;
 
 namespace Mina.Benchmark;
 
@@ -11,8 +11,8 @@ public class ObjectMapperBench
     public void GetMapper1000()
     {
         var receiver = new Data(1, 2, "a", "b");
-        var map_int = ObjectMapper.CreateGetMapper<Data, int>();
-        var map_str = ObjectMapper.CreateGetMapper<Data, string>();
+        var map_int = InstanceMapper.CreateGetMapper<Data, int>();
+        var map_str = InstanceMapper.CreateGetMapper<Data, string>();
         for (var i = 0; i < 1000; i++)
         {
             var i1 = map_int["Int1"](receiver);
@@ -31,7 +31,7 @@ public class ObjectMapperBench
     public void GetMapperD1000()
     {
         var receiver = new Data(1, 2, "a", "b");
-        var map_dynamic = ObjectMapper.CreateGetMapper<Data>();
+        var map_dynamic = InstanceMapper.CreateGetMapper<Data>();
         for (var i = 0; i < 1000; i++)
         {
             var i1 = map_dynamic["Int1"](receiver);
@@ -50,8 +50,8 @@ public class ObjectMapperBench
     public void SetMapper1000()
     {
         var receiver = new Data(1, 2, "a", "b");
-        var map_int = ObjectMapper.CreateSetMapper<Data, int>();
-        var map_str = ObjectMapper.CreateSetMapper<Data, string>();
+        var map_int = InstanceMapper.CreateSetMapper<Data, int>();
+        var map_str = InstanceMapper.CreateSetMapper<Data, string>();
         for (var i = 0; i < 1000; i++)
         {
             map_int["Int1"](receiver, 2);
@@ -65,7 +65,7 @@ public class ObjectMapperBench
     public void SetMapperD1000()
     {
         var receiver = new Data(1, 2, "a", "b");
-        var map_dynamic = ObjectMapper.CreateSetMapper<Data>();
+        var map_dynamic = InstanceMapper.CreateSetMapper<Data>();
         for (var i = 0; i < 1000; i++)
         {
             map_dynamic["Int1"](receiver, 2);

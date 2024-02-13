@@ -1,4 +1,4 @@
-﻿using Mina.Extensions;
+﻿using Mina.Mapper;
 using Xunit;
 
 namespace Mina.Test;
@@ -18,8 +18,8 @@ public class GetSetMapperTest
     {
         var receiver1 = new GetSetMapperTest();
         var receiver2 = new GetSetMapperTest() { PropInt1 = 10, PropInt2 = 20, PropStringAAA = "XXX", PropStringBBB = "YYY" };
-        var map_int = ObjectMapper.CreateGetMapper<GetSetMapperTest, int>();
-        var map_str = ObjectMapper.CreateGetMapper<GetSetMapperTest, string>();
+        var map_int = InstanceMapper.CreateGetMapper<GetSetMapperTest, int>();
+        var map_str = InstanceMapper.CreateGetMapper<GetSetMapperTest, string>();
 
         Assert.Equal(map_int["PropInt1"](receiver1), 1);
         Assert.Equal(map_int["PropInt2"](receiver1), 2);
@@ -37,7 +37,7 @@ public class GetSetMapperTest
     {
         var receiver1 = new GetSetMapperTest();
         var receiver2 = new GetSetMapperTest() { PropInt1 = 10, PropInt2 = 20, PropStringAAA = "XXX", PropStringBBB = "YYY" };
-        var map_dynamic = ObjectMapper.CreateGetMapper<GetSetMapperTest>();
+        var map_dynamic = InstanceMapper.CreateGetMapper<GetSetMapperTest>();
 
         Assert.Equal(map_dynamic["PropInt1"](receiver1), 1);
         Assert.Equal(map_dynamic["PropInt2"](receiver1), 2);
@@ -55,8 +55,8 @@ public class GetSetMapperTest
     {
         var receiver1 = new GetSetMapperTest();
         var receiver2 = new GetSetMapperTest() { PropInt1 = 10, PropInt2 = 20, PropStringAAA = "XXX", PropStringBBB = "YYY" };
-        var map_int = ObjectMapper.CreateSetMapper<GetSetMapperTest, int>();
-        var map_str = ObjectMapper.CreateSetMapper<GetSetMapperTest, string>();
+        var map_int = InstanceMapper.CreateSetMapper<GetSetMapperTest, int>();
+        var map_str = InstanceMapper.CreateSetMapper<GetSetMapperTest, string>();
 
         map_int["PropInt1"](receiver1, 2);
         map_int["PropInt2"](receiver1, 4);
@@ -82,7 +82,7 @@ public class GetSetMapperTest
     {
         var receiver1 = new GetSetMapperTest();
         var receiver2 = new GetSetMapperTest() { PropInt1 = 10, PropInt2 = 20, PropStringAAA = "XXX", PropStringBBB = "YYY" };
-        var map_dynamic = ObjectMapper.CreateSetMapper<GetSetMapperTest>();
+        var map_dynamic = InstanceMapper.CreateSetMapper<GetSetMapperTest>();
 
         map_dynamic["PropInt1"](receiver1, 2);
         map_dynamic["PropInt2"](receiver1, 4);
@@ -107,8 +107,8 @@ public class GetSetMapperTest
     public void TupleGetMap()
     {
         var receiver = (StringAAA: "aa", Int1: 10);
-        var map_str = ObjectMapper.CreateFieldGetMapper<(string StringAAA, int Int1), string>();
-        var map_int = ObjectMapper.CreateFieldGetMapper<(string StringAAA, int Int1), int>();
+        var map_str = InstanceMapper.CreateFieldGetMapper<(string StringAAA, int Int1), string>();
+        var map_int = InstanceMapper.CreateFieldGetMapper<(string StringAAA, int Int1), int>();
 
         Assert.Equal(map_str["Item1"](receiver), "aa");
         Assert.Equal(map_int["Item2"](receiver), 10);
@@ -118,7 +118,7 @@ public class GetSetMapperTest
     public void TupleDynamicGetMap()
     {
         var receiver = (StringAAA: "aa", Int1: 10);
-        var map_dynamic = ObjectMapper.CreateFieldGetMapper<(string StringAAA, int Int1)>();
+        var map_dynamic = InstanceMapper.CreateFieldGetMapper<(string StringAAA, int Int1)>();
 
         Assert.Equal(map_dynamic["Item1"](receiver), "aa");
         Assert.Equal(map_dynamic["Item2"](receiver), 10);
@@ -128,8 +128,8 @@ public class GetSetMapperTest
     public void FieldGetMap()
     {
         var receiver = new GetSetMapperTest() { FieldStr = "abc", FieldInt = 123 };
-        var map_str = ObjectMapper.CreateFieldGetMapper<GetSetMapperTest, string>();
-        var map_int = ObjectMapper.CreateFieldGetMapper<GetSetMapperTest, int>();
+        var map_str = InstanceMapper.CreateFieldGetMapper<GetSetMapperTest, string>();
+        var map_int = InstanceMapper.CreateFieldGetMapper<GetSetMapperTest, int>();
 
         Assert.Equal(map_str["FieldStr"](receiver), "abc");
         Assert.Equal(map_int["FieldInt"](receiver), 123);
@@ -139,7 +139,7 @@ public class GetSetMapperTest
     public void FieldDynamicGetMap()
     {
         var receiver = new GetSetMapperTest() { FieldStr = "abc", FieldInt = 123 };
-        var map_dynamic = ObjectMapper.CreateFieldGetMapper<GetSetMapperTest>();
+        var map_dynamic = InstanceMapper.CreateFieldGetMapper<GetSetMapperTest>();
 
         Assert.Equal(map_dynamic["FieldStr"](receiver), "abc");
         Assert.Equal(map_dynamic["FieldInt"](receiver), 123);
@@ -149,8 +149,8 @@ public class GetSetMapperTest
     public void FieldSetMap()
     {
         var receiver = new GetSetMapperTest();
-        var map_str = ObjectMapper.CreateFieldSetMapper<GetSetMapperTest, string>();
-        var map_int = ObjectMapper.CreateFieldSetMapper<GetSetMapperTest, int>();
+        var map_str = InstanceMapper.CreateFieldSetMapper<GetSetMapperTest, string>();
+        var map_int = InstanceMapper.CreateFieldSetMapper<GetSetMapperTest, int>();
 
         map_str["FieldStr"](receiver, "abc");
         map_int["FieldInt"](receiver, 123);
@@ -162,7 +162,7 @@ public class GetSetMapperTest
     public void FieldDynamicSetMap()
     {
         var receiver = new GetSetMapperTest();
-        var map_dynamic = ObjectMapper.CreateFieldSetMapper<GetSetMapperTest>();
+        var map_dynamic = InstanceMapper.CreateFieldSetMapper<GetSetMapperTest>();
 
         map_dynamic["FieldStr"](receiver, "abc");
         map_dynamic["FieldInt"](receiver, 123);

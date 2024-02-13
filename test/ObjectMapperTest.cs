@@ -1,4 +1,4 @@
-﻿using Mina.Extensions;
+﻿using Mina.Mapper;
 using System.Collections.Generic;
 using Xunit;
 
