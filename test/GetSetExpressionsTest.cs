@@ -1,4 +1,4 @@
-﻿using Mina.Extensions;
+﻿using Mina.Reflections;
 using Xunit;
 
 namespace Mina.Test;
