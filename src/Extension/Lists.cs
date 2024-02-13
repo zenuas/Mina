@@ -5,7 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Mina.Extensions;
+namespace Mina.Extension;
 
 public static class Lists
 {

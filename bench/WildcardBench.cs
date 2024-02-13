@@ -1,5 +1,5 @@
 ﻿using BenchmarkDotNet.Attributes;
-using Mina.Extensions;
+using Mina.Extension;
 using System.Text.RegularExpressions;
 
 namespace Mina.Benchmark;

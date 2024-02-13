@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reflection.Emit;
 
-namespace Mina.Reflections;
+namespace Mina.Reflection;
 
 public static partial class ILGenerators
 {

@@ -1,5 +1,5 @@
-﻿using Mina.Extensions;
-using Mina.Reflections;
+﻿using Mina.Extension;
+using Mina.Reflection;
 using System;
 using System.Collections.Generic;
 using System.Data;

@@ -1,9 +1,9 @@
-﻿using Mina.Extensions;
+﻿using Mina.Extension;
 using System;
 using System.Reflection;
 using System.Reflection.Emit;
 
-namespace Mina.Reflections;
+namespace Mina.Reflection;
 
 public static partial class ILGenerators
 {

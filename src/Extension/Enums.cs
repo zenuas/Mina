@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.Reflection;
 
-namespace Mina.Extensions;
+namespace Mina.Extension;
 
 public static class Enums
 {

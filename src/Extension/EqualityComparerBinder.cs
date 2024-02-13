@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Mina.Extensions;
+namespace Mina.Extension;
 
 public class EqualityComparerBinder<T> : IEqualityComparer<T>
 {

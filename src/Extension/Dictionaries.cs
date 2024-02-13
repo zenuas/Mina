@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace Mina.Extensions;
+namespace Mina.Extension;
 
 public static class Dictionaries
 {

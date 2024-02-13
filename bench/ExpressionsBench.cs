@@ -1,5 +1,5 @@
 ﻿using BenchmarkDotNet.Attributes;
-using Mina.Reflections;
+using Mina.Reflection;
 using System.Runtime.CompilerServices;
 
 namespace Mina.Benchmark;

@@ -1,11 +1,11 @@
-﻿using Mina.Extensions;
+﻿using Mina.Extension;
 using Mina.Mapper;
-using Mina.Reflections;
+using Mina.Reflection;
 using System;
 using System.Collections.Generic;
 using System.IO;
 
-namespace Mina.Datas;
+namespace Mina.Data;
 
 public static class CsvReader
 {
