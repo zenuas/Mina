@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Reflection;
 
 namespace Mina.Extension;
 
 public static class Enums
 {
-    [DebuggerHidden]
     public static T? GetAttributeOrDefault<T>(this Enum e) where T : Attribute
     {
         var field = e.GetType().GetField(e.ToString());

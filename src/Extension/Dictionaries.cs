@@ -1,11 +1,9 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
 
 namespace Mina.Extension;
 
 public static class Dictionaries
 {
-    [DebuggerHidden]
     public static TValue GetOrNew<TKey, TValue>(this Dictionary<TKey, TValue> self, TKey key)
         where TKey : notnull
         where TValue : new()
@@ -14,7 +12,6 @@ public static class Dictionaries
         return self[key];
     }
 
-    [DebuggerHidden]
     public static TValue? GetOrDefault<TKey, TValue>(this Dictionary<TKey, TValue> self, TKey key)
         where TKey : notnull
         where TValue : notnull
