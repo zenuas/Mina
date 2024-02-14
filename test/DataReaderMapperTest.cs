@@ -83,12 +83,44 @@ public class DataReaderMapperTest
     }
 
     [Fact]
-    public void ToClass()
+    public void SingleReader()
     {
         using var command = con.CreateCommand();
         command.CommandText = $"SELECT * FROM Test3x3 ORDER BY 1";
         using var reader = command.ExecuteReader();
         var f = DataReaderMapper.CreateMapper<FieldData>(reader);
+
+        Assert.Equal(reader.Read(), true);
+        var d1 = f(reader);
+
+        Assert.Equal(d1.Prop, 123);
+        Assert.Equal(d1.Method, "test0");
+        Assert.Equal(d1.Field, 456);
+
+        Assert.Equal(reader.Read(), true);
+        var d2 = f(reader);
+
+        Assert.Equal(d2.Prop, 124);
+        Assert.Equal(d2.Method, "test1");
+        Assert.Equal(d2.Field, 457);
+
+        Assert.Equal(reader.Read(), true);
+        var d3 = f(reader);
+
+        Assert.Equal(d3.Prop, 125);
+        Assert.Equal(d3.Method, "test2");
+        Assert.Equal(d3.Field, 458);
+
+        Assert.Equal(reader.Read(), false);
+    }
+
+    [Fact]
+    public void ToClass()
+    {
+        using var command = con.CreateCommand();
+        command.CommandText = $"SELECT * FROM Test3x3 ORDER BY 1";
+        using var reader = command.ExecuteReader();
+        var f = DataReaderMapper.CreateEnumerableMapper<FieldData>(reader);
         var d = f(reader).ToArray();
         Assert.Equal(d.Length, 3);
 
@@ -111,7 +143,7 @@ public class DataReaderMapperTest
         using var command = con.CreateCommand();
         command.CommandText = $"SELECT * FROM Test3x3 ORDER BY 1";
         using var reader = command.ExecuteReader();
-        var f = DataReaderMapper.CreateMapper<StructData>(reader);
+        var f = DataReaderMapper.CreateEnumerableMapper<StructData>(reader);
         var d = f(reader).ToArray();
         Assert.Equal(d.Length, 3);
 
@@ -134,7 +166,7 @@ public class DataReaderMapperTest
         using var command = con.CreateCommand();
         command.CommandText = $"SELECT * FROM Test3x3 ORDER BY 1";
         using var reader = command.ExecuteReader();
-        var f = DataReaderMapper.CreateMapper<RecordData>(reader);
+        var f = DataReaderMapper.CreateEnumerableMapper<RecordData>(reader);
         var d = f(reader).ToArray();
         Assert.Equal(d.Length, 3);
 
@@ -157,7 +189,7 @@ public class DataReaderMapperTest
         using var command = con.CreateCommand();
         command.CommandText = $"SELECT * FROM Test3x3 ORDER BY 1";
         using var reader = command.ExecuteReader();
-        var f = DataReaderMapper.CreateMapper<FieldData>(reader, ["Prop", "Method"]);
+        var f = DataReaderMapper.CreateEnumerableMapper<FieldData>(reader, ["Prop", "Method"]);
         var d = f(reader).ToArray();
         Assert.Equal(d.Length, 3);
 
@@ -180,7 +212,7 @@ public class DataReaderMapperTest
         using var command = con.CreateCommand();
         command.CommandText = $"SELECT * FROM Test3x3 ORDER BY 1";
         using var reader = command.ExecuteReader();
-        var f = DataReaderMapper.CreateMapper<FieldData>(reader, new Dictionary<string, string>() {
+        var f = DataReaderMapper.CreateEnumerableMapper<FieldData>(reader, new Dictionary<string, string>() {
             { "Prop", "Field" },
             { "Method", "Method" },
             { "Field", "Prop" },
@@ -207,7 +239,7 @@ public class DataReaderMapperTest
         using var command = con.CreateCommand();
         command.CommandText = $"SELECT * FROM Test4x3 ORDER BY 1";
         using var reader = command.ExecuteReader();
-        var f = DataReaderMapper.CreateMapper<FieldData>(reader);
+        var f = DataReaderMapper.CreateEnumerableMapper<FieldData>(reader);
         var d = f(reader).ToArray();
         Assert.Equal(d.Length, 3);
 
@@ -230,7 +262,7 @@ public class DataReaderMapperTest
         using var command = con.CreateCommand();
         command.CommandText = $"SELECT * FROM Test2Null ORDER BY 1";
         using var reader = command.ExecuteReader();
-        var f = DataReaderMapper.CreateMapper<NullableData>(reader);
+        var f = DataReaderMapper.CreateEnumerableMapper<NullableData>(reader);
         var d = f(reader).ToArray();
         Assert.Equal(d.Length, 2);
 
@@ -247,7 +279,7 @@ public class DataReaderMapperTest
         using var command = con.CreateCommand();
         command.CommandText = $"SELECT * FROM Date2Null ORDER BY 1";
         using var reader = command.ExecuteReader();
-        var f = DataReaderMapper.CreateMapper<DateData>(reader);
+        var f = DataReaderMapper.CreateEnumerableMapper<DateData>(reader);
         var d = f(reader).ToArray();
         Assert.Equal(d.Length, 2);
 
@@ -264,6 +296,6 @@ public class DataReaderMapperTest
         using var command = con.CreateCommand();
         command.CommandText = $"SELECT * FROM Test4x3 ORDER BY 1";
         using var reader = command.ExecuteReader();
-        _ = Assert.Throws<ArgumentOutOfRangeException>(() => DataReaderMapper.CreateMapper<FieldData>(reader, ["Foo"]));
+        _ = Assert.Throws<ArgumentOutOfRangeException>(() => DataReaderMapper.CreateEnumerableMapper<FieldData>(reader, ["Foo"]));
     }
 }

@@ -75,4 +75,12 @@ public static class ObjectMapper
             il.AnyCast(type, load_type);
         });
     }
+
+    public static Func<IEnumerable<T>, IEnumerable<R>> CreateEnumerableMapper<T, R>(IEnumerable<string> map) => CreateEnumerableMapper<T, R>(map.ToDictionary(x => x));
+
+    public static Func<IEnumerable<T>, IEnumerable<R>> CreateEnumerableMapper<T, R>(Dictionary<string, string> map)
+    {
+        var f = CreateMapper<T, R>(map);
+        return (xs) => xs.Select(f);
+    }
 }
