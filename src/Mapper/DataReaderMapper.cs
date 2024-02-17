@@ -49,7 +49,7 @@ public static class DataReaderMapper
             il.Call(typeof(IDataRecord).GetMethod(nameof(IDataRecord.IsDBNull))!);
             var else_label = il.IfFalseElseGoto_S();
 
-            // then: stack[top] = (type)GetGetFieldMethod(t)(index);
+            // then: stack[top] = (type)GetGetFieldMethod(t)(arg0, index);
             il.Ldarg(0);
             il.Ldc_I4(index);
             il.Call(GetGetFieldMethod(load_type));
@@ -65,7 +65,7 @@ public static class DataReaderMapper
         }
         else
         {
-            // stack[top] = (type)GetGetFieldMethod(t)(index);
+            // stack[top] = (type)GetGetFieldMethod(t)(arg0, index);
             il.Ldarg(0);
             il.Ldc_I4(index);
             il.Call(GetGetFieldMethod(load_type));
