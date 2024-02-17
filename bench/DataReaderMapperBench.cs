@@ -66,7 +66,7 @@ CREATE TABLE Test
     }
 
     [Benchmark]
-    public void HandAllAsync()
+    public void HandAll()
     {
         using var command = con.CreateCommand();
         command.CommandText = $"SELECT * FROM Test ORDER BY 1";
