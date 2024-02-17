@@ -40,7 +40,7 @@ public class StreamsTest
     }
 
     [Fact]
-    public void ReadAllLineTest()
+    public void ReadAllLinesTest()
     {
         var s = "\na\r\nbc\rdef";
         var input = new StringReader(s).ReadAllLines().ToArray();
@@ -101,6 +101,35 @@ public class StreamsTest
     }
 
     [Fact]
+    public void ReadAllLineWithEolsTest()
+    {
+        var s = "\na\r\nbc\rdef";
+        var input = new StringReader(s).ReadAllLineWithEols().ToArray();
+        Assert.Equal(input.Length, 4);
+        Assert.Equal(input[0], "\n");
+        Assert.Equal(input[1], "a\r\n");
+        Assert.Equal(input[2], "bc\r");
+        Assert.Equal(input[3], "def");
+
+        var s2 = "xyz\na\r\nbc\rdef";
+        var input2 = new StringReader(s2).ReadAllLineWithEols().ToArray();
+        Assert.Equal(input2.Length, 4);
+        Assert.Equal(input2[0], "xyz\n");
+        Assert.Equal(input2[1], "a\r\n");
+        Assert.Equal(input2[2], "bc\r");
+        Assert.Equal(input2[3], "def");
+
+        var s3 = "xyz\na\r\nbc\rdef\n\n";
+        var input3 = new StringReader(s3).ReadAllLineWithEols().ToArray();
+        Assert.Equal(input3.Length, 5);
+        Assert.Equal(input3[0], "xyz\n");
+        Assert.Equal(input3[1], "a\r\n");
+        Assert.Equal(input3[2], "bc\r");
+        Assert.Equal(input3[3], "def\n");
+        Assert.Equal(input3[4], "\n");
+    }
+
+    [Fact]
     public void ReadLineSplitEolTest()
     {
         var s = "\na\r\nbc\rdef";
@@ -130,6 +159,35 @@ public class StreamsTest
         Assert.Equal(input3.ReadLineSplitEol(), ("", "\n"));
         Assert.Equal(input3.ReadLineSplitEol(), ("", ""));
         Assert.Equal(input3.ReadLineSplitEol(), ("", ""));
+    }
+
+    [Fact]
+    public void ReadAllLineSplitEolsTest()
+    {
+        var s = "\na\r\nbc\rdef";
+        var input = new StringReader(s).ReadAllLineSplitEols().ToArray();
+        Assert.Equal(input.Length, 4);
+        Assert.Equal(input[0], ("", "\n"));
+        Assert.Equal(input[1], ("a", "\r\n"));
+        Assert.Equal(input[2], ("bc", "\r"));
+        Assert.Equal(input[3], ("def", ""));
+
+        var s2 = "xyz\na\r\nbc\rdef";
+        var input2 = new StringReader(s2).ReadAllLineSplitEols().ToArray();
+        Assert.Equal(input2.Length, 4);
+        Assert.Equal(input2[0], ("xyz", "\n"));
+        Assert.Equal(input2[1], ("a", "\r\n"));
+        Assert.Equal(input2[2], ("bc", "\r"));
+        Assert.Equal(input2[3], ("def", ""));
+
+        var s3 = "xyz\na\r\nbc\rdef\n\n";
+        var input3 = new StringReader(s3).ReadAllLineSplitEols().ToArray();
+        Assert.Equal(input3.Length, 5);
+        Assert.Equal(input3[0], ("xyz", "\n"));
+        Assert.Equal(input3[1], ("a", "\r\n"));
+        Assert.Equal(input3[2], ("bc", "\r"));
+        Assert.Equal(input3[3], ("def", "\n"));
+        Assert.Equal(input3[4], ("", "\n"));
     }
 
     [Fact]

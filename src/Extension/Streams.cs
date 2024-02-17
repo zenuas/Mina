@@ -59,6 +59,14 @@ public static class Streams
         .TakeWhile(x => x.Peek() >= 0)
         .Select(x => x.ReadLine()!);
 
+    public static IEnumerable<(string Line, string Eol)> ReadAllLineSplitEols(this TextReader self) => Lists.Repeat(self)
+        .TakeWhile(x => x.Peek() >= 0)
+        .Select(x => x.ReadLineSplitEol());
+
+    public static IEnumerable<string> ReadAllLineWithEols(this TextReader self) => Lists.Repeat(self)
+        .TakeWhile(x => x.Peek() >= 0)
+        .Select(x => x.ReadLineWithEol());
+
     public static (string Line, string Eol) ReadLineSplitEol(this TextReader self)
     {
         Span<char> buffer = stackalloc char[1];
