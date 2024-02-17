@@ -66,13 +66,32 @@ CREATE TABLE Test
     }
 
     [Benchmark]
-    public void ObjectMapperAll()
+    public void HandAllAsync()
     {
         using var command = con.CreateCommand();
         command.CommandText = $"SELECT * FROM Test ORDER BY 1";
         using var reader = command.ExecuteReader();
-        var f = DataReaderMapper.CreateEnumerableMapper<TestData>(reader);
-        var xs = f(reader).ToArray();
+        var lists = new List<TestData>();
+        while (reader.Read())
+        {
+            var x = new TestData();
+
+            x.Id = reader.GetInt32(0);
+            x.Text1 = reader.GetString(1);
+            x.Text2 = reader.IsDBNull(2) ? "" : reader.GetString(2);
+            x.Date1 = reader.GetDateTime(3);
+            x.Date2 = reader.IsDBNull(4) ? null : reader.GetDateTime(4);
+            x.Int1 = reader.GetInt32(5);
+            x.Int2 = reader.IsDBNull(6) ? null : reader.GetInt32(6);
+            x.Int3 = reader.IsDBNull(7) ? null : reader.GetInt32(7);
+            x.Int4 = reader.IsDBNull(8) ? null : reader.GetInt32(8);
+            x.Int5 = reader.IsDBNull(9) ? null : reader.GetInt32(9);
+            x.Int6 = reader.IsDBNull(10) ? null : reader.GetInt32(10);
+            x.Int7 = reader.IsDBNull(11) ? null : reader.GetInt32(11);
+            x.Int8 = reader.IsDBNull(12) ? null : reader.GetInt32(12);
+            x.Int9 = reader.IsDBNull(13) ? null : reader.GetInt32(13);
+            lists.Add(x);
+        }
     }
 
     public static Func<IDataReader, IEnumerable<TestData>>? CachedObjectMapperAll_cache_ = null;
