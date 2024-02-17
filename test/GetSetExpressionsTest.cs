@@ -36,7 +36,7 @@ public class GetSetExpressionsTest
     public void SetProperty()
     {
         var v = new GetSetExpressionsTest() { Test = "aaa" };
-        var f = Expressions.SetProperty<GetSetExpressionsTest, string>("Test");
+        var f = Expressions.SetProperty<GetSetExpressionsTest, string>(nameof(Test));
         f(v, "bbb");
         Assert.Equal(v.Test, "bbb");
     }
@@ -45,7 +45,7 @@ public class GetSetExpressionsTest
     public void GetProperty()
     {
         var v = new GetSetExpressionsTest() { Test = "aaa" };
-        var f = Expressions.GetProperty<GetSetExpressionsTest, string>("Test");
+        var f = Expressions.GetProperty<GetSetExpressionsTest, string>(nameof(Test));
         var p = f(v);
         Assert.Equal(p, "aaa");
     }
@@ -54,7 +54,7 @@ public class GetSetExpressionsTest
     public void GetAction()
     {
         var v = new GetSetExpressionsTest();
-        var f = Expressions.GetAction<GetSetExpressionsTest>("Act");
+        var f = Expressions.GetAction<GetSetExpressionsTest>(nameof(Act));
         f(v);
         Assert.Equal(v.Test2, "aaa");
     }
@@ -63,7 +63,7 @@ public class GetSetExpressionsTest
     public void GetAction_Str()
     {
         var v = new GetSetExpressionsTest();
-        var f = Expressions.GetAction<GetSetExpressionsTest, string>("Act_Str");
+        var f = Expressions.GetAction<GetSetExpressionsTest, string>(nameof(Act_Str));
         f(v, "bbb");
         Assert.Equal(v.Test2, "bbb");
     }
@@ -72,7 +72,7 @@ public class GetSetExpressionsTest
     public void GetAction_StrInt()
     {
         var v = new GetSetExpressionsTest();
-        var f = Expressions.GetAction<GetSetExpressionsTest, int>("Act_Str");
+        var f = Expressions.GetAction<GetSetExpressionsTest, int>(nameof(Act_Str));
         f(v, 123);
         Assert.Equal(v.Test2, "123");
     }
@@ -81,7 +81,7 @@ public class GetSetExpressionsTest
     public void GetAction_IntLong()
     {
         var v = new GetSetExpressionsTest();
-        var f = Expressions.GetAction<GetSetExpressionsTest, long>("Act_Int");
+        var f = Expressions.GetAction<GetSetExpressionsTest, long>(nameof(Act_Int));
         f(v, 123);
         Assert.Equal(v.Test3, 123);
     }
@@ -90,7 +90,7 @@ public class GetSetExpressionsTest
     public void GetAction_IntStr()
     {
         var v = new GetSetExpressionsTest();
-        var f = Expressions.GetAction<GetSetExpressionsTest, string>("Act_Int");
+        var f = Expressions.GetAction<GetSetExpressionsTest, string>(nameof(Act_Int));
         f(v, "123");
         Assert.Equal(v.Test3, 123);
     }
@@ -99,7 +99,7 @@ public class GetSetExpressionsTest
     public void GetAction_Int_Int()
     {
         var v = new GetSetExpressionsTest();
-        var f = Expressions.GetAction<GetSetExpressionsTest, int, int>("Act_Int_Int");
+        var f = Expressions.GetAction<GetSetExpressionsTest, int, int>(nameof(Act_Int_Int));
         f(v, 123, 456);
         Assert.Equal(v.Test3, 579);
     }
@@ -117,7 +117,7 @@ public class GetSetExpressionsTest
     public void GetFunction_Str()
     {
         var v = new GetSetExpressionsTest();
-        var f = Expressions.GetFunction<GetSetExpressionsTest, string>("Fun_Str");
+        var f = Expressions.GetFunction<GetSetExpressionsTest, string>(nameof(Fun_Str));
         var p = f(v);
         Assert.Equal(p, "yyy");
     }
@@ -126,7 +126,7 @@ public class GetSetExpressionsTest
     public void GetFunction_IntObject()
     {
         var v = new GetSetExpressionsTest();
-        var f = Expressions.GetFunction<GetSetExpressionsTest, object>("Fun_Int");
+        var f = Expressions.GetFunction<GetSetExpressionsTest, object>(nameof(Fun_Int));
         var p = f(v);
         Assert.True(p is int a && a == 123);
     }
@@ -135,7 +135,7 @@ public class GetSetExpressionsTest
     public void GetFunction_Int_Int()
     {
         var v = new GetSetExpressionsTest();
-        var f = Expressions.GetFunction<GetSetExpressionsTest, int, int>("Fun_Int_Int");
+        var f = Expressions.GetFunction<GetSetExpressionsTest, int, int>(nameof(Fun_Int_Int));
         var p = f(v, 123);
         Assert.Equal(p, 123);
     }
@@ -144,7 +144,7 @@ public class GetSetExpressionsTest
     public void GetFunction_IntLong_IntLong()
     {
         var v = new GetSetExpressionsTest();
-        var f = Expressions.GetFunction<GetSetExpressionsTest, long, long>("Fun_Int_Int");
+        var f = Expressions.GetFunction<GetSetExpressionsTest, long, long>(nameof(Fun_Int_Int));
         var p = f(v, 123);
         Assert.Equal(p, 123);
     }
@@ -153,7 +153,7 @@ public class GetSetExpressionsTest
     public void GetFunction_IntLong_IntObject()
     {
         var v = new GetSetExpressionsTest();
-        var f = Expressions.GetFunction<GetSetExpressionsTest, long, object>("Fun_Int_Int");
+        var f = Expressions.GetFunction<GetSetExpressionsTest, long, object>(nameof(Fun_Int_Int));
         var p = f(v, 123);
         Assert.True(p is int a && a == 123);
     }
@@ -162,7 +162,7 @@ public class GetSetExpressionsTest
     public void GetFunction_Int_Int_Int()
     {
         var v = new GetSetExpressionsTest();
-        var f = Expressions.GetFunction<GetSetExpressionsTest, int, int, int>("Fun_Int_Int_Int");
+        var f = Expressions.GetFunction<GetSetExpressionsTest, int, int, int>(nameof(Fun_Int_Int_Int));
         var p = f(v, 123, 456);
         Assert.True(p is int a && a == 579);
     }
@@ -171,7 +171,7 @@ public class GetSetExpressionsTest
     public void GetField_Str()
     {
         var v = new GetSetExpressionsTest();
-        var f = Expressions.GetField<GetSetExpressionsTest, string>("FieldStr");
+        var f = Expressions.GetField<GetSetExpressionsTest, string>(nameof(FieldStr));
         var p = f(v);
         Assert.Equal(p, "zzz");
     }
@@ -180,7 +180,7 @@ public class GetSetExpressionsTest
     public void GetField_Int()
     {
         var v = new GetSetExpressionsTest();
-        var f = Expressions.GetField<GetSetExpressionsTest, int>("FieldInt");
+        var f = Expressions.GetField<GetSetExpressionsTest, int>(nameof(FieldInt));
         var p = f(v);
         Assert.Equal(p, 1);
     }
@@ -189,7 +189,7 @@ public class GetSetExpressionsTest
     public void GetField_IntLong()
     {
         var v = new GetSetExpressionsTest();
-        var f = Expressions.GetField<GetSetExpressionsTest, long>("FieldInt");
+        var f = Expressions.GetField<GetSetExpressionsTest, long>(nameof(FieldInt));
         var p = f(v);
         Assert.Equal(p, 1);
     }
@@ -198,7 +198,7 @@ public class GetSetExpressionsTest
     public void SetField_Str()
     {
         var v = new GetSetExpressionsTest();
-        var f = Expressions.SetField<GetSetExpressionsTest, string>("FieldStr");
+        var f = Expressions.SetField<GetSetExpressionsTest, string>(nameof(FieldStr));
         f(v, "aaa");
         Assert.Equal(v.FieldStr, "aaa");
     }
@@ -207,7 +207,7 @@ public class GetSetExpressionsTest
     public void SetField_Int()
     {
         var v = new GetSetExpressionsTest();
-        var f = Expressions.SetField<GetSetExpressionsTest, int>("FieldInt");
+        var f = Expressions.SetField<GetSetExpressionsTest, int>(nameof(FieldInt));
         f(v, 123);
         Assert.Equal(v.FieldInt, 123);
     }
@@ -216,7 +216,7 @@ public class GetSetExpressionsTest
     public void SetField_IntLong()
     {
         var v = new GetSetExpressionsTest();
-        var f = Expressions.SetField<GetSetExpressionsTest, long>("FieldInt");
+        var f = Expressions.SetField<GetSetExpressionsTest, long>(nameof(FieldInt));
         f(v, 123);
         Assert.Equal(v.FieldInt, 123);
     }
