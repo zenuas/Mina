@@ -96,6 +96,7 @@ public static partial class ILGenerators
     public static void Ldsfld(this ILGenerator il, FieldInfo field) => il.Emit(OpCodes.Ldsfld, field);
     public static void Ldsflda(this ILGenerator il, FieldInfo field) => il.Emit(OpCodes.Ldsflda, field);
     public static void Stfld(this ILGenerator il, FieldInfo field) => il.Emit(OpCodes.Stfld, field);
+    public static void Stsfld(this ILGenerator il, FieldInfo field) => il.Emit(OpCodes.Stsfld, field);
 
     public static void Call(this ILGenerator il, MethodInfo method) => il.EmitCall(method.IsFinal || !method.IsVirtual ? OpCodes.Call : OpCodes.Callvirt, method, null);
     public static void Call(this ILGenerator il, ConstructorInfo ctor) => il.Emit(OpCodes.Call, ctor);
