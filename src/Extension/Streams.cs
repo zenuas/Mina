@@ -56,9 +56,8 @@ public static class Streams
     }
 
     public static IEnumerable<string> ReadAllLines(this TextReader self) => Lists.Repeat(self)
-        .Select(x => x.ReadLine())
-        .TakeWhile(x => x != null)
-        .Select(x => x!);
+        .TakeWhile(x => x.Peek() >= 0)
+        .Select(x => x.ReadLine()!);
 
     public static (string Line, string Eol) ReadLineSplitEol(this TextReader self)
     {
