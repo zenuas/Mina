@@ -93,6 +93,8 @@ public static partial class ILGenerators
 
     public static void Ldfld(this ILGenerator il, FieldInfo field) => il.Emit(OpCodes.Ldfld, field);
     public static void Ldflda(this ILGenerator il, FieldInfo field) => il.Emit(OpCodes.Ldflda, field);
+    public static void Ldsfld(this ILGenerator il, FieldInfo field) => il.Emit(OpCodes.Ldsfld, field);
+    public static void Ldsflda(this ILGenerator il, FieldInfo field) => il.Emit(OpCodes.Ldsflda, field);
     public static void Stfld(this ILGenerator il, FieldInfo field) => il.Emit(OpCodes.Stfld, field);
 
     public static void Call(this ILGenerator il, MethodInfo method) => il.EmitCall(method.IsFinal || !method.IsVirtual ? OpCodes.Call : OpCodes.Callvirt, method, null);
