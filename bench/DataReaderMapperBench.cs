@@ -94,15 +94,15 @@ CREATE TABLE Test
         }
     }
 
-    public static Func<IDataReader, IEnumerable<TestData>>? CachedObjectMapperAll_cache_ = null;
+    public static Func<IDataReader, IEnumerable<TestData>>? CachedDataReaderMapperAll_cache_ = null;
 
     [Benchmark]
-    public void CachedObjectMapperAll()
+    public void CachedDataReaderMapperAll()
     {
         using var command = con.CreateCommand();
         command.CommandText = $"SELECT * FROM Test ORDER BY 1";
         using var reader = command.ExecuteReader();
-        var f = CachedObjectMapperAll_cache_ ??= DataReaderMapper.CreateEnumerableMapper<TestData>(reader);
+        var f = CachedDataReaderMapperAll_cache_ ??= DataReaderMapper.CreateEnumerableMapper<TestData>(reader);
         var xs = f(reader).ToArray();
     }
 
