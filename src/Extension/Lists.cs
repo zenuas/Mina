@@ -28,8 +28,6 @@ public static class Lists
         for (; ; ) yield return x;
     }
 
-    public static IEnumerable<T> While<T>(Func<bool> cond, Func<T> f) => Repeat(0).TakeWhile(_ => cond()).Select(_ => f());
-
     public static bool IsEmpty<T>(this IEnumerable<T> self) => !self.Any();
 
     public static IEnumerable<T> Next<T>(this IEnumerable<T> self) => !self.IsEmpty() ? self.Skip(1) : throw new IndexOutOfRangeException();
