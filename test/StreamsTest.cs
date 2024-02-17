@@ -40,10 +40,10 @@ public class StreamsTest
     }
 
     [Fact]
-    public void ReadAllLinesTest()
+    public void EnumerableReadLineTest()
     {
         var s = "\na\r\nbc\rdef";
-        var input = new StringReader(s).ReadAllLines().ToArray();
+        var input = new StringReader(s).EnumerableReadLine().ToArray();
         Assert.Equal(input.Length, 4);
         Assert.Equal(input[0], "");
         Assert.Equal(input[1], "a");
@@ -51,7 +51,7 @@ public class StreamsTest
         Assert.Equal(input[3], "def");
 
         var s2 = "xyz\na\r\nbc\rdef";
-        var input2 = new StringReader(s2).ReadAllLines().ToArray();
+        var input2 = new StringReader(s2).EnumerableReadLine().ToArray();
         Assert.Equal(input2.Length, 4);
         Assert.Equal(input2[0], "xyz");
         Assert.Equal(input2[1], "a");
@@ -59,7 +59,7 @@ public class StreamsTest
         Assert.Equal(input2[3], "def");
 
         var s3 = "xyz\na\r\nbc\rdef\n\n";
-        var input3 = new StringReader(s3).ReadAllLines().ToArray();
+        var input3 = new StringReader(s3).EnumerableReadLine().ToArray();
         Assert.Equal(input3.Length, 5);
         Assert.Equal(input3[0], "xyz");
         Assert.Equal(input3[1], "a");
@@ -101,10 +101,10 @@ public class StreamsTest
     }
 
     [Fact]
-    public void ReadAllLineWithEolsTest()
+    public void EnumerableReadLineWithEolTest()
     {
         var s = "\na\r\nbc\rdef";
-        var input = new StringReader(s).ReadAllLineWithEols().ToArray();
+        var input = new StringReader(s).EnumerableReadLineWithEol().ToArray();
         Assert.Equal(input.Length, 4);
         Assert.Equal(input[0], "\n");
         Assert.Equal(input[1], "a\r\n");
@@ -112,7 +112,7 @@ public class StreamsTest
         Assert.Equal(input[3], "def");
 
         var s2 = "xyz\na\r\nbc\rdef";
-        var input2 = new StringReader(s2).ReadAllLineWithEols().ToArray();
+        var input2 = new StringReader(s2).EnumerableReadLineWithEol().ToArray();
         Assert.Equal(input2.Length, 4);
         Assert.Equal(input2[0], "xyz\n");
         Assert.Equal(input2[1], "a\r\n");
@@ -120,7 +120,7 @@ public class StreamsTest
         Assert.Equal(input2[3], "def");
 
         var s3 = "xyz\na\r\nbc\rdef\n\n";
-        var input3 = new StringReader(s3).ReadAllLineWithEols().ToArray();
+        var input3 = new StringReader(s3).EnumerableReadLineWithEol().ToArray();
         Assert.Equal(input3.Length, 5);
         Assert.Equal(input3[0], "xyz\n");
         Assert.Equal(input3[1], "a\r\n");
@@ -162,10 +162,10 @@ public class StreamsTest
     }
 
     [Fact]
-    public void ReadAllLineSplitEolsTest()
+    public void EnumerableReadLineSplitEolTest()
     {
         var s = "\na\r\nbc\rdef";
-        var input = new StringReader(s).ReadAllLineSplitEols().ToArray();
+        var input = new StringReader(s).EnumerableReadLineSplitEol().ToArray();
         Assert.Equal(input.Length, 4);
         Assert.Equal(input[0], ("", "\n"));
         Assert.Equal(input[1], ("a", "\r\n"));
@@ -173,7 +173,7 @@ public class StreamsTest
         Assert.Equal(input[3], ("def", ""));
 
         var s2 = "xyz\na\r\nbc\rdef";
-        var input2 = new StringReader(s2).ReadAllLineSplitEols().ToArray();
+        var input2 = new StringReader(s2).EnumerableReadLineSplitEol().ToArray();
         Assert.Equal(input2.Length, 4);
         Assert.Equal(input2[0], ("xyz", "\n"));
         Assert.Equal(input2[1], ("a", "\r\n"));
@@ -181,7 +181,7 @@ public class StreamsTest
         Assert.Equal(input2[3], ("def", ""));
 
         var s3 = "xyz\na\r\nbc\rdef\n\n";
-        var input3 = new StringReader(s3).ReadAllLineSplitEols().ToArray();
+        var input3 = new StringReader(s3).EnumerableReadLineSplitEol().ToArray();
         Assert.Equal(input3.Length, 5);
         Assert.Equal(input3[0], ("xyz", "\n"));
         Assert.Equal(input3[1], ("a", "\r\n"));

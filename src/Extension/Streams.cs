@@ -41,7 +41,7 @@ public static class Streams
         return self.ReadBytes(size);
     }
 
-    public static IEnumerable<byte> ReadAllBytes(this Stream self, int buffer_size = 1024)
+    public static IEnumerable<byte> EnumerableReadBytes(this Stream self, int buffer_size = 1024)
     {
         var buffer = new byte[buffer_size];
         while (true)
@@ -55,15 +55,15 @@ public static class Streams
         }
     }
 
-    public static IEnumerable<string> ReadAllLines(this TextReader self) => Lists.Repeat(self)
+    public static IEnumerable<string> EnumerableReadLine(this TextReader self) => Lists.Repeat(self)
         .TakeWhile(x => x.Peek() >= 0)
         .Select(x => x.ReadLine()!);
 
-    public static IEnumerable<(string Line, string Eol)> ReadAllLineSplitEols(this TextReader self) => Lists.Repeat(self)
+    public static IEnumerable<(string Line, string Eol)> EnumerableReadLineSplitEol(this TextReader self) => Lists.Repeat(self)
         .TakeWhile(x => x.Peek() >= 0)
         .Select(x => x.ReadLineSplitEol());
 
-    public static IEnumerable<string> ReadAllLineWithEols(this TextReader self) => Lists.Repeat(self)
+    public static IEnumerable<string> EnumerableReadLineWithEol(this TextReader self) => Lists.Repeat(self)
         .TakeWhile(x => x.Peek() >= 0)
         .Select(x => x.ReadLineWithEol());
 
