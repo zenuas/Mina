@@ -55,6 +55,11 @@ public static class Streams
         }
     }
 
+    public static IEnumerable<string> ReadAllLines(this TextReader self) => Lists.Repeat(self)
+        .Select(x => x.ReadLine())
+        .TakeWhile(x => x != null)
+        .Select(x => x!);
+
     public static (string Line, string Eol) ReadLineSplitEol(this TextReader self)
     {
         Span<char> buffer = stackalloc char[1];

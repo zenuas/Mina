@@ -1,5 +1,6 @@
 ﻿using Mina.Extension;
 using System.IO;
+using System.Linq;
 using Xunit;
 
 namespace Mina.Test;
@@ -36,6 +37,35 @@ public class StreamsTest
         Assert.Equal("", input3.ReadLine());
         Assert.Null(input3.ReadLine());
         Assert.Null(input3.ReadLine());
+    }
+
+    [Fact]
+    public void ReadAllLineTest()
+    {
+        var s = "\na\r\nbc\rdef";
+        var input = new StringReader(s).ReadAllLines().ToArray();
+        Assert.Equal(input.Length, 4);
+        Assert.Equal("", input[0]);
+        Assert.Equal("a", input[1]);
+        Assert.Equal("bc", input[2]);
+        Assert.Equal("def", input[3]);
+
+        var s2 = "xyz\na\r\nbc\rdef";
+        var input2 = new StringReader(s2).ReadAllLines().ToArray();
+        Assert.Equal(input2.Length, 4);
+        Assert.Equal("xyz", input2[0]);
+        Assert.Equal("a", input2[1]);
+        Assert.Equal("bc", input2[2]);
+        Assert.Equal("def", input2[3]);
+
+        var s3 = "xyz\na\r\nbc\rdef\n\n";
+        var input3 = new StringReader(s3).ReadAllLines().ToArray();
+        Assert.Equal(input3.Length, 5);
+        Assert.Equal("xyz", input3[0]);
+        Assert.Equal("a", input3[1]);
+        Assert.Equal("bc", input3[2]);
+        Assert.Equal("def", input3[3]);
+        Assert.Equal("", input3[4]);
     }
 
     [Fact]
