@@ -28,6 +28,10 @@ public class GetSetExpressionsTest
 
     public int Fun_Int_Int_Int(int a, int b) => a + b;
 
+    public void ActOverload(int n) => Act_Int(n);
+
+    public void ActOverload(long badcase_overload) { }
+
     [Fact]
     public void SetProperty()
     {
@@ -98,6 +102,15 @@ public class GetSetExpressionsTest
         var f = Expressions.GetAction<GetSetExpressionsTest, int, int>("Act_Int_Int");
         f(v, 123, 456);
         Assert.Equal(v.Test3, 579);
+    }
+
+    [Fact]
+    public void GetAction_Overload()
+    {
+        var v = new GetSetExpressionsTest();
+        var f = Expressions.GetAction<GetSetExpressionsTest, string>(typeof(GetSetExpressionsTest).GetMethod(nameof(ActOverload), [typeof(int)])!);
+        f(v, "123");
+        Assert.Equal(v.Test3, 123);
     }
 
     [Fact]
