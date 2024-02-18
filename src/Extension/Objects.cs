@@ -21,5 +21,9 @@ public static class Objects
 
     public static bool In<T>(this T self, params T[] args) where T : IEquatable<T> => !args.Where(self.Equals).IsEmpty();
 
+    public static bool InClass<T>(this T self, params T[] args) where T : class => !args.Where(self.Equals).IsEmpty();
+
+    public static bool InStruct<T>(this T self, params T[] args) where T : struct => !args.Where(x => self.Equals(x)).IsEmpty();
+
     public static T Cast<T>(this object self) => (T)self;
 }
