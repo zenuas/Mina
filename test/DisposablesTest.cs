@@ -51,7 +51,7 @@ public class DisposablesTest
         Assert.Equal(buffer.Join(", "), "");
 
         var xs = new DisposeTest("xs", buffer)
-            .UsingDefer(x => Lists.Sequence(0))
+            .UsingDefer(_ => Lists.Sequence(0))
             .Take(3);
 
         var e = xs.GetEnumerator();
@@ -70,5 +70,26 @@ public class DisposablesTest
 
         Assert.Equal(e.MoveNext(), false);
         Assert.Equal(buffer.Join(", "), "xs Dispose");
+
+        var ys = new DisposeTest("ys", buffer)
+            .UsingDefer(_ => new DisposeTest("zs", buffer).UsingDefer(_ => Lists.Sequence(0)))
+            .Take(3);
+
+        var e2 = ys.GetEnumerator();
+        Assert.Equal(buffer.Join(", "), "xs Dispose");
+        Assert.Equal(e2.MoveNext(), true);
+        Assert.Equal(e2.Current, 0);
+        Assert.Equal(buffer.Join(", "), "xs Dispose");
+
+        Assert.Equal(e2.MoveNext(), true);
+        Assert.Equal(e2.Current, 1);
+        Assert.Equal(buffer.Join(", "), "xs Dispose");
+
+        Assert.Equal(e2.MoveNext(), true);
+        Assert.Equal(e2.Current, 2);
+        Assert.Equal(buffer.Join(", "), "xs Dispose");
+
+        Assert.Equal(e2.MoveNext(), false);
+        Assert.Equal(buffer.Join(", "), "xs Dispose, zs Dispose, ys Dispose");
     }
 }
