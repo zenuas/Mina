@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Mina.Extension;
 
@@ -17,5 +18,11 @@ public static class Dictionaries
         where TValue : notnull
     {
         return self.TryGetValue(key, out var value) ? value : default;
+    }
+
+    public static bool TryAdd<TKey, TValue>(this Dictionary<TKey, TValue> self, TKey key, Func<TValue> f)
+        where TKey : notnull
+    {
+        return self.ContainsKey(key) ? false : self.TryAdd(key, f());
     }
 }
