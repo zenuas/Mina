@@ -23,6 +23,6 @@ public static class Dictionaries
     public static bool TryAdd<TKey, TValue>(this Dictionary<TKey, TValue> self, TKey key, Func<TValue> f)
         where TKey : notnull
     {
-        return self.ContainsKey(key) ? false : self.TryAdd(key, f());
+        return !self.ContainsKey(key) && self.TryAdd(key, f());
     }
 }
