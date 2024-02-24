@@ -9,7 +9,13 @@ public static class Dictionaries
         where TKey : notnull
         where TValue : new()
     {
-        if (!self.ContainsKey(key)) self.Add(key, new());
+        return self.GetOrNew(key, () => new());
+    }
+
+    public static TValue GetOrNew<TKey, TValue>(this Dictionary<TKey, TValue> self, TKey key, Func<TValue> f)
+        where TKey : notnull
+    {
+        self.TryAdd(key, f);
         return self[key];
     }
 
