@@ -49,7 +49,7 @@
 :publish
 	@call :setenv VERSION_NAME "powershell -Command Get-Date -Format yyyy.M.d"
 	@call :setenv BUILD_NAME   "powershell -Command Get-Date -Format HHmm"
-	@set      VERSION=%VERSION_NAME%-build-%BUILD_NAME%
+	@set      VERSION=%VERSION_NAME%
 	@set PACKAGE_NAME=Zenu.Mina.%VERSION%.nupkg
 	dotnet pack --nologo -v q src/Mina.csproj -c Release -o nupkg -p:PackageVersion=%VERSION%
 	dotnet nuget push nupkg/%PACKAGE_NAME% --api-key %NUGET_APIKEY% --source https://api.nuget.org/v3/index.json
