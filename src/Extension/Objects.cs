@@ -26,4 +26,6 @@ public static class Objects
     public static bool InStruct<T>(this T self, params T[] args) where T : struct => !args.Where(x => self.Equals(x)).IsEmpty();
 
     public static T Cast<T>(this object self) => (T)self;
+
+    public static T Try<T>(this T? self) => self ?? throw new();
 }

@@ -68,4 +68,20 @@ public class ObjectsTest
         Assert.Equal(TestEnum.Ccc.InStruct(TestEnum.Aaa, TestEnum.Bbb, TestEnum.Ccc), true);
         Assert.Equal(TestEnum.Xxx.InStruct(TestEnum.Aaa, TestEnum.Bbb, TestEnum.Ccc), false);
     }
+
+    [Fact]
+    public void TryTest()
+    {
+        String? ok = "ok";
+        String? ng = null;
+
+        Assert.Equal(ok.Try(), "ok");
+        Assert.Throws<Exception>(() => ng.Try());
+
+        int? ok2 = 100;
+        int? ng2 = null;
+
+        Assert.Equal(ok2.Try(), 100);
+        Assert.Throws<Exception>(() => ng2.Try());
+    }
 }
