@@ -28,4 +28,18 @@ public static class Objects
     public static T Cast<T>(this object self) => (T)self;
 
     public static T Try<T>(this T? self) => self ?? throw new();
+
+    public static Exception? Catch<T>(this Func<T> self, out T value)
+    {
+        value = default!;
+        try
+        {
+            value = self();
+            return null;
+        }
+        catch (Exception ex)
+        {
+            return ex;
+        }
+    }
 }
