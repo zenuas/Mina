@@ -263,8 +263,19 @@ public class SafeConvertTest
         Assert.Equal(SafeConvert.ToDateTime(new object()), dt);
     }
 
-    public class ToStringBinder(Func<string?> f)
+    public class ToStringBinder(Func<string?> f) : IParsable<ToStringBinder>
     {
+        public static ToStringBinder AValue = new(() => "A");
+        public static ToStringBinder BValue = new(() => "B");
+
+        public static ToStringBinder Parse(string s, IFormatProvider? provider) => s == "A" ? AValue : BValue;
+
+        public static bool TryParse(string? s, IFormatProvider? provider, out ToStringBinder result)
+        {
+            result = s == "A" ? AValue : BValue;
+            return true;
+        }
+
         public override string ToString() => f()!;
     }
 
@@ -563,5 +574,61 @@ public class SafeConvertTest
         Assert.Equal(SafeConvert.ToStringOrNull(new ToStringBinder(() => "test")), "test");
         Assert.Equal(SafeConvert.ToStringOrNull(new ToStringBinder(() => null)), null);
         Assert.Equal(SafeConvert.ToStringOrNull(new ToStringBinder(() => throw new())), null);
+    }
+
+    [Fact]
+    public void TryConvertTest()
+    {
+        Assert.True(SafeConvert.TryConvert<bool>(false, out var p1) && p1 == false);
+        Assert.True(SafeConvert.TryConvert<bool>(true, out var p2) && p2 == true);
+        Assert.True(SafeConvert.TryConvert<int>(0, out var p3) && p3 == 0);
+        Assert.True(SafeConvert.TryConvert<float>(0.5, out var p4) && p4 == 0.5);
+        Assert.True(SafeConvert.TryConvert<float>(-0.5, out var p5) && p5 == -0.5);
+        Assert.True(SafeConvert.TryConvert<double>(0.5, out var p6) && p6 == 0.5);
+        Assert.True(SafeConvert.TryConvert<double>(-0.5, out var p7) && p7 == -0.5);
+        Assert.True(SafeConvert.TryConvert<DateTime>("", out var _) == false);
+        Assert.True(SafeConvert.TryConvert<DateTime>("2000/12/31", out var p8) && p8 == new DateTime(2000, 12, 31));
+        Assert.True(SafeConvert.TryConvert<DateTime>("2000/12/31 23:59", out var p9) && p9 == new DateTime(2000, 12, 31, 23, 59, 0));
+        Assert.True(SafeConvert.TryConvert<DateTime>("2000/12/31 23:59:45", out var p10) && p10 == new DateTime(2000, 12, 31, 23, 59, 45));
+        Assert.True(SafeConvert.TryConvert<DateTime>("2000/12/31 23:59:45.123", out var p11) && p11 == new DateTime(2000, 12, 31, 23, 59, 45, 123));
+        Assert.True(SafeConvert.TryConvert<DateTime>("2000/12/31 23:59:45.123456", out var p12) && p12 == new DateTime(2000, 12, 31, 23, 59, 45, 123, 456));
+        Assert.True(SafeConvert.TryConvert<DateTime>("2000/12/32", out var _) == false);
+        Assert.True(SafeConvert.TryConvert<DateTime>("2000/12/31 23:60", out var _) == false);
+        Assert.True(SafeConvert.TryConvert<DateTime>("2000/12/31 23:59:60", out var _) == false);
+        Assert.True(SafeConvert.TryConvert<string>("", out var p13) && p13 == "");
+        Assert.True(SafeConvert.TryConvert<object>(null, out var p14) && p14 == null);
+        Assert.True(SafeConvert.TryConvert<object>(new object(), out var p15) && p15 is { });
+        Assert.True(SafeConvert.TryConvert<ToStringBinder>(new ToStringBinder(() => "test"), out var p16) && p16.ToString() == "test");
+    }
+
+    [Fact]
+    public void TryConvertUnSupportedTest()
+    {
+        Assert.False(SafeConvert.TryConvert<ToStringBinder>("A", out var _));
+        Assert.False(SafeConvert.TryConvert<ToStringBinder>("B", out var _));
+    }
+
+    [Fact]
+    public void TryParseTest()
+    {
+        Assert.True(SafeConvert.TryParse<bool>("false", out var p1) && p1 == false);
+        Assert.True(SafeConvert.TryParse<bool>("true", out var p2) && p2 == true);
+        Assert.True(SafeConvert.TryParse<int>("0", out var p3) && p3 == 0);
+        Assert.True(SafeConvert.TryParse<float>("0.5", out var p4) && p4 == 0.5);
+        Assert.True(SafeConvert.TryParse<float>("-0.5", out var p5) && p5 == -0.5);
+        Assert.True(SafeConvert.TryParse<double>("0.5", out var p6) && p6 == 0.5);
+        Assert.True(SafeConvert.TryParse<double>("-0.5", out var p7) && p7 == -0.5);
+        Assert.True(SafeConvert.TryParse<DateTime>("", out var _) == false);
+        Assert.True(SafeConvert.TryParse<DateTime>("2000/12/31", out var p8) && p8 == new DateTime(2000, 12, 31));
+        Assert.True(SafeConvert.TryParse<DateTime>("2000/12/31 23:59", out var p9) && p9 == new DateTime(2000, 12, 31, 23, 59, 0));
+        Assert.True(SafeConvert.TryParse<DateTime>("2000/12/31 23:59:45", out var p10) && p10 == new DateTime(2000, 12, 31, 23, 59, 45));
+        Assert.True(SafeConvert.TryParse<DateTime>("2000/12/31 23:59:45.123", out var p11) && p11 == new DateTime(2000, 12, 31, 23, 59, 45, 123));
+        Assert.True(SafeConvert.TryParse<DateTime>("2000/12/31 23:59:45.123456", out var p12) && p12 == new DateTime(2000, 12, 31, 23, 59, 45, 123, 456));
+        Assert.True(SafeConvert.TryParse<DateTime>("2000/12/32", out var _) == false);
+        Assert.True(SafeConvert.TryParse<DateTime>("2000/12/31 23:60", out var _) == false);
+        Assert.True(SafeConvert.TryParse<DateTime>("2000/12/31 23:59:60", out var _) == false);
+        Assert.True(SafeConvert.TryParse<string>("", out var p13) && p13 == "");
+        Assert.True(SafeConvert.TryParse<ToStringBinder>("A", out var p14) && p14.ToString() == "A");
+        Assert.True(SafeConvert.TryParse<ToStringBinder>("B", out var p15) && p15.ToString() == "B");
     }
 }
