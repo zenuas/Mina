@@ -28,6 +28,23 @@ public static class Streams
     public static void WriteFloatByBigEndian(this Stream self, float n) { Span<byte> buffer = stackalloc byte[4]; BinaryPrimitives.WriteSingleBigEndian(buffer, n); self.Write(buffer); }
     public static void WriteDoubleByBigEndian(this Stream self, double n) { Span<byte> buffer = stackalloc byte[8]; BinaryPrimitives.WriteDoubleBigEndian(buffer, n); self.Write(buffer); }
 
+    public static sbyte ReadSByte(this Stream self) => (sbyte)self.ReadBytes(1)[0];
+    public static byte ReadUByte(this Stream self) => self.ReadBytes(1)[0];
+
+    public static short ReadShortByLittleEndian(this Stream self) => BinaryPrimitives.ReadInt16LittleEndian(self.ReadBytes(2));
+    public static int ReadIntByLittleEndian(this Stream self) => BinaryPrimitives.ReadInt32LittleEndian(self.ReadBytes(4));
+    public static long ReadLongByLittleEndian(this Stream self) => BinaryPrimitives.ReadInt64LittleEndian(self.ReadBytes(8));
+    public static ushort ReadUShortByLittleEndian(this Stream self) => BinaryPrimitives.ReadUInt16LittleEndian(self.ReadBytes(2));
+    public static uint ReadUIntByLittleEndian(this Stream self) => BinaryPrimitives.ReadUInt32LittleEndian(self.ReadBytes(4));
+    public static ulong ReadULongByLittleEndian(this Stream self) => BinaryPrimitives.ReadUInt64LittleEndian(self.ReadBytes(8));
+
+    public static short ReadShortByBigEndian(this Stream self) => BinaryPrimitives.ReadInt16BigEndian(self.ReadBytes(2));
+    public static int ReadIntByBigEndian(this Stream self) => BinaryPrimitives.ReadInt32BigEndian(self.ReadBytes(4));
+    public static long ReadLongByBigEndian(this Stream self) => BinaryPrimitives.ReadInt64BigEndian(self.ReadBytes(8));
+    public static ushort ReadUShortByBigEndian(this Stream self) => BinaryPrimitives.ReadUInt16BigEndian(self.ReadBytes(2));
+    public static uint ReadUIntByBigEndian(this Stream self) => BinaryPrimitives.ReadUInt32BigEndian(self.ReadBytes(4));
+    public static ulong ReadULongByBigEndian(this Stream self) => BinaryPrimitives.ReadUInt64BigEndian(self.ReadBytes(8));
+
     public static byte[] ReadBytes(this Stream self, int size)
     {
         var buffer = new byte[size];
