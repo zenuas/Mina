@@ -76,12 +76,14 @@ public class ObjectsTest
         String? ng = null;
 
         Assert.Equal(ok.Try(), "ok");
+        Assert.Equal(ok.Try().GetType(), typeof(string));
         Assert.Throws<Exception>(() => ng.Try());
 
         int? ok2 = 100;
         int? ng2 = null;
 
         Assert.Equal(ok2.Try(), 100);
+        Assert.Equal(ok2.Try().GetType(), typeof(int));
         Assert.Throws<Exception>(() => ng2.Try());
     }
 }
