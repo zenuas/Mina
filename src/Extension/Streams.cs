@@ -66,7 +66,7 @@ public static class Streams
         var buffer = new byte[buffer_size];
         while (true)
         {
-            var readed = self.Read(buffer, 0, buffer_size);
+            var readed = self.Read(buffer);
             if (readed <= 0) break;
             for (var i = 0; i < readed; i++)
             {
