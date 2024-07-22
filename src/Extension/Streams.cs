@@ -28,35 +28,38 @@ public static class Streams
     public static void WriteFloatByBigEndian(this Stream self, float n) { Span<byte> buffer = stackalloc byte[4]; BinaryPrimitives.WriteSingleBigEndian(buffer, n); self.Write(buffer); }
     public static void WriteDoubleByBigEndian(this Stream self, double n) { Span<byte> buffer = stackalloc byte[8]; BinaryPrimitives.WriteDoubleBigEndian(buffer, n); self.Write(buffer); }
 
-    public static sbyte ReadSByte(this Stream self) => (sbyte)self.ReadBytes(1)[0];
-    public static byte ReadUByte(this Stream self) => self.ReadBytes(1)[0];
+    public static sbyte ReadSByte(this Stream self) => (sbyte)self.ReadExactly(1)[0];
+    public static byte ReadUByte(this Stream self) => self.ReadExactly(1)[0];
 
-    public static short ReadShortByLittleEndian(this Stream self) => BinaryPrimitives.ReadInt16LittleEndian(self.ReadBytes(2));
-    public static int ReadIntByLittleEndian(this Stream self) => BinaryPrimitives.ReadInt32LittleEndian(self.ReadBytes(4));
-    public static long ReadLongByLittleEndian(this Stream self) => BinaryPrimitives.ReadInt64LittleEndian(self.ReadBytes(8));
-    public static ushort ReadUShortByLittleEndian(this Stream self) => BinaryPrimitives.ReadUInt16LittleEndian(self.ReadBytes(2));
-    public static uint ReadUIntByLittleEndian(this Stream self) => BinaryPrimitives.ReadUInt32LittleEndian(self.ReadBytes(4));
-    public static ulong ReadULongByLittleEndian(this Stream self) => BinaryPrimitives.ReadUInt64LittleEndian(self.ReadBytes(8));
+    public static short ReadShortByLittleEndian(this Stream self) => BinaryPrimitives.ReadInt16LittleEndian(self.ReadExactly(2));
+    public static int ReadIntByLittleEndian(this Stream self) => BinaryPrimitives.ReadInt32LittleEndian(self.ReadExactly(4));
+    public static long ReadLongByLittleEndian(this Stream self) => BinaryPrimitives.ReadInt64LittleEndian(self.ReadExactly(8));
+    public static ushort ReadUShortByLittleEndian(this Stream self) => BinaryPrimitives.ReadUInt16LittleEndian(self.ReadExactly(2));
+    public static uint ReadUIntByLittleEndian(this Stream self) => BinaryPrimitives.ReadUInt32LittleEndian(self.ReadExactly(4));
+    public static ulong ReadULongByLittleEndian(this Stream self) => BinaryPrimitives.ReadUInt64LittleEndian(self.ReadExactly(8));
 
-    public static short ReadShortByBigEndian(this Stream self) => BinaryPrimitives.ReadInt16BigEndian(self.ReadBytes(2));
-    public static int ReadIntByBigEndian(this Stream self) => BinaryPrimitives.ReadInt32BigEndian(self.ReadBytes(4));
-    public static long ReadLongByBigEndian(this Stream self) => BinaryPrimitives.ReadInt64BigEndian(self.ReadBytes(8));
-    public static ushort ReadUShortByBigEndian(this Stream self) => BinaryPrimitives.ReadUInt16BigEndian(self.ReadBytes(2));
-    public static uint ReadUIntByBigEndian(this Stream self) => BinaryPrimitives.ReadUInt32BigEndian(self.ReadBytes(4));
-    public static ulong ReadULongByBigEndian(this Stream self) => BinaryPrimitives.ReadUInt64BigEndian(self.ReadBytes(8));
+    public static short ReadShortByBigEndian(this Stream self) => BinaryPrimitives.ReadInt16BigEndian(self.ReadExactly(2));
+    public static int ReadIntByBigEndian(this Stream self) => BinaryPrimitives.ReadInt32BigEndian(self.ReadExactly(4));
+    public static long ReadLongByBigEndian(this Stream self) => BinaryPrimitives.ReadInt64BigEndian(self.ReadExactly(8));
+    public static ushort ReadUShortByBigEndian(this Stream self) => BinaryPrimitives.ReadUInt16BigEndian(self.ReadExactly(2));
+    public static uint ReadUIntByBigEndian(this Stream self) => BinaryPrimitives.ReadUInt32BigEndian(self.ReadExactly(4));
+    public static ulong ReadULongByBigEndian(this Stream self) => BinaryPrimitives.ReadUInt64BigEndian(self.ReadExactly(8));
 
-    public static byte[] ReadBytes(this Stream self, int size)
+    public static byte[] ReadAtLeast(this Stream self, int size, bool throw_on_end_of_stream = true)
     {
         var buffer = new byte[size];
-        var readed = self.Read(buffer, 0, size);
+        var readed = self.ReadAtLeast(buffer, size, throw_on_end_of_stream);
         return size == readed ? buffer : [.. buffer.Take(readed)];
     }
 
-    public static byte[] ReadPositionBytes(this Stream self, long pos, int size)
+    public static byte[] ReadExactly(this Stream self, int size)
     {
-        self.Position = pos;
-        return self.ReadBytes(size);
+        var buffer = new byte[size];
+        self.ReadExactly(buffer);
+        return buffer;
     }
+
+    public static T SeekTo<T>(this T self, long pos, SeekOrigin origin = SeekOrigin.Begin) where T : Stream => self.Return(x => x.Seek(pos, origin));
 
     public static IEnumerable<byte> EnumerableReadBytes(this Stream self, int buffer_size = 1024)
     {
