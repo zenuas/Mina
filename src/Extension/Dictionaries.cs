@@ -8,9 +8,7 @@ public static class Dictionaries
     public static TValue GetOrNew<TKey, TValue>(this Dictionary<TKey, TValue> self, TKey key)
         where TKey : notnull
         where TValue : new()
-    {
-        return self.GetOrNew(key, () => new());
-    }
+        => self.GetOrNew(key, () => new());
 
     public static TValue GetOrNew<TKey, TValue>(this Dictionary<TKey, TValue> self, TKey key, Func<TValue> f)
         where TKey : notnull
@@ -22,13 +20,9 @@ public static class Dictionaries
     public static TValue? GetOrDefault<TKey, TValue>(this Dictionary<TKey, TValue> self, TKey key)
         where TKey : notnull
         where TValue : notnull
-    {
-        return self.TryGetValue(key, out var value) ? value : default;
-    }
+        => self.TryGetValue(key, out var value) ? value : default;
 
     public static bool TryAdd<TKey, TValue>(this Dictionary<TKey, TValue> self, TKey key, Func<TValue> f)
         where TKey : notnull
-    {
-        return !self.ContainsKey(key) && self.TryAdd(key, f());
-    }
+        => !self.ContainsKey(key) && self.TryAdd(key, f());
 }

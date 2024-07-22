@@ -7,11 +7,11 @@ namespace Mina.Extension;
 
 public static class Strings
 {
-    public static int CountAsByte(this string self, int length, Encoding enc) =>
-        self.Select(x => enc.GetByteCount([x]))
-            .Accumulator((acc, x) => acc + x)
-            .TakeWhile(x => x <= length)
-            .Count();
+    public static int CountAsByte(this string self, int length, Encoding enc) => self
+        .Select(x => enc.GetByteCount([x]))
+        .Accumulator((acc, x) => acc + x)
+        .TakeWhile(x => x <= length)
+        .Count();
 
     public static string SubstringAsByte(this string self, int startIndex, Encoding enc) => self[self.CountAsByte(startIndex, enc)..];
 
