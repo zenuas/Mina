@@ -12,8 +12,7 @@ public static class CsvReader
     public static string[] ReadFields(TextReader input)
     {
         var fields = TryReadFields(input);
-        if (fields is { }) return fields;
-        throw new EndOfStreamException();
+        return fields is { } ? fields : throw new EndOfStreamException();
     }
 
     public static string[]? TryReadFields(TextReader input)

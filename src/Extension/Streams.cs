@@ -149,9 +149,8 @@ public static class Streams
     public static char? PeekNewLineLF(this TextReader self)
     {
         var c = self.Peek();
-        if (c < 0) return null;
-        if (c == '\r') return '\n';
-        return (char)c;
+        return c < 0 ? null :
+            c == '\r' ? '\n' : (char)c;
     }
 
     public static char? ReadNewLineLF(this TextReader self)
