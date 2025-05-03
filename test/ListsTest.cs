@@ -9,6 +9,23 @@ namespace Mina.Test;
 
 public class ListsTest
 {
+    public class TestEnumeratorAndDisposable(object[] lists, Action? disposable = null) : IEnumerator, IDisposable
+    {
+        public int Index { get; private set; } = 0;
+        public object Current => lists[Index - 1];
+
+        public bool MoveNext() => lists.Length >= ++Index;
+
+        public void Reset() => Index = 0;
+
+        public void Dispose() => disposable?.Invoke();
+    }
+
+    public class TestEnumerable(Func<IEnumerator> f) : IEnumerable
+    {
+        public IEnumerator GetEnumerator() => f();
+    }
+
     [Fact]
     public void SequenceTest()
     {
@@ -249,5 +266,47 @@ public class ListsTest
         Assert.Equal(xs[0], "A");
         Assert.Equal(xs[1], "B");
         Assert.Equal(xs[2], "C");
+
+        var dispose = 0;
+
+        var e1 = new TestEnumerable(() => new TestEnumeratorAndDisposable([1, 2, 3, 4, 5]));
+        Assert.Equal(e1.GetIterator().OfType<int>().ToList(), [1, 2, 3, 4, 5]);
+        Assert.Equal(dispose, 0);
+
+        var e2 = new TestEnumerable(() => new TestEnumeratorAndDisposable([1, 2, 3, 4, 5]));
+        Assert.Equal(e2.GetIterator().OfType<int>().Take(3), [1, 2, 3]);
+        Assert.Equal(dispose, 0);
+
+        var e3 = new TestEnumerable(() => new TestEnumeratorAndDisposable([1, 2, 3, 4, 5], () => dispose++));
+        Assert.Equal(e3.GetIterator().OfType<int>().ToList(), [1, 2, 3, 4, 5]);
+        Assert.Equal(dispose, 1);
+        Assert.Equal(e3.GetIterator().OfType<int>().ToList(), [1, 2, 3, 4, 5]);
+        Assert.Equal(dispose, 2);
+
+        var e4 = new TestEnumerable(() => new TestEnumeratorAndDisposable([1, 2, 3, 4, 5], () => dispose++));
+        Assert.Equal(e4.GetIterator().OfType<int>().Take(3), [1, 2, 3]);
+        Assert.Equal(dispose, 3);
+
+        var xs4_1 = e4.GetIterator().OfType<int>();
+        Assert.Equal(dispose, 3);
+        foreach (var x in xs4_1)
+        {
+            if (x == 3) break;
+        }
+        Assert.Equal(dispose, 4);
+
+        var xs4_2 = e4.GetIterator().OfType<int>();
+        Assert.Equal(dispose, 4);
+        try
+        {
+            foreach (var x in xs4_2)
+            {
+                if (x == 3) throw new Exception();
+            }
+        }
+        catch
+        {
+            Assert.Equal(dispose, 5);
+        }
     }
 }

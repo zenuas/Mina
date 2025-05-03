@@ -65,9 +65,16 @@ public static class Lists
     public static IEnumerable GetIterator(this IEnumerable self)
     {
         var xs = self.GetEnumerator();
-        while (xs.MoveNext())
+        try
         {
-            yield return xs.Current;
+            while (xs.MoveNext())
+            {
+                yield return xs.Current;
+            }
+        }
+        finally
+        {
+            if (xs is IDisposable disposable) disposable.Dispose();
         }
     }
 
