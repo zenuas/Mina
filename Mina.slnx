@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+  </Folder>
+  <Project Path="bench/Mina.Benchmark.csproj" />
+  <Project Path="src/Mina.csproj" />
+  <Project Path="test/Mina.Test.csproj" />
+</Solution>
