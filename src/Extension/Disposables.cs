@@ -17,18 +17,21 @@ public static class Disposables
         return f(x);
     }
 
+    public static IEnumerable<R> UsingDefer<T, R>(this T self) where T : IDisposable, IEnumerable<R>
+    {
+        using var y = self;
+        foreach (var x in y)
+        {
+            yield return x;
+        }
+    }
+
     public static IEnumerable<R> UsingDefer<T, R>(this T self, Func<T, IEnumerable<R>> f) where T : IDisposable
     {
-        try
+        using var y = self;
+        foreach (var x in f(y))
         {
-            foreach (var x in f(self))
-            {
-                yield return x;
-            }
-        }
-        finally
-        {
-            self.Dispose();
+            yield return x;
         }
     }
 }
