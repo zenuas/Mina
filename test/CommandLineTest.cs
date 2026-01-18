@@ -40,7 +40,7 @@ public class CommandLineTest
         Assert.Equal(receiver.Output, "test1");
         Assert.Equal(receiver.EntryPoint, "test2");
         Assert.Equal(receiver.Lib, ["xxx", "test3", "test4"]);
-        Assert.Equal(args, ["a", "b", "c"]);
+        Assert.Equal([.. args], ["a", "b", "c"]);
     }
 
     [Fact]
@@ -61,7 +61,7 @@ public class CommandLineTest
         Assert.Equal(receiver.Output, "test1");
         Assert.Equal(receiver.EntryPoint, "test2");
         Assert.Equal(receiver.Lib, ["xxx", "test3", "test4"]);
-        Assert.Equal(args, ["a", "b", "c"]);
+        Assert.Equal([.. args], ["a", "b", "c"]);
     }
 
     [Fact]
