@@ -28,22 +28,22 @@ public static class Streams
     public static void WriteFloatByBigEndian(this Stream self, float n) { Span<byte> buffer = stackalloc byte[4]; BinaryPrimitives.WriteSingleBigEndian(buffer, n); self.Write(buffer); }
     public static void WriteDoubleByBigEndian(this Stream self, double n) { Span<byte> buffer = stackalloc byte[8]; BinaryPrimitives.WriteDoubleBigEndian(buffer, n); self.Write(buffer); }
 
-    public static sbyte ReadSByte(this Stream self) => (sbyte)self.ReadExactly(1)[0];
-    public static byte ReadUByte(this Stream self) => self.ReadExactly(1)[0];
+    public static sbyte ReadSByte(this Stream self) { Span<byte> buffer = stackalloc byte[1]; self.ReadExactly(buffer); return (sbyte)buffer[0]; }
+    public static byte ReadUByte(this Stream self) { Span<byte> buffer = stackalloc byte[1]; self.ReadExactly(buffer); return buffer[0]; }
 
-    public static short ReadShortByLittleEndian(this Stream self) => BinaryPrimitives.ReadInt16LittleEndian(self.ReadExactly(2));
-    public static int ReadIntByLittleEndian(this Stream self) => BinaryPrimitives.ReadInt32LittleEndian(self.ReadExactly(4));
-    public static long ReadLongByLittleEndian(this Stream self) => BinaryPrimitives.ReadInt64LittleEndian(self.ReadExactly(8));
-    public static ushort ReadUShortByLittleEndian(this Stream self) => BinaryPrimitives.ReadUInt16LittleEndian(self.ReadExactly(2));
-    public static uint ReadUIntByLittleEndian(this Stream self) => BinaryPrimitives.ReadUInt32LittleEndian(self.ReadExactly(4));
-    public static ulong ReadULongByLittleEndian(this Stream self) => BinaryPrimitives.ReadUInt64LittleEndian(self.ReadExactly(8));
+    public static short ReadShortByLittleEndian(this Stream self) { Span<byte> buffer = stackalloc byte[2]; self.ReadExactly(buffer); return BinaryPrimitives.ReadInt16LittleEndian(buffer); }
+    public static int ReadIntByLittleEndian(this Stream self) { Span<byte> buffer = stackalloc byte[4]; self.ReadExactly(buffer); return BinaryPrimitives.ReadInt32LittleEndian(buffer); }
+    public static long ReadLongByLittleEndian(this Stream self) { Span<byte> buffer = stackalloc byte[8]; self.ReadExactly(buffer); return BinaryPrimitives.ReadInt64LittleEndian(buffer); }
+    public static ushort ReadUShortByLittleEndian(this Stream self) { Span<byte> buffer = stackalloc byte[2]; self.ReadExactly(buffer); return BinaryPrimitives.ReadUInt16LittleEndian(buffer); }
+    public static uint ReadUIntByLittleEndian(this Stream self) { Span<byte> buffer = stackalloc byte[4]; self.ReadExactly(buffer); return BinaryPrimitives.ReadUInt32LittleEndian(buffer); }
+    public static ulong ReadULongByLittleEndian(this Stream self) { Span<byte> buffer = stackalloc byte[8]; self.ReadExactly(buffer); return BinaryPrimitives.ReadUInt64LittleEndian(buffer); }
 
-    public static short ReadShortByBigEndian(this Stream self) => BinaryPrimitives.ReadInt16BigEndian(self.ReadExactly(2));
-    public static int ReadIntByBigEndian(this Stream self) => BinaryPrimitives.ReadInt32BigEndian(self.ReadExactly(4));
-    public static long ReadLongByBigEndian(this Stream self) => BinaryPrimitives.ReadInt64BigEndian(self.ReadExactly(8));
-    public static ushort ReadUShortByBigEndian(this Stream self) => BinaryPrimitives.ReadUInt16BigEndian(self.ReadExactly(2));
-    public static uint ReadUIntByBigEndian(this Stream self) => BinaryPrimitives.ReadUInt32BigEndian(self.ReadExactly(4));
-    public static ulong ReadULongByBigEndian(this Stream self) => BinaryPrimitives.ReadUInt64BigEndian(self.ReadExactly(8));
+    public static short ReadShortByBigEndian(this Stream self) { Span<byte> buffer = stackalloc byte[2]; self.ReadExactly(buffer); return BinaryPrimitives.ReadInt16BigEndian(buffer); }
+    public static int ReadIntByBigEndian(this Stream self) { Span<byte> buffer = stackalloc byte[4]; self.ReadExactly(buffer); return BinaryPrimitives.ReadInt32BigEndian(buffer); }
+    public static long ReadLongByBigEndian(this Stream self) { Span<byte> buffer = stackalloc byte[8]; self.ReadExactly(buffer); return BinaryPrimitives.ReadInt64BigEndian(buffer); }
+    public static ushort ReadUShortByBigEndian(this Stream self) { Span<byte> buffer = stackalloc byte[2]; self.ReadExactly(buffer); return BinaryPrimitives.ReadUInt16BigEndian(buffer); }
+    public static uint ReadUIntByBigEndian(this Stream self) { Span<byte> buffer = stackalloc byte[4]; self.ReadExactly(buffer); return BinaryPrimitives.ReadUInt32BigEndian(buffer); }
+    public static ulong ReadULongByBigEndian(this Stream self) { Span<byte> buffer = stackalloc byte[8]; self.ReadExactly(buffer); return BinaryPrimitives.ReadUInt64BigEndian(buffer); }
 
     public static byte[] ReadAtLeast(this Stream self, int size, bool throw_on_end_of_stream = true)
     {
