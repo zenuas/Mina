@@ -10,26 +10,23 @@ public class SpeedBench
     public void Bench1()
     {
         object o = "2000/01/01";
-        DateTime n;
 
-        n = (DateTime)Convert.ChangeType(o, typeof(DateTime), CultureInfo.InvariantCulture);
+        _ = (DateTime)Convert.ChangeType(o, typeof(DateTime), CultureInfo.InvariantCulture);
     }
 
     [Benchmark]
     public void Bench2()
     {
         object o = "2000/01/01";
-        DateTime n;
 
-        n = DateTime.Parse(o.ToString()!, CultureInfo.InvariantCulture);
+        _ = DateTime.Parse(o.ToString()!, CultureInfo.InvariantCulture);
     }
 
     [Benchmark]
     public void Bench3()
     {
         object o = "2000/01/01";
-        DateTime n;
 
-        DateTime.TryParse(o.ToString()!, CultureInfo.InvariantCulture, out n);
+        _ = DateTime.TryParse(o.ToString()!, CultureInfo.InvariantCulture, out var _);
     }
 }

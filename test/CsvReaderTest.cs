@@ -58,14 +58,14 @@ public class CsvReaderTest
     public void TryReadFieldsTest()
     {
         Assert.Null(CsvReader.TryReadFields(CreateReader("")));
-        Assert.Equal(["a"], CsvReader.TryReadFields(CreateReader("a")));
-        Assert.Equal(["a", "b"], CsvReader.TryReadFields(CreateReader("a,b")));
-        Assert.Equal(["a", "b", "c"], CsvReader.TryReadFields(CreateReader("a,b,c")));
-        Assert.Equal(["ab", "c"], CsvReader.TryReadFields(CreateReader("ab,c")));
-        Assert.Equal(["a", "bc"], CsvReader.TryReadFields(CreateReader("a,bc")));
-        Assert.Equal(["a", "b", "c"], CsvReader.TryReadFields(CreateReader("a,b,c\rx")));
-        Assert.Equal(["a", "b", "c"], CsvReader.TryReadFields(CreateReader("a,b,c\nx")));
-        Assert.Equal(["a", "b", "c"], CsvReader.TryReadFields(CreateReader("a,b,c\r\nx")));
+        Assert.Equal(["a"], CsvReader.TryReadFields(CreateReader("a"))!);
+        Assert.Equal(["a", "b"], CsvReader.TryReadFields(CreateReader("a,b"))!);
+        Assert.Equal(["a", "b", "c"], CsvReader.TryReadFields(CreateReader("a,b,c"))!);
+        Assert.Equal(["ab", "c"], CsvReader.TryReadFields(CreateReader("ab,c"))!);
+        Assert.Equal(["a", "bc"], CsvReader.TryReadFields(CreateReader("a,bc"))!);
+        Assert.Equal(["a", "b", "c"], CsvReader.TryReadFields(CreateReader("a,b,c\rx"))!);
+        Assert.Equal(["a", "b", "c"], CsvReader.TryReadFields(CreateReader("a,b,c\nx"))!);
+        Assert.Equal(["a", "b", "c"], CsvReader.TryReadFields(CreateReader("a,b,c\r\nx"))!);
 
         var input = CreateReader(@"name,age,addr
 ""foo,bar"",10,addr0
@@ -76,13 +76,13 @@ addr2""
 , ,  ,,
 あいうえお,①,住所
 ");
-        Assert.Equal(["name", "age", "addr"], CsvReader.TryReadFields(input));
-        Assert.Equal(["foo,bar", "10", "addr0"], CsvReader.TryReadFields(input));
-        Assert.Equal(["baz", " 20", "addr1\r\naddr2"], CsvReader.TryReadFields(input));
-        Assert.Equal([""], CsvReader.TryReadFields(input));
-        Assert.Equal(["", ""], CsvReader.TryReadFields(input));
-        Assert.Equal(["", " ", "  ", "", ""], CsvReader.TryReadFields(input));
-        Assert.Equal(["あいうえお", "①", "住所"], CsvReader.TryReadFields(input));
+        Assert.Equal(["name", "age", "addr"], CsvReader.TryReadFields(input)!);
+        Assert.Equal(["foo,bar", "10", "addr0"], CsvReader.TryReadFields(input)!);
+        Assert.Equal(["baz", " 20", "addr1\r\naddr2"], CsvReader.TryReadFields(input)!);
+        Assert.Equal([""], CsvReader.TryReadFields(input)!);
+        Assert.Equal(["", ""], CsvReader.TryReadFields(input)!);
+        Assert.Equal(["", " ", "  ", "", ""], CsvReader.TryReadFields(input)!);
+        Assert.Equal(["あいうえお", "①", "住所"], CsvReader.TryReadFields(input)!);
         Assert.Null(CsvReader.TryReadFields(input));
     }
 
