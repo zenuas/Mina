@@ -13,7 +13,7 @@ Minaは初めに組み込む小さなライブラリである
 
 ## Requirement
 
-* .NET 8  
+* .NET 10  
 
 ## Author
 
