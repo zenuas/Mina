@@ -123,6 +123,45 @@ public static class Lists
 
     public static IEnumerable<IEnumerable<T>> SplitAfter<T>(this IEnumerable<T> self, Func<T, bool> f) => self.SplitFor(f).Select(x => x.Found ? x.Values.Concat(x.Separator) : x.Values);
 
+    public static IEnumerable<T> Replace<T>(this IEnumerable<T> self, IList<T> oldValues, Func<IEnumerable<T>, IEnumerable<T>> f) where T : IEquatable<T>
+    {
+        var i = 0;
+        var values = self.ToList();
+        if (oldValues.Count > 0)
+        {
+            for (; i < values.Count - oldValues.Count + 1; i++)
+            {
+                var j = 0;
+                for (; j < oldValues.Count; j++)
+                {
+                    if (!values[i + j].Equals(oldValues[j])) break;
+                }
+                if (j < oldValues.Count)
+                {
+                    yield return values[i];
+                }
+                else
+                {
+                    foreach (var x in f(values.Take(i..(i + j))))
+                    {
+                        yield return x;
+                    }
+                    i += j - 1;
+                }
+            }
+        }
+        for (; i < values.Count; i++)
+        {
+            yield return values[i];
+        }
+    }
+
+    public static IEnumerable<T> Replace<T>(this IEnumerable<T> self, IList<T> oldValues, IEnumerable<T> newValues) where T : IEquatable<T> => self.Replace(oldValues, _ => newValues);
+
+    public static IEnumerable<T> ReplaceBeforeInsert<T>(this IEnumerable<T> self, IList<T> oldValues, IEnumerable<T> beforeValues) where T : IEquatable<T> => self.Replace(oldValues, xs => [.. beforeValues, .. xs]);
+
+    public static IEnumerable<T> ReplaceAfterInsert<T>(this IEnumerable<T> self, IList<T> oldValues, IEnumerable<T> afterValues) where T : IEquatable<T> => self.Replace(oldValues, xs => [.. xs, .. afterValues]);
+
     public static (IEnumerable<T1> First, IEnumerable<T2> Second) UnZip<T1, T2>(this IEnumerable<(T1, T2)> self) => (self.Select(x => x.Item1), self.Select(x => x.Item2));
 
     public static int FindFirstIndex<T>(this IEnumerable<T> self, Func<T, bool> f) => self.Zip(Sequence(0)).Where(x => f(x.First)).If(IsEmpty, _ => -1, x => x.First().Second);
