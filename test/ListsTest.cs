@@ -314,12 +314,13 @@ public class ListsTest
     public void ReplaceTest()
     {
         var xs = Lists.RangeTo(1, 5);
+        var empty = new int[] { };
 
-        Assert.Equal(xs.Replace([], x => x), [1, 2, 3, 4, 5]);
-        Assert.Equal(xs.Replace([], x => x), [1, 2, 3, 4, 5]);
-        Assert.Equal(xs.Replace([], x => x), [1, 2, 3, 4, 5]);
-        Assert.Equal(xs.Replace([], x => x), [1, 2, 3, 4, 5]);
-        Assert.Equal(xs.Replace([], x => x), [1, 2, 3, 4, 5]);
+        Assert.Equal(xs.Replace(empty, x => x), [1, 2, 3, 4, 5]);
+        Assert.Equal(xs.Replace(empty, x => x), [1, 2, 3, 4, 5]);
+        Assert.Equal(xs.Replace(empty, x => x), [1, 2, 3, 4, 5]);
+        Assert.Equal(xs.Replace(empty, x => x), [1, 2, 3, 4, 5]);
+        Assert.Equal(xs.Replace(empty, x => x), [1, 2, 3, 4, 5]);
 
         Assert.Equal(xs.Replace([1], x => x), [1, 2, 3, 4, 5]);
         Assert.Equal(xs.Replace([2], x => x), [1, 2, 3, 4, 5]);
@@ -347,12 +348,13 @@ public class ListsTest
     public void Replace2Test()
     {
         var xs = Lists.RangeTo(1, 5);
+        var empty = new int[] { };
 
-        Assert.Equal(xs.Replace([], [0]), [1, 2, 3, 4, 5]);
-        Assert.Equal(xs.Replace([], [0]), [1, 2, 3, 4, 5]);
-        Assert.Equal(xs.Replace([], [0]), [1, 2, 3, 4, 5]);
-        Assert.Equal(xs.Replace([], [0]), [1, 2, 3, 4, 5]);
-        Assert.Equal(xs.Replace([], [0]), [1, 2, 3, 4, 5]);
+        Assert.Equal(xs.Replace(empty, [0]), [1, 2, 3, 4, 5]);
+        Assert.Equal(xs.Replace(empty, [0]), [1, 2, 3, 4, 5]);
+        Assert.Equal(xs.Replace(empty, [0]), [1, 2, 3, 4, 5]);
+        Assert.Equal(xs.Replace(empty, [0]), [1, 2, 3, 4, 5]);
+        Assert.Equal(xs.Replace(empty, [0]), [1, 2, 3, 4, 5]);
 
         Assert.Equal(xs.Replace([1], [0]), [0, 2, 3, 4, 5]);
         Assert.Equal(xs.Replace([2], [0]), [1, 0, 3, 4, 5]);
@@ -371,15 +373,100 @@ public class ListsTest
     }
 
     [Fact]
+    public void Replace3Test()
+    {
+        var xs = Lists.RangeTo(1, 5);
+        var empty = new int[][] { };
+
+        Assert.Equal(xs.Replace(empty, x => x), [1, 2, 3, 4, 5]);
+        Assert.Equal(xs.Replace(empty, x => x), [1, 2, 3, 4, 5]);
+        Assert.Equal(xs.Replace(empty, x => x), [1, 2, 3, 4, 5]);
+        Assert.Equal(xs.Replace(empty, x => x), [1, 2, 3, 4, 5]);
+        Assert.Equal(xs.Replace(empty, x => x), [1, 2, 3, 4, 5]);
+
+        Assert.Equal(xs.Replace([[1], [2]], x => x), [1, 2, 3, 4, 5]);
+        Assert.Equal(xs.Replace([[2], [3]], x => x), [1, 2, 3, 4, 5]);
+        Assert.Equal(xs.Replace([[3], [4]], x => x), [1, 2, 3, 4, 5]);
+        Assert.Equal(xs.Replace([[4], [5]], x => x), [1, 2, 3, 4, 5]);
+        Assert.Equal(xs.Replace([[5], [6]], x => x), [1, 2, 3, 4, 5]);
+        Assert.Equal(xs.Replace([[6], [7]], x => x), [1, 2, 3, 4, 5]);
+
+        Assert.Equal(xs.Replace([[1, 2], [2, 3]], x => x), [1, 2, 3, 4, 5]);
+        Assert.Equal(xs.Replace([[2, 3], [3, 4]], x => x), [1, 2, 3, 4, 5]);
+        Assert.Equal(xs.Replace([[3, 4], [4, 5]], x => x), [1, 2, 3, 4, 5]);
+        Assert.Equal(xs.Replace([[4, 5], [5, 6]], x => x), [1, 2, 3, 4, 5]);
+        Assert.Equal(xs.Replace([[5, 6], [6, 7]], x => x), [1, 2, 3, 4, 5]);
+
+        Assert.Equal(xs.Replace([[1, 2], [2, 3]], x => [0]), [0, 3, 4, 5]);
+        Assert.Equal(xs.Replace([[2, 3], [3, 4]], x => [0]), [1, 0, 4, 5]);
+        Assert.Equal(xs.Replace([[3, 4], [4, 5]], x => [0]), [1, 2, 0, 5]);
+        Assert.Equal(xs.Replace([[4, 5], [5, 6]], x => [0]), [1, 2, 3, 0]);
+        Assert.Equal(xs.Replace([[5, 6], [6, 7]], x => [0]), [1, 2, 3, 4, 5]);
+
+        Assert.Equal(xs.Replace([[1, 2], [3, 4]], x => [0]), [0, 0, 5]);
+        Assert.Equal(xs.Replace([[2, 3], [4, 5]], x => [0]), [1, 0, 0]);
+        Assert.Equal(xs.Replace([[3, 4], [5, 6]], x => [0]), [1, 2, 0, 5]);
+        Assert.Equal(xs.Replace([[4, 5], [6, 7]], x => [0]), [1, 2, 3, 0]);
+        Assert.Equal(xs.Replace([[5, 6], [7, 8]], x => [0]), [1, 2, 3, 4, 5]);
+
+        Assert.Equal(xs.Replace([[1, 2, 3, 4, 5]], x => [0]), [0]);
+        Assert.Equal(xs.Replace([[1], [1, 2, 3, 4, 5]], x => [0]), [0, 2, 3, 4, 5]);
+        Assert.Equal(xs.Replace([[2], [1, 2, 3, 4, 5]], x => [0]), [0]);
+    }
+
+    [Fact]
+    public void Replace4Test()
+    {
+        var xs = Lists.RangeTo(1, 5);
+        var empty = new int[][] { };
+
+        Assert.Equal(xs.Replace(empty, [0]), [1, 2, 3, 4, 5]);
+        Assert.Equal(xs.Replace(empty, [0]), [1, 2, 3, 4, 5]);
+        Assert.Equal(xs.Replace(empty, [0]), [1, 2, 3, 4, 5]);
+        Assert.Equal(xs.Replace(empty, [0]), [1, 2, 3, 4, 5]);
+        Assert.Equal(xs.Replace(empty, [0]), [1, 2, 3, 4, 5]);
+
+        Assert.Equal(xs.Replace([[1], [2]], [0]), [0, 0, 3, 4, 5]);
+        Assert.Equal(xs.Replace([[2], [3]], [0]), [1, 0, 0, 4, 5]);
+        Assert.Equal(xs.Replace([[3], [4]], [0]), [1, 2, 0, 0, 5]);
+        Assert.Equal(xs.Replace([[4], [5]], [0]), [1, 2, 3, 0, 0]);
+        Assert.Equal(xs.Replace([[5], [6]], [0]), [1, 2, 3, 4, 0]);
+        Assert.Equal(xs.Replace([[6], [7]], [0]), [1, 2, 3, 4, 5]);
+
+        Assert.Equal(xs.Replace([[1, 2], [2, 3]], [0]), [0, 3, 4, 5]);
+        Assert.Equal(xs.Replace([[2, 3], [3, 4]], [0]), [1, 0, 4, 5]);
+        Assert.Equal(xs.Replace([[3, 4], [4, 5]], [0]), [1, 2, 0, 5]);
+        Assert.Equal(xs.Replace([[4, 5], [5, 6]], [0]), [1, 2, 3, 0]);
+        Assert.Equal(xs.Replace([[5, 6], [6, 7]], [0]), [1, 2, 3, 4, 5]);
+
+        Assert.Equal(xs.Replace([[1, 2], [2, 3]], [0]), [0, 3, 4, 5]);
+        Assert.Equal(xs.Replace([[2, 3], [3, 4]], [0]), [1, 0, 4, 5]);
+        Assert.Equal(xs.Replace([[3, 4], [4, 5]], [0]), [1, 2, 0, 5]);
+        Assert.Equal(xs.Replace([[4, 5], [5, 6]], [0]), [1, 2, 3, 0]);
+        Assert.Equal(xs.Replace([[5, 6], [6, 7]], [0]), [1, 2, 3, 4, 5]);
+
+        Assert.Equal(xs.Replace([[1, 2], [3, 4]], [0]), [0, 0, 5]);
+        Assert.Equal(xs.Replace([[2, 3], [4, 5]], [0]), [1, 0, 0]);
+        Assert.Equal(xs.Replace([[3, 4], [5, 6]], [0]), [1, 2, 0, 5]);
+        Assert.Equal(xs.Replace([[4, 5], [6, 7]], [0]), [1, 2, 3, 0]);
+        Assert.Equal(xs.Replace([[5, 6], [7, 8]], [0]), [1, 2, 3, 4, 5]);
+
+        Assert.Equal(xs.Replace([[1, 2, 3, 4, 5]], [0]), [0]);
+        Assert.Equal(xs.Replace([[1], [1, 2, 3, 4, 5]], [0]), [0, 2, 3, 4, 5]);
+        Assert.Equal(xs.Replace([[2], [1, 2, 3, 4, 5]], [0]), [0]);
+    }
+
+    [Fact]
     public void ReplaceBeforeInsertTest()
     {
         var xs = Lists.RangeTo(1, 5);
+        var empty = new int[] { };
 
-        Assert.Equal(xs.ReplaceBeforeInsert([], [0]), [1, 2, 3, 4, 5]);
-        Assert.Equal(xs.ReplaceBeforeInsert([], [0]), [1, 2, 3, 4, 5]);
-        Assert.Equal(xs.ReplaceBeforeInsert([], [0]), [1, 2, 3, 4, 5]);
-        Assert.Equal(xs.ReplaceBeforeInsert([], [0]), [1, 2, 3, 4, 5]);
-        Assert.Equal(xs.ReplaceBeforeInsert([], [0]), [1, 2, 3, 4, 5]);
+        Assert.Equal(xs.ReplaceBeforeInsert(empty, [0]), [1, 2, 3, 4, 5]);
+        Assert.Equal(xs.ReplaceBeforeInsert(empty, [0]), [1, 2, 3, 4, 5]);
+        Assert.Equal(xs.ReplaceBeforeInsert(empty, [0]), [1, 2, 3, 4, 5]);
+        Assert.Equal(xs.ReplaceBeforeInsert(empty, [0]), [1, 2, 3, 4, 5]);
+        Assert.Equal(xs.ReplaceBeforeInsert(empty, [0]), [1, 2, 3, 4, 5]);
 
         Assert.Equal(xs.ReplaceBeforeInsert([1], [0]), [0, 1, 2, 3, 4, 5]);
         Assert.Equal(xs.ReplaceBeforeInsert([2], [0]), [1, 0, 2, 3, 4, 5]);
@@ -398,15 +485,46 @@ public class ListsTest
     }
 
     [Fact]
+    public void ReplaceBeforeInsert2Test()
+    {
+        var xs = Lists.RangeTo(1, 5);
+        var empty = new int[][] { };
+
+        Assert.Equal(xs.ReplaceBeforeInsert(empty, [0]), [1, 2, 3, 4, 5]);
+        Assert.Equal(xs.ReplaceBeforeInsert(empty, [0]), [1, 2, 3, 4, 5]);
+        Assert.Equal(xs.ReplaceBeforeInsert(empty, [0]), [1, 2, 3, 4, 5]);
+        Assert.Equal(xs.ReplaceBeforeInsert(empty, [0]), [1, 2, 3, 4, 5]);
+        Assert.Equal(xs.ReplaceBeforeInsert(empty, [0]), [1, 2, 3, 4, 5]);
+
+        Assert.Equal(xs.ReplaceBeforeInsert([[1], [2]], [0]), [0, 1, 0, 2, 3, 4, 5]);
+        Assert.Equal(xs.ReplaceBeforeInsert([[2], [3]], [0]), [1, 0, 2, 0, 3, 4, 5]);
+        Assert.Equal(xs.ReplaceBeforeInsert([[3], [4]], [0]), [1, 2, 0, 3, 0, 4, 5]);
+        Assert.Equal(xs.ReplaceBeforeInsert([[4], [5]], [0]), [1, 2, 3, 0, 4, 0, 5]);
+        Assert.Equal(xs.ReplaceBeforeInsert([[5], [6]], [0]), [1, 2, 3, 4, 0, 5]);
+        Assert.Equal(xs.ReplaceBeforeInsert([[6], [7]], [0]), [1, 2, 3, 4, 5]);
+
+        Assert.Equal(xs.ReplaceBeforeInsert([[1, 2], [2, 3]], [0]), [0, 1, 2, 3, 4, 5]);
+        Assert.Equal(xs.ReplaceBeforeInsert([[2, 3], [3, 4]], [0]), [1, 0, 2, 3, 4, 5]);
+        Assert.Equal(xs.ReplaceBeforeInsert([[3, 4], [4, 5]], [0]), [1, 2, 0, 3, 4, 5]);
+        Assert.Equal(xs.ReplaceBeforeInsert([[4, 5], [5, 6]], [0]), [1, 2, 3, 0, 4, 5]);
+        Assert.Equal(xs.ReplaceBeforeInsert([[5, 6], [6, 7]], [0]), [1, 2, 3, 4, 5]);
+
+        Assert.Equal(xs.ReplaceBeforeInsert([[1, 2, 3, 4, 5]], [0]), [0, 1, 2, 3, 4, 5]);
+        Assert.Equal(xs.ReplaceBeforeInsert([[1], [1, 2, 3, 4, 5]], [0]), [0, 1, 2, 3, 4, 5]);
+        Assert.Equal(xs.ReplaceBeforeInsert([[2], [1, 2, 3, 4, 5]], [0]), [0, 1, 2, 3, 4, 5]);
+    }
+
+    [Fact]
     public void ReplaceAfterInsertTest()
     {
         var xs = Lists.RangeTo(1, 5);
+        var empty = new int[] { };
 
-        Assert.Equal(xs.ReplaceAfterInsert([], [0]), [1, 2, 3, 4, 5]);
-        Assert.Equal(xs.ReplaceAfterInsert([], [0]), [1, 2, 3, 4, 5]);
-        Assert.Equal(xs.ReplaceAfterInsert([], [0]), [1, 2, 3, 4, 5]);
-        Assert.Equal(xs.ReplaceAfterInsert([], [0]), [1, 2, 3, 4, 5]);
-        Assert.Equal(xs.ReplaceAfterInsert([], [0]), [1, 2, 3, 4, 5]);
+        Assert.Equal(xs.ReplaceAfterInsert(empty, [0]), [1, 2, 3, 4, 5]);
+        Assert.Equal(xs.ReplaceAfterInsert(empty, [0]), [1, 2, 3, 4, 5]);
+        Assert.Equal(xs.ReplaceAfterInsert(empty, [0]), [1, 2, 3, 4, 5]);
+        Assert.Equal(xs.ReplaceAfterInsert(empty, [0]), [1, 2, 3, 4, 5]);
+        Assert.Equal(xs.ReplaceAfterInsert(empty, [0]), [1, 2, 3, 4, 5]);
 
         Assert.Equal(xs.ReplaceAfterInsert([1], [0]), [1, 0, 2, 3, 4, 5]);
         Assert.Equal(xs.ReplaceAfterInsert([2], [0]), [1, 2, 0, 3, 4, 5]);
@@ -422,5 +540,35 @@ public class ListsTest
         Assert.Equal(xs.ReplaceAfterInsert([5, 6], [0]), [1, 2, 3, 4, 5]);
 
         Assert.Equal(xs.ReplaceAfterInsert([1, 2, 3, 4, 5], [0]), [1, 2, 3, 4, 5, 0]);
+    }
+
+    [Fact]
+    public void ReplaceAfter2Insert()
+    {
+        var xs = Lists.RangeTo(1, 5);
+        var empty = new int[][] { };
+
+        Assert.Equal(xs.ReplaceAfterInsert(empty, [0]), [1, 2, 3, 4, 5]);
+        Assert.Equal(xs.ReplaceAfterInsert(empty, [0]), [1, 2, 3, 4, 5]);
+        Assert.Equal(xs.ReplaceAfterInsert(empty, [0]), [1, 2, 3, 4, 5]);
+        Assert.Equal(xs.ReplaceAfterInsert(empty, [0]), [1, 2, 3, 4, 5]);
+        Assert.Equal(xs.ReplaceAfterInsert(empty, [0]), [1, 2, 3, 4, 5]);
+
+        Assert.Equal(xs.ReplaceAfterInsert([[1], [2]], [0]), [1, 0, 2, 0, 3, 4, 5]);
+        Assert.Equal(xs.ReplaceAfterInsert([[2], [3]], [0]), [1, 2, 0, 3, 0, 4, 5]);
+        Assert.Equal(xs.ReplaceAfterInsert([[3], [4]], [0]), [1, 2, 3, 0, 4, 0, 5]);
+        Assert.Equal(xs.ReplaceAfterInsert([[4], [5]], [0]), [1, 2, 3, 4, 0, 5, 0]);
+        Assert.Equal(xs.ReplaceAfterInsert([[5], [6]], [0]), [1, 2, 3, 4, 5, 0]);
+        Assert.Equal(xs.ReplaceAfterInsert([[6], [7]], [0]), [1, 2, 3, 4, 5]);
+
+        Assert.Equal(xs.ReplaceAfterInsert([[1, 2], [2, 3]], [0]), [1, 2, 0, 3, 4, 5]);
+        Assert.Equal(xs.ReplaceAfterInsert([[2, 3], [3, 4]], [0]), [1, 2, 3, 0, 4, 5]);
+        Assert.Equal(xs.ReplaceAfterInsert([[3, 4], [4, 5]], [0]), [1, 2, 3, 4, 0, 5]);
+        Assert.Equal(xs.ReplaceAfterInsert([[4, 5], [5, 6]], [0]), [1, 2, 3, 4, 5, 0]);
+        Assert.Equal(xs.ReplaceAfterInsert([[5, 6], [6, 7]], [0]), [1, 2, 3, 4, 5]);
+
+        Assert.Equal(xs.ReplaceAfterInsert([[1, 2, 3, 4, 5]], [0]), [1, 2, 3, 4, 5, 0]);
+        Assert.Equal(xs.ReplaceAfterInsert([[1], [1, 2, 3, 4, 5]], [0]), [1, 0, 2, 3, 4, 5]);
+        Assert.Equal(xs.ReplaceAfterInsert([[2], [1, 2, 3, 4, 5]], [0]), [1, 2, 3, 4, 5, 0]);
     }
 }
