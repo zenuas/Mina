@@ -256,4 +256,30 @@ public class StringsTest
         _ = Assert.Throws<ArgumentOutOfRangeException>(() => s.Substring(14, 3));
         _ = Assert.Throws<ArgumentOutOfRangeException>(() => s.Substring(15, 3));
     }
+
+    [Fact]
+    public void ToUtf32CharArrayTest()
+    {
+        Assert.Equal("".ToUtf32CharArray(), []);
+        Assert.Equal("abcあいうアイウ亜伊宇ｱｲｳ".ToUtf32CharArray(), [0x61, 0x62, 0x63, 0x3042, 0x3044, 0x3046, 0x30a2, 0x30a4, 0x30a6, 0x4e9c, 0x4f0a, 0x5b87, 0xff71, 0xff72, 0xff73]);
+        Assert.Equal("🍣".ToUtf32CharArray(), [0x1F363]);
+        Assert.Equal("𠮷野家".ToUtf32CharArray(), [0x20BB7, 0x91CE, 0x5BB6]);
+        Assert.Equal("abc\uD83C\uDF63".ToUtf32CharArray(), [0x61, 0x62, 0x63, 0x1F363]);
+        Assert.Equal("\uD83C\uDF63abc".ToUtf32CharArray(), [0x1F363, 0x61, 0x62, 0x63]);
+        Assert.Equal("abc\uD800".ToUtf32CharArray(), [0x61, 0x62, 0x63, 0xD800]); // unpaired surrogate
+        Assert.Equal("\uD800a".ToUtf32CharArray(), [0xD800, 0x61]); // unpaired surrogate
+    }
+
+    [Fact]
+    public void ToStringByCharsTest()
+    {
+        Assert.Equal(new int[] { }.ToStringByChars(), "");
+        Assert.Equal(new int[] { 0x61, 0x62, 0x63, 0x3042, 0x3044, 0x3046, 0x30a2, 0x30a4, 0x30a6, 0x4e9c, 0x4f0a, 0x5b87, 0xff71, 0xff72, 0xff73 }.ToStringByChars(), "abcあいうアイウ亜伊宇ｱｲｳ");
+        Assert.Equal(new int[] { 0x1F363 }.ToStringByChars(), "🍣");
+        Assert.Equal(new int[] { 0x20BB7, 0x91CE, 0x5BB6 }.ToStringByChars(), "𠮷野家");
+        Assert.Equal(new int[] { 0x61, 0x62, 0x63, 0x1F363 }.ToStringByChars(), "abc\uD83C\uDF63");
+        Assert.Equal(new int[] { 0x1F363, 0x61, 0x62, 0x63 }.ToStringByChars(), "\uD83C\uDF63abc");
+        Assert.Throws<ArgumentOutOfRangeException>(() => new int[] { 0x61, 0x62, 0x63, 0xD800 }.ToStringByChars()); // unpaired surrogate
+        Assert.Throws<ArgumentOutOfRangeException>(() => new int[] { 0xD800, 0x61 }.ToStringByChars()); // unpaired surrogate
+    }
 }

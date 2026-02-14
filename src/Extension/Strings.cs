@@ -88,5 +88,19 @@ public static class Strings
 
     public static string[] SplitLine(this string self) => self.Split(["\r\n", "\n", "\r"], StringSplitOptions.None);
 
+    public static IEnumerable<int> ToUtf32CharArray(this string s)
+    {
+        var i = 0;
+        for (; i < s.Length - 1; i++)
+        {
+            yield return char.IsHighSurrogate(s[i]) && char.IsLowSurrogate(s[i + 1])
+                ? char.ConvertToUtf32(s[i], s[++i])
+                : s[i];
+        }
+        if (i < s.Length) yield return s[^1];
+    }
+
     public static string ToStringByChars(this IEnumerable<char> self) => new([.. self]);
+
+    public static string ToStringByChars(this IEnumerable<int> chars) => chars.Select(char.ConvertFromUtf32).Join();
 }
