@@ -62,7 +62,7 @@ public static class CommandLine
             if (method is { } && method.GetParameters().Length <= method_args.Count)
             {
                 var parameters = method.GetParameters();
-                _ = method.Invoke(receiver, method_args.Select((arg, i) => Convert(parameters[i].ParameterType, arg)).ToArray());
+                _ = method.Invoke(receiver, [.. method_args.Select((arg, i) => Convert(parameters[i].ParameterType, arg))]);
                 method = null;
                 method_args.Clear();
             }
