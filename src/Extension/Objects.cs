@@ -31,6 +31,10 @@ public static class Objects
 
     public static T Try<T>(this T? self) where T : struct => self ?? throw new();
 
+    public static T Try<T, E>(this T? self) where T : class where E : Exception, new() => self ?? throw new E();
+
+    public static T Try<T, E>(this T? self) where T : struct where E : Exception, new() => self ?? throw new E();
+
     public static T? TryOrDefault<T>(this Func<T> self) => self.Catch(out var value) is null ? value : default;
 
     public static T? TryOrNullValue<T>(this Func<T> self) where T : struct => self.Catch(out var value) is null ? value : null;

@@ -78,6 +78,7 @@ public class ObjectsTest
         Assert.Equal(ok.Try(), "ok");
         Assert.Equal(ok.Try().GetType(), typeof(string));
         Assert.Throws<Exception>(() => ng.Try());
+        Assert.Throws<NullReferenceException>(() => ng.Try<string, NullReferenceException>());
 
         int? ok2 = 100;
         int? ng2 = null;
@@ -85,5 +86,6 @@ public class ObjectsTest
         Assert.Equal(ok2.Try(), 100);
         Assert.Equal(ok2.Try().GetType(), typeof(int));
         Assert.Throws<Exception>(() => ng2.Try());
+        Assert.Throws<NullReferenceException>(() => ng2.Try<int, NullReferenceException>());
     }
 }
