@@ -20,11 +20,11 @@ public class EncodingsTest
     [Fact]
     public void GetEncodingOrNullTest()
     {
-        Assert.Equal(Encodings.GetEncodingOrNull(""), null);
-        Assert.Equal(Encodings.GetEncodingOrNull("xxx_not_found_xxx"), null);
-        Assert.Equal(Encodings.GetEncodingOrNull(65535), null);
-        Assert.Equal(Encodings.GetEncodingOrNull(-1), null);
-        Assert.Equal(Encodings.GetEncodingOrNull(1200), Encoding.Unicode);
+        Assert.Equal(Encoding.GetEncodingOrNull(""), null);
+        Assert.Equal(Encoding.GetEncodingOrNull("xxx_not_found_xxx"), null);
+        Assert.Equal(Encoding.GetEncodingOrNull(65535), null);
+        Assert.Equal(Encoding.GetEncodingOrNull(-1), null);
+        Assert.Equal(Encoding.GetEncodingOrNull(1200), Encoding.Unicode);
     }
 
     [Fact]
@@ -32,11 +32,11 @@ public class EncodingsTest
     {
         var utf8 = Encoding.UTF8;
 
-        Assert.Equal(Encodings.GetEncodingOrUtf8(""), utf8);
-        Assert.Equal(Encodings.GetEncodingOrUtf8("xxx_not_found_xxx"), utf8);
-        Assert.Equal(Encodings.GetEncodingOrUtf8(65535), utf8);
-        Assert.Equal(Encodings.GetEncodingOrUtf8(-1), utf8);
-        Assert.Equal(Encodings.GetEncodingOrUtf8(1200), Encoding.Unicode);
+        Assert.Equal(Encoding.GetEncodingOrUtf8(""), utf8);
+        Assert.Equal(Encoding.GetEncodingOrUtf8("xxx_not_found_xxx"), utf8);
+        Assert.Equal(Encoding.GetEncodingOrUtf8(65535), utf8);
+        Assert.Equal(Encoding.GetEncodingOrUtf8(-1), utf8);
+        Assert.Equal(Encoding.GetEncodingOrUtf8(1200), Encoding.Unicode);
     }
 
     [Fact]
