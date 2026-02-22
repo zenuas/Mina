@@ -28,6 +28,11 @@ public static class Lists
         for (; ; ) yield return x;
     }
 
+    public static IEnumerable<T> Repeat<T>(Func<T> x)
+    {
+        for (; ; ) yield return x();
+    }
+
     public static bool IsEmpty<T>(this IEnumerable<T> self) => !self.Any();
 
     public static IEnumerable<T> Next<T>(this IEnumerable<T> self) => !self.IsEmpty() ? self.Skip(1) : throw new IndexOutOfRangeException();
