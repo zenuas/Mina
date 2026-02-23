@@ -65,7 +65,7 @@ public static class Lists
         foreach (var v in self.Skip(1)) yield return acc = f(acc, v);
     }
 
-    public static IEnumerable<T> Concat<T>(this IEnumerable<T> self, T x) => Enumerable.Concat(self, [x]);
+    public static IEnumerable<T> Concat<T>(this IEnumerable<T> self, T x) => self.Concat([x]);
 
     public static IEnumerable GetIterator(this IEnumerable self)
     {
@@ -235,13 +235,13 @@ public static class Lists
 
     public static IOrderedEnumerable<T> ThenByDescending<T, R>(this IOrderedEnumerable<T> self, Func<T, R> selector, Func<R, R, int> f) => self.ThenByDescending(selector, new ComparerBinder<R> { Compare = f });
 
-    public static IEnumerable<T> Distinct<T>(this IEnumerable<T> self, Func<T?, T?, bool> f) => Enumerable.Distinct(self, new EqualityComparerBinder<T>() { Equals = f });
+    public static IEnumerable<T> Distinct<T>(this IEnumerable<T> self, Func<T?, T?, bool> f) => self.Distinct(new EqualityComparerBinder<T>() { Equals = f });
 
-    public static IEnumerable<T> Union<T>(this IEnumerable<T> self, IEnumerable<T> second, Func<T?, T?, bool> f) => Enumerable.Union(self, second, new EqualityComparerBinder<T>() { Equals = f });
+    public static IEnumerable<T> Union<T>(this IEnumerable<T> self, IEnumerable<T> second, Func<T?, T?, bool> f) => self.Union(second, new EqualityComparerBinder<T>() { Equals = f });
 
-    public static IEnumerable<T> Intersect<T>(this IEnumerable<T> self, IEnumerable<T> second, Func<T?, T?, bool> f) => Enumerable.Intersect(self, second, new EqualityComparerBinder<T>() { Equals = f });
+    public static IEnumerable<T> Intersect<T>(this IEnumerable<T> self, IEnumerable<T> second, Func<T?, T?, bool> f) => self.Intersect(second, new EqualityComparerBinder<T>() { Equals = f });
 
-    public static IEnumerable<T> Except<T>(this IEnumerable<T> self, IEnumerable<T> second, Func<T?, T?, bool> f) => Enumerable.Except(self, second, new EqualityComparerBinder<T>() { Equals = f });
+    public static IEnumerable<T> Except<T>(this IEnumerable<T> self, IEnumerable<T> second, Func<T?, T?, bool> f) => self.Except(second, new EqualityComparerBinder<T>() { Equals = f });
 
     public static IEnumerable<T> Travers<T>(this T self, Func<T, IEnumerable<T>> f) => f(self).Select(x => Travers(x, f)).Flatten().Prepend(self);
 }
