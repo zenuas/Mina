@@ -607,28 +607,4 @@ public class SafeConvertTest
         Assert.False(SafeConvert.TryConvert<ToStringBinder>("A", out var _));
         Assert.False(SafeConvert.TryConvert<ToStringBinder>("B", out var _));
     }
-
-    [Fact]
-    public void TryParseTest()
-    {
-        Assert.True(SafeConvert.TryParse<bool>("false", out var p1) && p1 == false);
-        Assert.True(SafeConvert.TryParse<bool>("true", out var p2) && p2 == true);
-        Assert.True(SafeConvert.TryParse<int>("0", out var p3) && p3 == 0);
-        Assert.True(SafeConvert.TryParse<float>("0.5", out var p4) && p4 == 0.5);
-        Assert.True(SafeConvert.TryParse<float>("-0.5", out var p5) && p5 == -0.5);
-        Assert.True(SafeConvert.TryParse<double>("0.5", out var p6) && p6 == 0.5);
-        Assert.True(SafeConvert.TryParse<double>("-0.5", out var p7) && p7 == -0.5);
-        Assert.True(SafeConvert.TryParse<DateTime>("", out var _) == false);
-        Assert.True(SafeConvert.TryParse<DateTime>("2000/12/31", out var p8) && p8 == new DateTime(2000, 12, 31));
-        Assert.True(SafeConvert.TryParse<DateTime>("2000/12/31 23:59", out var p9) && p9 == new DateTime(2000, 12, 31, 23, 59, 0));
-        Assert.True(SafeConvert.TryParse<DateTime>("2000/12/31 23:59:45", out var p10) && p10 == new DateTime(2000, 12, 31, 23, 59, 45));
-        Assert.True(SafeConvert.TryParse<DateTime>("2000/12/31 23:59:45.123", out var p11) && p11 == new DateTime(2000, 12, 31, 23, 59, 45, 123));
-        Assert.True(SafeConvert.TryParse<DateTime>("2000/12/31 23:59:45.123456", out var p12) && p12 == new DateTime(2000, 12, 31, 23, 59, 45, 123, 456));
-        Assert.True(SafeConvert.TryParse<DateTime>("2000/12/32", out var _) == false);
-        Assert.True(SafeConvert.TryParse<DateTime>("2000/12/31 23:60", out var _) == false);
-        Assert.True(SafeConvert.TryParse<DateTime>("2000/12/31 23:59:60", out var _) == false);
-        Assert.True(SafeConvert.TryParse<string>("", out var p13) && p13 == "");
-        Assert.True(SafeConvert.TryParse<ToStringBinder>("A", out var p14) && p14.ToString() == "A");
-        Assert.True(SafeConvert.TryParse<ToStringBinder>("B", out var p15) && p15.ToString() == "B");
-    }
 }

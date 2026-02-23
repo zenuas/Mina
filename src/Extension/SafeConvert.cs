@@ -35,6 +35,4 @@ public static class SafeConvert
     public static string? ToStringOrNull(object? obj) => ((Func<string?>)(() => obj?.ToString())).Catch(out var value) is null ? value : null;
 
     public static bool TryConvert<T>(object? obj, out T value) => ((Func<T>)(() => (T)Convert.ChangeType(obj, typeof(T))!)).Catch(out value) is null;
-    public static bool TryParse<T>(string s, out T value) where T : IParsable<T> => T.TryParse(s, null, out value!);
-    public static bool TryParse<T>(string s, IFormatProvider? format, out T value) where T : IParsable<T> => T.TryParse(s, format, out value!);
 }
