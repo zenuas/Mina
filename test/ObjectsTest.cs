@@ -88,4 +88,97 @@ public class ObjectsTest
         Assert.Throws<Exception>(() => ng2.Try());
         Assert.Throws<NullReferenceException>(() => ng2.Try<int, NullReferenceException>());
     }
+
+    public struct TestStruct1
+    {
+        public byte Byte = 0;
+
+        public TestStruct1()
+        {
+        }
+    }
+
+    public struct TestStruct2
+    {
+        public short Short = 0;
+
+        public TestStruct2()
+        {
+        }
+    }
+
+    public struct TestStruct3
+    {
+        public byte Byte = 0;
+        public short Short = 0;
+
+        public TestStruct3()
+        {
+        }
+    }
+
+    public class TestClass
+    {
+        public byte Byte { get; init; }
+    }
+
+    [Fact]
+    public void SizeOfTest()
+    {
+        sbyte sb = 0;
+        byte ub = 0;
+        Assert.Equal(sb.SizeOf(), sizeof(sbyte));
+        Assert.Equal(ub.SizeOf(), sizeof(byte));
+
+        short ss = 0;
+        ushort us = 0;
+        Assert.Equal(ss.SizeOf(), sizeof(short));
+        Assert.Equal(us.SizeOf(), sizeof(ushort));
+
+        int si = 0;
+        uint ui = 0;
+        Assert.Equal(si.SizeOf(), sizeof(int));
+        Assert.Equal(ui.SizeOf(), sizeof(uint));
+
+        long sl = 0;
+        ulong ul = 0;
+        Assert.Equal(sl.SizeOf(), sizeof(long));
+        Assert.Equal(ul.SizeOf(), sizeof(ulong));
+
+        float fl = 0;
+        double db = 0;
+        decimal dm = 0;
+        Assert.Equal(fl.SizeOf(), sizeof(float));
+        Assert.Equal(db.SizeOf(), sizeof(double));
+        Assert.Equal(dm.SizeOf(), sizeof(decimal));
+
+        nint ni = 0;
+        nuint nu = 0;
+        Assert.True(ni.SizeOf() is 4 or 8);
+        Assert.True(nu.SizeOf() is 4 or 8);
+
+        bool b = true;
+        Assert.Equal(b.SizeOf(), sizeof(bool));
+
+        //bool? nullable_b = null;
+        //Assert.Equal(nullable_b.SizeOf(), sizeof(bool));
+
+        TestStruct1 t1 = new();
+        TestStruct2 t2 = new();
+        TestStruct3 t3 = new();
+        Assert.True(t1.SizeOf() is 1 or 4 or 8);
+        Assert.True(t2.SizeOf() is 2 or 4 or 8);
+        Assert.True(t3.SizeOf() is 3 or 4 or 8);
+
+        TestEnum e = TestEnum.Aaa;
+        Assert.Equal(sizeof(TestEnum), e.SizeOf());
+
+        //string s = "abc";
+        //Assert.True(s.SizeOf() is 4 or 8);
+
+        var tc = new TestClass();
+        //Assert.True(tc.SizeOf() is 4 or 8);
+        //Assert.Equal(sizeof(tc.Byte), sizeof(byte));
+        Assert.Equal(tc.Byte.SizeOf(), sizeof(byte));
+    }
 }

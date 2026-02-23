@@ -5,6 +5,8 @@ namespace Mina.Extension;
 
 public static class Objects
 {
+    public static unsafe int SizeOf<T>(this T _) where T : unmanaged => sizeof(T);
+
     public static R If<T, R>(this T self, Func<T, bool> cond, Func<T, R> then, Func<T, R> else_) => cond(self) ? then(self) : else_(self);
 
     public static T Then<T>(this T self, Func<T, bool> cond, Func<T, T> then) => cond(self) ? then(self) : self;
