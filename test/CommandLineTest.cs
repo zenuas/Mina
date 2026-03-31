@@ -72,4 +72,45 @@ public class CommandLineTest
         Assert.Equal(receiver.Output, "-");
         Assert.True(receiver.Error == Console.Out);
     }
+
+    public class SubCommand1
+    {
+        [CommandOption('o')]
+        [CommandOption("output")]
+        [CommandHelp("output help message")]
+        public TextWriter Output { get; init; } = Console.Error;
+    }
+
+    public class SubCommand2
+    {
+    }
+
+    public class SubCommand3
+    {
+    }
+
+    [Fact]
+    public void SubCommand()
+    {
+        var (receiver, args) = CommandLine.Run([
+                ("sub1", typeof(SubCommand1)),
+                ("sub2", typeof(SubCommand2)),
+                ("sub3", typeof(SubCommand3)),
+            ], "sub1", "-o", "-", "a");
+
+        Assert.IsType<SubCommand1>(receiver);
+
+        var sub1 = (SubCommand1)receiver;
+        Assert.Equal(sub1.Output, Console.Out);
+        Assert.Equal(args, new string[] { "a" });
+
+        var (receiver2, args2) = CommandLine.Run([
+                ("sub1", typeof(SubCommand1)),
+                ("sub2", typeof(SubCommand2)),
+                ("sub3", typeof(SubCommand3)),
+            ], "sub2", "a", "b", "c");
+
+        Assert.IsType<SubCommand2>(receiver2);
+        Assert.Equal(args2, new string[] { "a", "b", "c" });
+    }
 }

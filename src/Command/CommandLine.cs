@@ -9,9 +9,9 @@ namespace Mina.Command;
 
 public static class CommandLine
 {
-    public static IEnumerable<(A Attribute, MethodInfo Method)> GetCommands<T, A>() where A : Attribute
+    public static IEnumerable<(A Attribute, MethodInfo Method)> GetCommands<A>(Type t) where A : Attribute
     {
-        foreach (var m in typeof(T).GetMethods(BindingFlags.FlattenHierarchy | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static))
+        foreach (var m in t.GetMethods(BindingFlags.FlattenHierarchy | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static))
         {
             foreach (var attr in m.GetCustomAttributes<A>(true))
             {
@@ -19,7 +19,7 @@ public static class CommandLine
             }
         }
 
-        foreach (var m in typeof(T).GetProperties(BindingFlags.FlattenHierarchy | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.SetProperty))
+        foreach (var m in t.GetProperties(BindingFlags.FlattenHierarchy | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.SetProperty))
         {
             var setter = m.GetSetMethod(true)!;
             foreach (var attr in m.GetCustomAttributes<A>(true))
@@ -29,9 +29,11 @@ public static class CommandLine
         }
     }
 
-    public static string[] Parse<T>(T receiver, params string[] args)
+    public static IEnumerable<(A Attribute, MethodInfo Method)> GetCommands<T, A>() where A : Attribute => GetCommands<A>(typeof(T));
+
+    public static string[] Parse<T>(Type t, T receiver, params string[] args)
     {
-        var map = GetCommands<T, CommandOptionAttribute>()
+        var map = GetCommands<CommandOptionAttribute>(t)
             .ToDictionary(x => x.Attribute.Command);
 
         var xargs = new List<string>();
@@ -70,13 +72,25 @@ public static class CommandLine
         return [.. xargs];
     }
 
+    public static string[] Parse<T>(T receiver, params string[] args) => Parse(typeof(T), receiver, args);
+
     public static (T Receiver, string[] Arguments) Run<T>(params string[] args)
     {
         var receiver = Expressions.GetNew<T>()();
         return (receiver, Run(receiver, args));
     }
 
-    public static string[] Run<T>(T receiver, params string[] args) => Parse(receiver, args);
+    public static string[] Run<T>(T receiver, params string[] args) => Parse<T>(receiver, args);
+
+    public static (T Receiver, string[] Arguments) Run<T>((string Command, Type Receiver)[] subcommands, params string[] args)
+    {
+        var command = args.FirstOrDefault() ?? "";
+        var subcommand = subcommands.Where(x => x.Command == command).First();
+        var receiver = Expressions.GetNew<T>(subcommand.Receiver.GetConstructor([])!)();
+        return (receiver, Parse(subcommand.Receiver, receiver, [.. args.Skip(1)]));
+    }
+
+    public static (object Receiver, string[] Arguments) Run((string Command, Type Receiver)[] subcommands, params string[] args) => Run<object>(subcommands, args);
 
     public static object Convert(Type t, string s)
     {
