@@ -1,6 +1,7 @@
 using Mina.Command;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using Xunit;
 
@@ -112,5 +113,18 @@ public class CommandLineTest
 
         Assert.IsType<SubCommand2>(receiver2);
         Assert.Equal(args2, new string[] { "a", "b", "c" });
+    }
+
+    [Fact]
+    public void ConvertTest()
+    {
+        Assert.Equal(CommandLine.Convert(typeof(int), "123"), 123);
+        Assert.Equal(CommandLine.Convert(typeof(double), "1.23"), 1.23);
+        Assert.Equal(CommandLine.Convert(typeof(bool), "true"), true);
+        Assert.Equal(CommandLine.Convert(typeof(bool), "false"), false);
+        Assert.Equal(CommandLine.Convert(typeof(DateTime), "2000/01/02"), new DateTime(2000, 1, 2));
+        Assert.Equal(CommandLine.Convert(typeof(Color), "#FF0000"), Color.FromName("#FF0000"));
+        Assert.NotEqual(CommandLine.Convert(typeof(Color), "#FF0000"), Color.Red);
+        Assert.Equal(CommandLine.Convert(typeof(Color), "Red"), Color.Red);
     }
 }

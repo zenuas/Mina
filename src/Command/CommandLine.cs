@@ -1,6 +1,8 @@
 ﻿using Mina.Reflection;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -113,8 +115,27 @@ public static class CommandLine
             Type a when a == typeof(char) => char.Parse(s),
             Type a when a == typeof(bool) => bool.Parse(s),
             Type a when a == typeof(decimal) => decimal.Parse(s),
-            Type a when a == typeof(DateTime) => DateTime.Parse(s),
+            Type a when a == typeof(Color) => Color.FromName(s),
+            Type a when TryConvert(a, s, out var result) => result!,
             _ => s,
         };
+    }
+
+    public static bool TryConvert(Type t, string s, [MaybeNullWhen(returnValue: false)] out object? result)
+    {
+        result = null;
+        try
+        {
+            var parsable = typeof(IParsable<>).MakeGenericType(t);
+            if (parsable.IsAssignableFrom(t) && t.GetMethod("Parse", [typeof(string), typeof(IFormatProvider)]) is { } method)
+            {
+                result = method.Invoke(null, [s, null]);
+                return true;
+            }
+        }
+        catch
+        {
+        }
+        return false;
     }
 }
