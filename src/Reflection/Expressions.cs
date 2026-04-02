@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Reflection;
 using System.Reflection.Emit;
@@ -152,5 +153,23 @@ public static class Expressions
         il.Newobj(ctor);
         il.Emit(OpCodes.Ret);
         return ilmethod.CreateDelegate<Func<T>>();
+    }
+
+    public static bool TryConvert(Type t, string s, [MaybeNullWhen(returnValue: false)] out object? result)
+    {
+        result = null;
+        try
+        {
+            var parsable = typeof(IParsable<>).MakeGenericType(t);
+            if (parsable.IsAssignableFrom(t) && t.GetMethod("Parse", [typeof(string), typeof(IFormatProvider)]) is { } method)
+            {
+                result = method.Invoke(null, [s, null]);
+                return true;
+            }
+        }
+        catch
+        {
+        }
+        return false;
     }
 }

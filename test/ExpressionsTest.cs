@@ -1,4 +1,5 @@
 ﻿using Mina.Reflection;
+using System;
 using Xunit;
 
 namespace Mina.Test;
@@ -57,5 +58,16 @@ public class ExpressionsTest
     {
         var rshift_int = Expressions.RightShift<int>();
         Assert.Equal(rshift_int(40, 3), 5);
+    }
+
+    [Fact]
+    public void TryConvertTest()
+    {
+        var result1 = Expressions.TryConvert(typeof(DateTime), "a", out var _);
+        Assert.Equal(result1, false);
+
+        var result2 = Expressions.TryConvert(typeof(DateTime), "2000/01/02", out var v2);
+        Assert.Equal(result2, true);
+        Assert.Equal(v2, new DateTime(2000, 1, 2));
     }
 }
