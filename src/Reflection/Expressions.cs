@@ -161,10 +161,14 @@ public static class Expressions
         try
         {
             var parsable = typeof(IParsable<>).MakeGenericType(t);
-            if (parsable.IsAssignableFrom(t) && t.GetMethod("Parse", [typeof(string), typeof(IFormatProvider)]) is { } method)
+            if (parsable.IsAssignableFrom(t) && t.GetMethod("TryParse", [typeof(string), typeof(IFormatProvider), t.MakeByRefType()]) is { } method)
             {
-                result = method.Invoke(null, [s, null]);
-                return true;
+                var parameter = new object?[] { s, null, null };
+                if ((bool)method.Invoke(null, parameter)!)
+                {
+                    result = parameter[2];
+                    return true;
+                }
             }
         }
         catch

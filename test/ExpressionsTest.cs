@@ -1,5 +1,6 @@
 ﻿using Mina.Reflection;
 using System;
+using System.Drawing;
 using Xunit;
 
 namespace Mina.Test;
@@ -69,5 +70,8 @@ public class ExpressionsTest
         var result2 = Expressions.TryConvert(typeof(DateTime), "2000/01/02", out var v2);
         Assert.Equal(result2, true);
         Assert.Equal(v2, new DateTime(2000, 1, 2));
+
+        var result3 = Expressions.TryConvert(typeof(Color), "Red", out var _);
+        Assert.Equal(result3, false);
     }
 }
