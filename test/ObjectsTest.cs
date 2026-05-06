@@ -122,6 +122,46 @@ public class ObjectsTest
         public byte Byte { get; init; }
     }
 
+    public enum EnumByte : byte
+    {
+        Dummy = 0,
+    }
+
+    public enum EnumSByte : sbyte
+    {
+        Dummy = 0,
+    }
+
+    public enum EnumShort : short
+    {
+        Dummy = 0,
+    }
+
+    public enum EnumUShort : ushort
+    {
+        Dummy = 0,
+    }
+
+    public enum EnumInt : int
+    {
+        Dummy = 0,
+    }
+
+    public enum EnumUInt : uint
+    {
+        Dummy = 0,
+    }
+
+    public enum EnumLong : long
+    {
+        Dummy = 0,
+    }
+
+    public enum EnumULong : ulong
+    {
+        Dummy = 0,
+    }
+
     [Fact]
     public void SizeOfTest()
     {
@@ -180,5 +220,22 @@ public class ObjectsTest
         //Assert.True(tc.SizeOf() is 4 or 8);
         //Assert.Equal(sizeof(tc.Byte), sizeof(byte));
         Assert.Equal(tc.Byte.SizeOf(), sizeof(byte));
+
+        var eb = EnumByte.Dummy;
+        var esb = EnumSByte.Dummy;
+        var es = EnumShort.Dummy;
+        var eus = EnumUShort.Dummy;
+        var ei = EnumInt.Dummy;
+        var eui = EnumUInt.Dummy;
+        var el = EnumLong.Dummy;
+        var eul = EnumULong.Dummy;
+        Assert.True(eb.SizeOf() is 1);
+        Assert.True(esb.SizeOf() is 1);
+        Assert.True(es.SizeOf() is 2);
+        Assert.True(eus.SizeOf() is 2);
+        Assert.True(ei.SizeOf() is 4);
+        Assert.True(eui.SizeOf() is 4);
+        Assert.True(el.SizeOf() is 8);
+        Assert.True(eul.SizeOf() is 8);
     }
 }
