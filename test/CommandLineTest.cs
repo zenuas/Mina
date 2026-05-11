@@ -9,6 +9,13 @@ namespace Mina.Test;
 
 public class CommandLineTest
 {
+    public enum TestEnum
+    {
+        Value1,
+        Value2,
+        Value3,
+    }
+
     [CommandOption('o')]
     [CommandOption("output")]
     [CommandHelp("output help message")]
@@ -32,15 +39,19 @@ public class CommandLineTest
     [CommandOption("test")]
     public void TestMethod() => Lib.Add("xxx");
 
+    [CommandOption("enum")]
+    public TestEnum EnumValue { get; init; } = TestEnum.Value1;
+
     [Fact]
     public void Test()
     {
         var receiver = new CommandLineTest();
-        var args = CommandLine.Run(receiver, "a", "-otest1", "--entrypoint", "test2", "-t", "-l", "test3", "b", "--lib", "test4", "c");
+        var args = CommandLine.Run(receiver, "a", "-otest1", "--entrypoint", "test2", "-t", "-l", "test3", "b", "--lib", "test4", "c", "--enum", "Value2");
 
         Assert.Equal(receiver.Output, "test1");
         Assert.Equal(receiver.EntryPoint, "test2");
         Assert.Equal(receiver.Lib, ["xxx", "test3", "test4"]);
+        Assert.Equal(receiver.EnumValue, TestEnum.Value2);
         Assert.Equal([.. args], ["a", "b", "c"]);
     }
 

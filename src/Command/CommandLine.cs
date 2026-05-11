@@ -115,6 +115,7 @@ public static class CommandLine
             Type a when a == typeof(bool) => bool.Parse(s),
             Type a when a == typeof(decimal) => decimal.Parse(s),
             Type a when a == typeof(Color) => Color.FromName(s),
+            Type a when a.IsEnum => Enum.Parse(a, s),
             Type a when Expressions.TryConvert(a, s, out var result) => result!,
             _ => s,
         };
