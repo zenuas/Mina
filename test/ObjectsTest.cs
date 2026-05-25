@@ -238,4 +238,35 @@ public class ObjectsTest
         Assert.True(el.SizeOf() is 8);
         Assert.True(eul.SizeOf() is 8);
     }
+
+    [Fact]
+    public void ReturnTest()
+    {
+        var num = 123;
+        Assert.Equal(num.ToString(), "123");
+        Assert.Equal(num.Return(x => x.ToString()), 123);
+
+        var str = "abc";
+        Assert.Equal(str.Substring(0, 1), "a");
+        Assert.Equal(str.Return(x => x.Substring(0, 1)), "abc");
+    }
+
+    public static void ReturnFunction<T>(T _)
+    {
+    }
+
+    public static DateTime ReturnFunction2<T>(T _)
+    {
+        return default;
+    }
+
+    [Fact]
+    public void ReturnFunctionTest()
+    {
+        Assert.Equal(((Action<int>)ReturnFunction).Return()(123), 123);
+        Assert.Equal(((Action<string>)ReturnFunction).Return()("abc"), "abc");
+
+        Assert.Equal(((Func<int, DateTime>)ReturnFunction2).Return()(123), 123);
+        Assert.Equal(((Func<string, DateTime>)ReturnFunction2).Return()("abc"), "abc");
+    }
 }

@@ -13,11 +13,11 @@ public static class Objects
 
     public static T Else<T>(this T self, Func<T, bool> cond, Func<T, T> else_) => cond(self) ? self : else_(self);
 
-    public static T Return<T>(this T self, Action<T> f)
-    {
-        f(self);
-        return self;
-    }
+    public static T Return<T>(this T self, Action<T> f) { f(self); return self; }
+
+    public static Func<T, T> Return<T>(this Action<T> self) => x => { self(x); return x; };
+
+    public static Func<T, T> Return<T, R>(this Func<T, R> self) => x => { self(x); return x; };
 
     public static R To<T, R>(this T self, Func<T, R> f) => f(self);
 
