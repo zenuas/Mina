@@ -21,12 +21,12 @@
 
 :distclean
 	@call :clean
-	rmdir /S /Q src\bin   2>nul
-	rmdir /S /Q src\obj   2>nul
-	rmdir /S /Q test\bin  2>nul
-	rmdir /S /Q test\obj  2>nul
-	rmdir /S /Q bench\bin 2>nul
-	rmdir /S /Q bench\obj 2>nul
+	@for /F %%i in ('powershell -c Select-Xml -Path Mina.slnx -XPath "//Solution/Project | ForEach-Object {$_.Node.Path}"') do @(
+		echo rmdir /S /Q %%~dpibin
+		rmdir /S /Q %%~dpibin 2>nul
+		echo rmdir /S /Q %%~dpiobj
+		rmdir /S /Q %%~dpiobj 2>nul
+	)
 	@exit /b %ERRORLEVEL%
 
 :release
