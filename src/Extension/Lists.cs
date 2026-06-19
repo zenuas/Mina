@@ -44,6 +44,17 @@ public static class Lists
 
     public static void Each<T>(this IEnumerable<T> self, Action<T, int> f) => self.Zip(Sequence(0)).Each(x => f(x.First, x.Second));
 
+    public static IEnumerable<T> DoEach<T>(this IEnumerable<T> self, Action<T> f)
+    {
+        foreach (var v in self)
+        {
+            f(v);
+            yield return v;
+        }
+    }
+
+    public static IEnumerable<T> DoEach<T>(this IEnumerable<T> self, Action<T, int> f) => self.Zip(Sequence(0)).DoEach(x => f(x.First, x.Second)).Select(x => x.First);
+
     public static IEnumerable<T> Apply<T>(this IList<T> self, Func<T, T> f)
     {
         for (var i = 0; i < self.Count; i++)
