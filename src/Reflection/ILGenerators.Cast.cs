@@ -5,11 +5,10 @@ namespace Mina.Reflection;
 
 public static partial class ILGenerators
 {
-    public static bool IsRequireAddressLoad(Type left_type, Type right_type) => (
-            (left_type == typeof(string) && right_type.IsValueType) ||
-            (Nullable.GetUnderlyingType(left_type) is null && Nullable.GetUnderlyingType(right_type) is { }) ||
-            (Nullable.GetUnderlyingType(left_type) is { } left_t && Nullable.GetUnderlyingType(right_type) is { } right_t && left_t != right_t)
-        );
+    public static bool IsRequireAddressLoad(Type left_type, Type right_type) =>
+        (left_type == typeof(string) && right_type.IsValueType) ||
+        (Nullable.GetUnderlyingType(left_type) is null && Nullable.GetUnderlyingType(right_type) is { }) ||
+        (Nullable.GetUnderlyingType(left_type) is { } left_t && Nullable.GetUnderlyingType(right_type) is { } right_t && left_t != right_t);
 
     public static void LdargCast(this ILGenerator il, Type left_type, Type arg_type, int argn)
     {
@@ -183,7 +182,7 @@ public static partial class ILGenerators
                 // then: stack[top] = null;
                 il.Emit(OpCodes.Pop);
                 il.Emit(OpCodes.Ldnull);
-                il.Br_S(endif_label);
+                _ = il.Br_S(endif_label);
 
                 // else: stack[top] = stack[top].ToString();
                 il.MarkLabel(else_label);
@@ -281,7 +280,7 @@ public static partial class ILGenerators
                 // then: stack[top] = 0;
                 il.Emit(OpCodes.Pop);
                 il.Ldc_I4(0);
-                il.Br_S(endif_label);
+                _ = il.Br_S(endif_label);
 
                 // else: if (stack[top] is string)
                 il.MarkLabel(else2_label);
@@ -290,7 +289,7 @@ public static partial class ILGenerators
 
                 // then: stack[top] = (left_type)(string)stack[top];
                 il.AnyCast(left_type, typeof(string));
-                il.Br_S(endif_label);
+                _ = il.Br_S(endif_label);
 
                 // else: stack[top] = (left_type)stack[top];
                 il.MarkLabel(else3_label);

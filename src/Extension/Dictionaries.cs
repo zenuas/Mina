@@ -13,7 +13,7 @@ public static class Dictionaries
     public static TValue GetOrNew<TKey, TValue>(this Dictionary<TKey, TValue> self, TKey key, Func<TValue> f)
         where TKey : notnull
     {
-        self.TryAdd(key, f);
+        _ = self.TryAdd(key, f);
         return self[key];
     }
 
