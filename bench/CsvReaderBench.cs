@@ -33,7 +33,7 @@ public class CsvReaderBench
             var item = new Person2
             {
                 Name = fields[0],
-                Age = int.Parse(fields[1]),
+                Age = int.Parse(fields[1], CultureInfo.InvariantCulture),
             };
             result[index] = item;
             index++;

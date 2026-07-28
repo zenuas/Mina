@@ -1,5 +1,6 @@
 ﻿using Mina.Extension;
 using System;
+using System.Globalization;
 using Xunit;
 
 namespace Mina.Test;
@@ -77,16 +78,16 @@ public class ObjectsTest
 
         Assert.Equal(ok.Try(), "ok");
         Assert.Equal(ok.Try().GetType(), typeof(string));
-        Assert.Throws<Exception>(() => ng.Try());
-        Assert.Throws<NullReferenceException>(() => ng.Try<string, NullReferenceException>());
+        _ = Assert.Throws<Exception>(() => ng.Try());
+        _ = Assert.Throws<NullReferenceException>(() => ng.Try<string, NullReferenceException>());
 
         int? ok2 = 100;
         int? ng2 = null;
 
         Assert.Equal(ok2.Try(), 100);
         Assert.Equal(ok2.Try().GetType(), typeof(int));
-        Assert.Throws<Exception>(() => ng2.Try());
-        Assert.Throws<NullReferenceException>(() => ng2.Try<int, NullReferenceException>());
+        _ = Assert.Throws<Exception>(() => ng2.Try());
+        _ = Assert.Throws<NullReferenceException>(() => ng2.Try<int, NullReferenceException>());
     }
 
     public struct TestStruct1
@@ -243,8 +244,8 @@ public class ObjectsTest
     public void ReturnTest()
     {
         var num = 123;
-        Assert.Equal(num.ToString(), "123");
-        Assert.Equal(num.Return(x => x.ToString()), 123);
+        Assert.Equal(num.ToString(CultureInfo.InvariantCulture), "123");
+        Assert.Equal(num.Return(x => x.ToString(CultureInfo.InvariantCulture)), 123);
 
         var str = "abc";
         Assert.Equal(str.Substring(0, 1), "a");

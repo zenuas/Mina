@@ -1,5 +1,6 @@
 ﻿using Mina.Attributes;
 using System;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 
@@ -7,7 +8,7 @@ namespace Mina.Extension;
 
 public static class Enums
 {
-    public static bool HasBit<T>(this T e, T flags) => (Convert.ToUInt64(e) & Convert.ToUInt64(flags)) != 0;
+    public static bool HasBit<T>(this T e, T flags) => (Convert.ToUInt64(e, CultureInfo.InvariantCulture) & Convert.ToUInt64(flags, CultureInfo.InvariantCulture)) != 0;
 
     public static T? GetAttributeOrDefault<T>(this Enum e) where T : Attribute => e.GetType().GetField(e.ToString())?.GetCustomAttribute<T>() is T attr ? attr : null;
 

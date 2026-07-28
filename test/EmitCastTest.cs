@@ -1,5 +1,6 @@
 ﻿using Mina.Reflection;
 using System;
+using System.Globalization;
 using System.Reflection.Emit;
 using Xunit;
 
@@ -13,8 +14,8 @@ public class EmitCastTest
         public int? Inta { get; set; } = 999;
         public long Long { get; set; } = 999;
         public long? Longa { get; set; } = 999;
-        public DateTime Date { get; set; } = DateTime.Parse("1950/12/31");
-        public DateTime? Datea { get; set; } = DateTime.Parse("1950/12/31");
+        public DateTime Date { get; set; } = DateTime.Parse("1950/12/31", CultureInfo.InvariantCulture);
+        public DateTime? Datea { get; set; } = DateTime.Parse("1950/12/31", CultureInfo.InvariantCulture);
         public string String { get; set; } = "dummy";
         public string? Stringa { get; set; } = "dummy";
     }
@@ -473,9 +474,9 @@ public class EmitCastTest
         var f = ilmethod.CreateDelegate<Action<Data, DateTime>>();
 
         var x = new Data();
-        DateTime n = DateTime.Parse("2000/01/01");
+        DateTime n = DateTime.Parse("2000/01/01", CultureInfo.InvariantCulture);
         f(x, n);
-        Assert.Equal(x.Date, DateTime.Parse("2000/01/01"));
+        Assert.Equal(x.Date, DateTime.Parse("2000/01/01", CultureInfo.InvariantCulture));
     }
 
     [Fact]
@@ -490,9 +491,9 @@ public class EmitCastTest
         var f = ilmethod.CreateDelegate<Action<Data, DateTime?>>();
 
         var x = new Data();
-        DateTime? n = DateTime.Parse("2000/01/01");
+        DateTime? n = DateTime.Parse("2000/01/01", CultureInfo.InvariantCulture);
         f(x, n);
-        Assert.Equal(x.Date, DateTime.Parse("2000/01/01"));
+        Assert.Equal(x.Date, DateTime.Parse("2000/01/01", CultureInfo.InvariantCulture));
     }
 
     [Fact]
@@ -524,9 +525,9 @@ public class EmitCastTest
         var f = ilmethod.CreateDelegate<Action<Data, object?>>();
 
         var x = new Data();
-        object? n = DateTime.Parse("2000/01/01");
+        object? n = DateTime.Parse("2000/01/01", CultureInfo.InvariantCulture);
         f(x, n);
-        Assert.Equal(x.Date, DateTime.Parse("2000/01/01"));
+        Assert.Equal(x.Date, DateTime.Parse("2000/01/01", CultureInfo.InvariantCulture));
     }
 
     [Fact]
@@ -577,7 +578,26 @@ public class EmitCastTest
         var x = new Data();
         object? n = "2000/01/01";
         f(x, n);
-        Assert.Equal(x.Date, DateTime.Parse("2000/01/01"));
+        Assert.Equal(x.Date, DateTime.Parse("2000/01/01", CultureInfo.InvariantCulture));
+    }
+
+    [Fact]
+    public void Date_ObjectStringIgnoreCulture()
+    {
+        CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo("fr-FR");
+
+        var ilmethod = new DynamicMethod("", null, [typeof(Data), typeof(object)]);
+        var il = ilmethod.GetILGenerator();
+        il.Ldarg(0);
+        il.LdargCast(typeof(DateTime), typeof(object), 1);
+        il.Call(typeof(Data).GetProperty(nameof(Data.Date))!.GetSetMethod()!);
+        il.Emit(OpCodes.Ret);
+        var f = ilmethod.CreateDelegate<Action<Data, object?>>();
+
+        var x = new Data();
+        object? n = "01/02/2000";
+        f(x, n);
+        Assert.Equal(x.Date, DateTime.Parse("2000/01/02", CultureInfo.InvariantCulture));
     }
 
     [Fact]
@@ -594,7 +614,7 @@ public class EmitCastTest
         var x = new Data();
         string n = "2000/01/01";
         f(x, n);
-        Assert.Equal(x.Date, DateTime.Parse("2000/01/01"));
+        Assert.Equal(x.Date, DateTime.Parse("2000/01/01", CultureInfo.InvariantCulture));
     }
 
     [Fact]
@@ -609,9 +629,9 @@ public class EmitCastTest
         var f = ilmethod.CreateDelegate<Action<Data, DateTime>>();
 
         var x = new Data();
-        DateTime n = DateTime.Parse("2000/01/01");
+        DateTime n = DateTime.Parse("2000/01/01", CultureInfo.InvariantCulture);
         f(x, n);
-        Assert.Equal(x.Datea, DateTime.Parse("2000/01/01"));
+        Assert.Equal(x.Datea, DateTime.Parse("2000/01/01", CultureInfo.InvariantCulture));
     }
 
     [Fact]
@@ -626,9 +646,9 @@ public class EmitCastTest
         var f = ilmethod.CreateDelegate<Action<Data, DateTime?>>();
 
         var x = new Data();
-        DateTime? n = DateTime.Parse("2000/01/01");
+        DateTime? n = DateTime.Parse("2000/01/01", CultureInfo.InvariantCulture);
         f(x, n);
-        Assert.Equal(x.Datea, DateTime.Parse("2000/01/01"));
+        Assert.Equal(x.Datea, DateTime.Parse("2000/01/01", CultureInfo.InvariantCulture));
     }
 
     [Fact]
@@ -660,9 +680,9 @@ public class EmitCastTest
         var f = ilmethod.CreateDelegate<Action<Data, object?>>();
 
         var x = new Data();
-        object? n = DateTime.Parse("2000/01/01");
+        object? n = DateTime.Parse("2000/01/01", CultureInfo.InvariantCulture);
         f(x, n);
-        Assert.Equal(x.Datea, DateTime.Parse("2000/01/01"));
+        Assert.Equal(x.Datea, DateTime.Parse("2000/01/01", CultureInfo.InvariantCulture));
     }
 
     [Fact]
@@ -713,7 +733,7 @@ public class EmitCastTest
         var x = new Data();
         object? n = "2000/01/01";
         f(x, n);
-        Assert.Equal(x.Datea, DateTime.Parse("2000/01/01"));
+        Assert.Equal(x.Datea, DateTime.Parse("2000/01/01", CultureInfo.InvariantCulture));
     }
 
     [Fact]
@@ -730,7 +750,7 @@ public class EmitCastTest
         var x = new Data();
         string n = "2000/01/01";
         f(x, n);
-        Assert.Equal(x.Datea, DateTime.Parse("2000/01/01"));
+        Assert.Equal(x.Datea, DateTime.Parse("2000/01/01", CultureInfo.InvariantCulture));
     }
 
     [Fact]

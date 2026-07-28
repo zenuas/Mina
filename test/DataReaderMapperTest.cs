@@ -2,6 +2,7 @@
 using Mina.Mapper;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Xunit;
 
@@ -283,10 +284,10 @@ public class DataReaderMapperTest
         var d = f(reader).ToArray();
         Assert.Equal(d.Length, 2);
 
-        Assert.Equal(d[0].Date, DateTime.Parse("2000/01/10"));
-        Assert.Equal(d[0].DateOrNull, DateTime.Parse("2001/02/03"));
+        Assert.Equal(d[0].Date, DateTime.Parse("2000/01/10", CultureInfo.InvariantCulture));
+        Assert.Equal(d[0].DateOrNull, DateTime.Parse("2001/02/03", CultureInfo.InvariantCulture));
 
-        Assert.Equal(d[1].Date, DateTime.Parse("2000/01/11"));
+        Assert.Equal(d[1].Date, DateTime.Parse("2000/01/11", CultureInfo.InvariantCulture));
         Assert.Null(d[1].DateOrNull);
     }
 

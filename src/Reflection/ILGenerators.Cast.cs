@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Reflection.Emit;
 
 namespace Mina.Reflection;
@@ -25,10 +26,11 @@ public static partial class ILGenerators
 
     public static void ChangeType(this ILGenerator il, Type type)
     {
-        // stack[top] = (type)Convert.ChangeType(stack[top], type);
+        // stack[top] = (type)Convert.ChangeType(stack[top], type, CultureInfo.InvariantCulture);
         il.Ldtoken(type);
         il.Call(typeof(Type).GetMethod(nameof(Type.GetTypeFromHandle))!);
-        il.Call(typeof(Convert).GetMethod(nameof(Convert.ChangeType), [typeof(object), typeof(Type)])!);
+        il.Call(typeof(CultureInfo).GetProperty(nameof(CultureInfo.InvariantCulture))!.GetGetMethod()!);
+        il.Call(typeof(Convert).GetMethod(nameof(Convert.ChangeType), [typeof(object), typeof(Type), typeof(IFormatProvider)])!);
         il.Unbox_Any(type);
     }
 

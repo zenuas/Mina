@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 
 namespace Mina.Extension;
 
@@ -34,5 +35,5 @@ public static class SafeConvert
     public static DateTime? ToDateTimeOrNull(object? obj) => TryConvert<DateTime>(obj, out var value) ? value : null;
     public static string? ToStringOrNull(object? obj) => ((Func<string?>)(() => obj?.ToString())).Catch(out var value) is null ? value : null;
 
-    public static bool TryConvert<T>(object? obj, out T value) => ((Func<T>)(() => (T)Convert.ChangeType(obj, typeof(T))!)).Catch(out value) is null;
+    public static bool TryConvert<T>(object? obj, out T value) => ((Func<T>)(() => (T)Convert.ChangeType(obj, typeof(T), CultureInfo.InvariantCulture)!)).Catch(out value) is null;
 }

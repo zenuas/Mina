@@ -44,7 +44,7 @@ public static class CommandLine
 
         for (var i = 0; i < args.Length; i++)
         {
-            if (args[i].StartsWith("--"))
+            if (args[i].StartsWith("--", StringComparison.Ordinal))
             {
                 method = map[args[i][2..]].Method;
             }
