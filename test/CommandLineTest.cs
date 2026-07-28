@@ -1,6 +1,7 @@
 using Mina.Command;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.IO;
 using Xunit;
@@ -126,6 +127,20 @@ public class CommandLineTest
         Assert.Equal(args2, new string[] { "a", "b", "c" });
     }
 
+    public class ParsableClass : IParsable<ParsableClass>
+    {
+        public required int Value { get; init; }
+
+        public static ParsableClass Parse(string s, IFormatProvider? provider) => TryParse(s, provider, out var result) ? result : throw new();
+
+        public static bool TryParse([NotNullWhen(true)] string? s, IFormatProvider? provider, [MaybeNullWhen(false)] out ParsableClass result)
+        {
+            var b = int.TryParse(s, out var r);
+            result = b ? new ParsableClass() { Value = r } : default;
+            return b;
+        }
+    }
+
     [Fact]
     public void ConvertTest()
     {
@@ -137,5 +152,9 @@ public class CommandLineTest
         Assert.Equal(CommandLine.Convert(typeof(Color), "#FF0000"), Color.FromName("#FF0000"));
         Assert.NotEqual(CommandLine.Convert(typeof(Color), "#FF0000"), Color.Red);
         Assert.Equal(CommandLine.Convert(typeof(Color), "Red"), Color.Red);
+
+        var v = CommandLine.Convert(typeof(ParsableClass), "123");
+        var o = Assert.IsType<ParsableClass>(v);
+        Assert.Equal(o.Value, 123);
     }
 }

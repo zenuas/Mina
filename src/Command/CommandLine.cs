@@ -101,6 +101,8 @@ public static class CommandLine
             Type a when a == typeof(StreamReader) => new StreamReader(s),
             Type a when a == typeof(TextWriter) => s == "-" ? Console.Out : new StreamWriter(s),
             Type a when a == typeof(StreamWriter) => new StreamWriter(s),
+
+            // Built-in types are used frequently, so they are handled directly to avoid reflection via Expressions.TryConvert.
             Type a when a == typeof(byte) => byte.Parse(s),
             Type a when a == typeof(sbyte) => sbyte.Parse(s),
             Type a when a == typeof(int) => int.Parse(s),
@@ -114,6 +116,7 @@ public static class CommandLine
             Type a when a == typeof(char) => char.Parse(s),
             Type a when a == typeof(bool) => bool.Parse(s),
             Type a when a == typeof(decimal) => decimal.Parse(s),
+
             Type a when a == typeof(Color) => Color.FromName(s),
             Type a when a.IsEnum => Enum.Parse(a, s),
             Type a when Expressions.TryConvert(a, s, out var result) => result!,
