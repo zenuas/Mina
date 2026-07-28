@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -32,7 +33,7 @@ public static class CommandLine
 
     public static IEnumerable<(A Attribute, MethodInfo Method)> GetCommands<T, A>() where A : Attribute => GetCommands<A>(typeof(T));
 
-    public static string[] Parse<T>(Type t, T receiver, params string[] args)
+    public static string[] Parse<T>(Type t, T receiver, IFormatProvider provider, params string[] args)
     {
         var map = GetCommands<CommandOptionAttribute>(t)
             .ToDictionary(x => x.Attribute.Command);
@@ -65,7 +66,7 @@ public static class CommandLine
             if (method is { } && method.GetParameters().Length <= method_args.Count)
             {
                 var parameters = method.GetParameters();
-                _ = method.Invoke(receiver, [.. method_args.Select((arg, i) => Convert(parameters[i].ParameterType, arg))]);
+                _ = method.Invoke(receiver, [.. method_args.Select((arg, i) => Convert(parameters[i].ParameterType, arg, provider))]);
                 method = null;
                 method_args.Clear();
             }
@@ -73,7 +74,7 @@ public static class CommandLine
         return [.. xargs];
     }
 
-    public static string[] Parse<T>(T receiver, params string[] args) => Parse(typeof(T), receiver, args);
+    public static string[] Parse<T>(T receiver, IFormatProvider provider, params string[] args) => Parse(typeof(T), receiver, provider, args);
 
     public static (T Receiver, string[] Arguments) Run<T>(params string[] args)
     {
@@ -81,19 +82,25 @@ public static class CommandLine
         return (receiver, Run(receiver, args));
     }
 
-    public static string[] Run<T>(T receiver, params string[] args) => Parse<T>(receiver, args);
+    public static string[] Run<T>(T receiver, params string[] args) => Run<T>(receiver, CultureInfo.InvariantCulture, args);
 
-    public static (T Receiver, string[] Arguments) Run<T>((string Command, Type Receiver)[] subcommands, params string[] args)
+    public static string[] Run<T>(T receiver, IFormatProvider provider, params string[] args) => Parse<T>(receiver, provider, args);
+
+    public static (T Receiver, string[] Arguments) Run<T>((string Command, Type Receiver)[] subcommands, params string[] args) => Run<T>(subcommands, CultureInfo.InvariantCulture, args);
+
+    public static (T Receiver, string[] Arguments) Run<T>((string Command, Type Receiver)[] subcommands, IFormatProvider provider, params string[] args)
     {
         var command = args.FirstOrDefault() ?? "";
         var subcommand = subcommands.Where(x => x.Command == command).First();
         var receiver = Expressions.GetNew<T>(subcommand.Receiver.GetConstructor([])!)();
-        return (receiver, Parse(subcommand.Receiver, receiver, [.. args.Skip(1)]));
+        return (receiver, Parse(subcommand.Receiver, receiver, provider, [.. args.Skip(1)]));
     }
 
-    public static (object Receiver, string[] Arguments) Run((string Command, Type Receiver)[] subcommands, params string[] args) => Run<object>(subcommands, args);
+    public static (object Receiver, string[] Arguments) Run((string Command, Type Receiver)[] subcommands, params string[] args) => Run<object>(subcommands, CultureInfo.InvariantCulture, args);
 
-    public static object Convert(Type t, string s)
+    public static (object Receiver, string[] Arguments) Run((string Command, Type Receiver)[] subcommands, IFormatProvider provider, params string[] args) => Run<object>(subcommands, provider, args);
+
+    public static object Convert(Type t, string s, IFormatProvider provider)
     {
         return t switch
         {
@@ -103,23 +110,26 @@ public static class CommandLine
             Type a when a == typeof(StreamWriter) => new StreamWriter(s),
 
             // Built-in types are used frequently, so they are handled directly to avoid reflection via Expressions.TryConvert.
-            Type a when a == typeof(byte) => byte.Parse(s),
-            Type a when a == typeof(sbyte) => sbyte.Parse(s),
-            Type a when a == typeof(int) => int.Parse(s),
-            Type a when a == typeof(uint) => uint.Parse(s),
-            Type a when a == typeof(short) => short.Parse(s),
-            Type a when a == typeof(ushort) => ushort.Parse(s),
-            Type a when a == typeof(long) => long.Parse(s),
-            Type a when a == typeof(ulong) => ulong.Parse(s),
-            Type a when a == typeof(float) => float.Parse(s),
-            Type a when a == typeof(double) => double.Parse(s),
+            Type a when a == typeof(byte) => byte.Parse(s, provider),
+            Type a when a == typeof(sbyte) => sbyte.Parse(s, provider),
+            Type a when a == typeof(int) => int.Parse(s, provider),
+            Type a when a == typeof(uint) => uint.Parse(s, provider),
+            Type a when a == typeof(short) => short.Parse(s, provider),
+            Type a when a == typeof(ushort) => ushort.Parse(s, provider),
+            Type a when a == typeof(long) => long.Parse(s, provider),
+            Type a when a == typeof(ulong) => ulong.Parse(s, provider),
+            Type a when a == typeof(float) => float.Parse(s, provider),
+            Type a when a == typeof(double) => double.Parse(s, provider),
             Type a when a == typeof(char) => char.Parse(s),
             Type a when a == typeof(bool) => bool.Parse(s),
-            Type a when a == typeof(decimal) => decimal.Parse(s),
+            Type a when a == typeof(decimal) => decimal.Parse(s, provider),
+            Type a when a == typeof(DateTime) => DateTime.Parse(s, provider),
+            Type a when a == typeof(DateOnly) => DateOnly.Parse(s, provider),
+            Type a when a == typeof(TimeOnly) => TimeOnly.Parse(s, provider),
 
             Type a when a == typeof(Color) => Color.FromName(s),
             Type a when a.IsEnum => Enum.Parse(a, s),
-            Type a when Expressions.TryConvert(a, s, out var result) => result!,
+            Type a when Expressions.TryConvert(a, s, provider, out var result) => result!,
             _ => s,
         };
     }

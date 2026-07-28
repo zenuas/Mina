@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
 using Xunit;
 
@@ -142,18 +143,64 @@ public class CommandLineTest
     }
 
     [Fact]
-    public void ConvertTest()
+    public void ConvertInvariantCultureTest()
     {
-        Assert.Equal(CommandLine.Convert(typeof(int), "123"), 123);
-        Assert.Equal(CommandLine.Convert(typeof(double), "1.23"), 1.23);
-        Assert.Equal(CommandLine.Convert(typeof(bool), "true"), true);
-        Assert.Equal(CommandLine.Convert(typeof(bool), "false"), false);
-        Assert.Equal(CommandLine.Convert(typeof(DateTime), "2000/01/02"), new DateTime(2000, 1, 2));
-        Assert.Equal(CommandLine.Convert(typeof(Color), "#FF0000"), Color.FromName("#FF0000"));
-        Assert.NotEqual(CommandLine.Convert(typeof(Color), "#FF0000"), Color.Red);
-        Assert.Equal(CommandLine.Convert(typeof(Color), "Red"), Color.Red);
+        var culture = CultureInfo.InvariantCulture;
 
-        var v = CommandLine.Convert(typeof(ParsableClass), "123");
+        Assert.Equal(CommandLine.Convert(typeof(int), "123", culture), 123);
+        Assert.Equal(CommandLine.Convert(typeof(double), "1.23", culture), 1.23);
+        Assert.Equal(CommandLine.Convert(typeof(bool), "true", culture), true);
+        Assert.Equal(CommandLine.Convert(typeof(bool), "false", culture), false);
+        Assert.Equal(CommandLine.Convert(typeof(DateTime), "2000/01/02", culture), new DateTime(2000, 1, 2));
+        Assert.Equal(CommandLine.Convert(typeof(DateTime), "01/02/2000", culture), new DateTime(2000, 1, 2));
+        Assert.Equal(CommandLine.Convert(typeof(DateTime), "2000年1月2日", culture), new DateTime(2000, 1, 2));
+        Assert.Equal(CommandLine.Convert(typeof(Color), "#FF0000", culture), Color.FromName("#FF0000"));
+        Assert.NotEqual(CommandLine.Convert(typeof(Color), "#FF0000", culture), Color.Red);
+        Assert.Equal(CommandLine.Convert(typeof(Color), "Red", culture), Color.Red);
+
+        var v = CommandLine.Convert(typeof(ParsableClass), "123", culture);
+        var o = Assert.IsType<ParsableClass>(v);
+        Assert.Equal(o.Value, 123);
+    }
+
+    [Fact]
+    public void ConvertJapaneseCultureTest()
+    {
+        var culture = CultureInfo.GetCultureInfo("ja-JP");
+
+        Assert.Equal(CommandLine.Convert(typeof(int), "123", culture), 123);
+        Assert.Equal(CommandLine.Convert(typeof(double), "1.23", culture), 1.23);
+        Assert.Equal(CommandLine.Convert(typeof(bool), "true", culture), true);
+        Assert.Equal(CommandLine.Convert(typeof(bool), "false", culture), false);
+        Assert.Equal(CommandLine.Convert(typeof(DateTime), "2000/01/02", culture), new DateTime(2000, 1, 2));
+        Assert.Equal(CommandLine.Convert(typeof(DateTime), "01/02/2000", culture), new DateTime(2000, 1, 2));
+        Assert.Equal(CommandLine.Convert(typeof(DateTime), "2000年1月2日", culture), new DateTime(2000, 1, 2));
+        Assert.Equal(CommandLine.Convert(typeof(Color), "#FF0000", culture), Color.FromName("#FF0000"));
+        Assert.NotEqual(CommandLine.Convert(typeof(Color), "#FF0000", culture), Color.Red);
+        Assert.Equal(CommandLine.Convert(typeof(Color), "Red", culture), Color.Red);
+
+        var v = CommandLine.Convert(typeof(ParsableClass), "123", culture);
+        var o = Assert.IsType<ParsableClass>(v);
+        Assert.Equal(o.Value, 123);
+    }
+
+    [Fact]
+    public void ConvertFranceCultureTest()
+    {
+        var culture = CultureInfo.GetCultureInfo("fr-FR");
+
+        Assert.Equal(CommandLine.Convert(typeof(int), "123", culture), 123);
+        Assert.Equal(CommandLine.Convert(typeof(double), "1,23", culture), 1.23);
+        Assert.Equal(CommandLine.Convert(typeof(bool), "true", culture), true);
+        Assert.Equal(CommandLine.Convert(typeof(bool), "false", culture), false);
+        Assert.Equal(CommandLine.Convert(typeof(DateTime), "2000/01/02", culture), new DateTime(2000, 1, 2));
+        Assert.Equal(CommandLine.Convert(typeof(DateTime), "01/02/2000", culture), new DateTime(2000, 2, 1));
+        Assert.Equal(CommandLine.Convert(typeof(DateTime), "2000年1月2日", culture), new DateTime(2000, 1, 2));
+        Assert.Equal(CommandLine.Convert(typeof(Color), "#FF0000", culture), Color.FromName("#FF0000"));
+        Assert.NotEqual(CommandLine.Convert(typeof(Color), "#FF0000", culture), Color.Red);
+        Assert.Equal(CommandLine.Convert(typeof(Color), "Red", culture), Color.Red);
+
+        var v = CommandLine.Convert(typeof(ParsableClass), "123", culture);
         var o = Assert.IsType<ParsableClass>(v);
         Assert.Equal(o.Value, 123);
     }

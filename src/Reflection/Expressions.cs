@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.Numerics;
 using System.Reflection;
 using System.Reflection.Emit;
@@ -155,7 +156,9 @@ public static class Expressions
         return ilmethod.CreateDelegate<Func<T>>();
     }
 
-    public static bool TryConvert(Type t, string s, [MaybeNullWhen(returnValue: false)] out object? result)
+    public static bool TryConvert(Type t, string s, [MaybeNullWhen(returnValue: false)] out object? result) => TryConvert(t, s, CultureInfo.InvariantCulture, out result);
+
+    public static bool TryConvert(Type t, string s, IFormatProvider? provider, [MaybeNullWhen(returnValue: false)] out object? result)
     {
         result = null;
         try
@@ -163,7 +166,7 @@ public static class Expressions
             var parsable = typeof(IParsable<>).MakeGenericType(t);
             if (parsable.IsAssignableFrom(t) && t.GetMethod("TryParse", [typeof(string), typeof(IFormatProvider), t.MakeByRefType()]) is { } method)
             {
-                var parameter = new object?[] { s, null, null };
+                var parameter = new object?[] { s, provider, null };
                 if ((bool)method.Invoke(null, parameter)!)
                 {
                     result = parameter[2];

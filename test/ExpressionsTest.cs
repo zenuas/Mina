@@ -2,6 +2,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
+using System.Globalization;
 using Xunit;
 
 namespace Mina.Test;
@@ -97,24 +98,170 @@ public class ExpressionsTest
     [Fact]
     public void TryConvertTest()
     {
-        var result1 = Expressions.TryConvert(typeof(DateTime), "a", out var _);
-        Assert.Equal(result1, false);
+        // When no culture is specified, use InvariantCulture.
+        // Ignore CurrentCulture.
+        CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo("fr-FR");
 
-        var result2 = Expressions.TryConvert(typeof(DateTime), "2000/01/02", out var v2);
+        var result1 = Expressions.TryConvert(typeof(int), "123", out var v1);
+        Assert.Equal(result1, true);
+        Assert.Equal(v1, 123);
+
+        var result2 = Expressions.TryConvert(typeof(double), "1.23", out var v2);
         Assert.Equal(result2, true);
-        Assert.Equal(v2, new DateTime(2000, 1, 2));
+        Assert.Equal(v2, 1.23);
 
-        var result3 = Expressions.TryConvert(typeof(Color), "Red", out var _);
+        var result3 = Expressions.TryConvert(typeof(DateTime), "a", out var _);
         Assert.Equal(result3, false);
 
-        var result4 = Expressions.TryConvert(typeof(ParsableClass), "123", out var v4);
+        var result4 = Expressions.TryConvert(typeof(DateTime), "2000/01/02", out var v4);
         Assert.Equal(result4, true);
-        var o4 = Assert.IsType<ParsableClass>(v4);
-        Assert.Equal(o4.Value, 123);
+        Assert.Equal(v4, new DateTime(2000, 1, 2));
 
-        var result5 = Expressions.TryConvert(typeof(SpanParsableClass), "234", out var v5);
+        var result5 = Expressions.TryConvert(typeof(DateTime), "01/02/2000", out var v5);
         Assert.Equal(result5, true);
-        var o5 = Assert.IsType<SpanParsableClass>(v5);
-        Assert.Equal(o5.Value, 234);
+        Assert.Equal(v5, new DateTime(2000, 1, 2));
+
+        var result6 = Expressions.TryConvert(typeof(DateTime), "2000年1月2日", out var v6);
+        Assert.Equal(result6, true);
+        Assert.Equal(v6, new DateTime(2000, 1, 2));
+
+        var result7 = Expressions.TryConvert(typeof(Color), "Red", out var _);
+        Assert.Equal(result7, false);
+
+        var result8 = Expressions.TryConvert(typeof(ParsableClass), "123", out var v8);
+        Assert.Equal(result8, true);
+        var o8 = Assert.IsType<ParsableClass>(v8);
+        Assert.Equal(o8.Value, 123);
+
+        var result9 = Expressions.TryConvert(typeof(SpanParsableClass), "234", out var v9);
+        Assert.Equal(result9, true);
+        var o9 = Assert.IsType<SpanParsableClass>(v9);
+        Assert.Equal(o9.Value, 234);
+    }
+
+    [Fact]
+    public void TryConvertInvariantCultureTest()
+    {
+        var culture = CultureInfo.InvariantCulture;
+
+        var result1 = Expressions.TryConvert(typeof(int), "123", culture, out var v1);
+        Assert.Equal(result1, true);
+        Assert.Equal(v1, 123);
+
+        var result2 = Expressions.TryConvert(typeof(double), "1.23", culture, out var v2);
+        Assert.Equal(result2, true);
+        Assert.Equal(v2, 1.23);
+
+        var result3 = Expressions.TryConvert(typeof(DateTime), "a", culture, out var _);
+        Assert.Equal(result3, false);
+
+        var result4 = Expressions.TryConvert(typeof(DateTime), "2000/01/02", culture, out var v4);
+        Assert.Equal(result4, true);
+        Assert.Equal(v4, new DateTime(2000, 1, 2));
+
+        var result5 = Expressions.TryConvert(typeof(DateTime), "01/02/2000", culture, out var v5);
+        Assert.Equal(result5, true);
+        Assert.Equal(v5, new DateTime(2000, 1, 2));
+
+        var result6 = Expressions.TryConvert(typeof(DateTime), "2000年1月2日", culture, out var v6);
+        Assert.Equal(result6, true);
+        Assert.Equal(v6, new DateTime(2000, 1, 2));
+
+        var result7 = Expressions.TryConvert(typeof(Color), "Red", culture, out var _);
+        Assert.Equal(result7, false);
+
+        var result8 = Expressions.TryConvert(typeof(ParsableClass), "123", culture, out var v8);
+        Assert.Equal(result8, true);
+        var o8 = Assert.IsType<ParsableClass>(v8);
+        Assert.Equal(o8.Value, 123);
+
+        var result9 = Expressions.TryConvert(typeof(SpanParsableClass), "234", culture, out var v9);
+        Assert.Equal(result9, true);
+        var o9 = Assert.IsType<SpanParsableClass>(v9);
+        Assert.Equal(o9.Value, 234);
+    }
+
+    [Fact]
+    public void TryConvertJapaneseCultureTest()
+    {
+        var culture = CultureInfo.GetCultureInfo("ja-JP");
+
+        var result1 = Expressions.TryConvert(typeof(int), "123", culture, out var v1);
+        Assert.Equal(result1, true);
+        Assert.Equal(v1, 123);
+
+        var result2 = Expressions.TryConvert(typeof(double), "1.23", culture, out var v2);
+        Assert.Equal(result2, true);
+        Assert.Equal(v2, 1.23);
+
+        var result3 = Expressions.TryConvert(typeof(DateTime), "a", culture, out var _);
+        Assert.Equal(result3, false);
+
+        var result4 = Expressions.TryConvert(typeof(DateTime), "2000/01/02", culture, out var v4);
+        Assert.Equal(result4, true);
+        Assert.Equal(v4, new DateTime(2000, 1, 2));
+
+        var result5 = Expressions.TryConvert(typeof(DateTime), "01/02/2000", culture, out var v5);
+        Assert.Equal(result5, true);
+        Assert.Equal(v5, new DateTime(2000, 1, 2));
+
+        var result6 = Expressions.TryConvert(typeof(DateTime), "2000年1月2日", culture, out var v6);
+        Assert.Equal(result6, true);
+        Assert.Equal(v6, new DateTime(2000, 1, 2));
+
+        var result7 = Expressions.TryConvert(typeof(Color), "Red", culture, out var _);
+        Assert.Equal(result7, false);
+
+        var result8 = Expressions.TryConvert(typeof(ParsableClass), "123", culture, out var v8);
+        Assert.Equal(result8, true);
+        var o8 = Assert.IsType<ParsableClass>(v8);
+        Assert.Equal(o8.Value, 123);
+
+        var result9 = Expressions.TryConvert(typeof(SpanParsableClass), "234", culture, out var v9);
+        Assert.Equal(result9, true);
+        var o9 = Assert.IsType<SpanParsableClass>(v9);
+        Assert.Equal(o9.Value, 234);
+    }
+
+    [Fact]
+    public void TryConvertFranceCultureTest()
+    {
+        var culture = CultureInfo.GetCultureInfo("fr-FR");
+
+        var result1 = Expressions.TryConvert(typeof(int), "123", culture, out var v1);
+        Assert.Equal(result1, true);
+        Assert.Equal(v1, 123);
+
+        var result2 = Expressions.TryConvert(typeof(double), "1,23", culture, out var v2);
+        Assert.Equal(result2, true);
+        Assert.Equal(v2, 1.23);
+
+        var result3 = Expressions.TryConvert(typeof(DateTime), "a", culture, out var _);
+        Assert.Equal(result3, false);
+
+        var result4 = Expressions.TryConvert(typeof(DateTime), "2000/01/02", culture, out var v4);
+        Assert.Equal(result4, true);
+        Assert.Equal(v4, new DateTime(2000, 1, 2));
+
+        var result5 = Expressions.TryConvert(typeof(DateTime), "01/02/2000", culture, out var v5);
+        Assert.Equal(result5, true);
+        Assert.Equal(v5, new DateTime(2000, 2, 1));
+
+        var result6 = Expressions.TryConvert(typeof(DateTime), "2000年1月2日", culture, out var v6);
+        Assert.Equal(result6, true);
+        Assert.Equal(v6, new DateTime(2000, 1, 2));
+
+        var result7 = Expressions.TryConvert(typeof(Color), "Red", culture, out var _);
+        Assert.Equal(result7, false);
+
+        var result8 = Expressions.TryConvert(typeof(ParsableClass), "123", culture, out var v8);
+        Assert.Equal(result8, true);
+        var o8 = Assert.IsType<ParsableClass>(v8);
+        Assert.Equal(o8.Value, 123);
+
+        var result9 = Expressions.TryConvert(typeof(SpanParsableClass), "234", culture, out var v9);
+        Assert.Equal(result9, true);
+        var o9 = Assert.IsType<SpanParsableClass>(v9);
+        Assert.Equal(o9.Value, 234);
     }
 }
