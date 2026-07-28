@@ -1,5 +1,6 @@
 ﻿using Mina.Reflection;
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using Xunit;
 
@@ -61,6 +62,38 @@ public class ExpressionsTest
         Assert.Equal(rshift_int(40, 3), 5);
     }
 
+    public class ParsableClass : IParsable<ParsableClass>
+    {
+        public required int Value { get; init; }
+
+        public static ParsableClass Parse(string s, IFormatProvider? provider) => TryParse(s, provider, out var result) ? result : throw new();
+
+        public static bool TryParse([NotNullWhen(true)] string? s, IFormatProvider? provider, [MaybeNullWhen(false)] out ParsableClass result)
+        {
+            var b = int.TryParse(s, out var r);
+            result = b ? new ParsableClass() { Value = r } : default;
+            return b;
+        }
+    }
+
+    public class SpanParsableClass : ISpanParsable<SpanParsableClass>
+    {
+        public required int Value { get; init; }
+
+        public static SpanParsableClass Parse(string s, IFormatProvider? provider) => TryParse(s, provider, out var result) ? result : throw new();
+
+        public static SpanParsableClass Parse(ReadOnlySpan<char> s, IFormatProvider? provider) => TryParse(s, provider, out var result) ? result : throw new();
+
+        public static bool TryParse([NotNullWhen(true)] string? s, IFormatProvider? provider, [MaybeNullWhen(false)] out SpanParsableClass result) => TryParse(s.AsSpan(), provider, out result);
+
+        public static bool TryParse(ReadOnlySpan<char> s, IFormatProvider? provider, [MaybeNullWhen(false)] out SpanParsableClass result)
+        {
+            var b = int.TryParse(s, out var r);
+            result = b ? new SpanParsableClass() { Value = r } : default;
+            return b;
+        }
+    }
+
     [Fact]
     public void TryConvertTest()
     {
@@ -73,5 +106,15 @@ public class ExpressionsTest
 
         var result3 = Expressions.TryConvert(typeof(Color), "Red", out var _);
         Assert.Equal(result3, false);
+
+        var result4 = Expressions.TryConvert(typeof(ParsableClass), "123", out var v4);
+        Assert.Equal(result4, true);
+        var o4 = Assert.IsType<ParsableClass>(v4);
+        Assert.Equal(o4.Value, 123);
+
+        var result5 = Expressions.TryConvert(typeof(SpanParsableClass), "234", out var v5);
+        Assert.Equal(result5, true);
+        var o5 = Assert.IsType<SpanParsableClass>(v5);
+        Assert.Equal(o5.Value, 234);
     }
 }
