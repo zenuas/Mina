@@ -3,12 +3,18 @@ using System.Buffers.Binary;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 
 namespace Mina.Extension;
 
 public static class Streams
 {
-    public static void Write(this Stream self, string s) => self.Write(System.Text.Encoding.UTF8.GetBytes(s));
+    public static void Write(this Stream self, string s)
+    {
+        Span<byte> buffer = stackalloc byte[Encoding.UTF8.GetMaxByteCount(s.Length)];
+        var count = Encoding.UTF8.GetBytes(s, buffer);
+        self.Write(buffer[..count]);
+    }
 
     public static void WriteShortByLittleEndian(this Stream self, short n) { Span<byte> buffer = stackalloc byte[2]; BinaryPrimitives.WriteInt16LittleEndian(buffer, n); self.Write(buffer); }
     public static void WriteIntByLittleEndian(this Stream self, int n) { Span<byte> buffer = stackalloc byte[4]; BinaryPrimitives.WriteInt32LittleEndian(buffer, n); self.Write(buffer); }

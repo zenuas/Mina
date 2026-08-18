@@ -7,25 +7,17 @@ namespace Mina.Benchmark;
 
 public class StreamBench
 {
-    public MemoryStream mem_ = new();
-
-    [GlobalSetup]
-    public void GlobalSetup()
+    [Benchmark]
+    public void WriteStringStackalloc()
     {
-        mem_ = new MemoryStream(Encoding.ASCII.GetBytes("abc123"));
+        var m = new MemoryStream();
+        m.Write("abc123");
     }
 
     [Benchmark]
-    public void ReadSByte()
+    public void WriteStringHeap()
     {
-        mem_.Position = 0;
-        _ = mem_.ReadSByte();
-    }
-
-    [Benchmark]
-    public void ReadUByte()
-    {
-        mem_.Position = 0;
-        _ = mem_.ReadUByte();
+        var m = new MemoryStream();
+        m.Write(Encoding.UTF8.GetBytes("abc123"));
     }
 }
