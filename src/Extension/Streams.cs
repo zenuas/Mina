@@ -9,12 +9,22 @@ namespace Mina.Extension;
 
 public static class Streams
 {
-    public static void Write(this Stream self, string s)
+    public static void Write(this Stream self, string s, Encoding encoding)
     {
-        Span<byte> buffer = stackalloc byte[Encoding.UTF8.GetMaxByteCount(s.Length)];
-        var count = Encoding.UTF8.GetBytes(s, buffer);
+        Span<byte> buffer = stackalloc byte[encoding.GetMaxByteCount(s.Length)];
+        var count = encoding.GetBytes(s, buffer);
         self.Write(buffer[..count]);
     }
+
+    public static void Write(this Stream self, char c, Encoding encoding)
+    {
+        Span<byte> buffer = stackalloc byte[encoding.GetMaxByteCount(1)];
+        var count = encoding.GetBytes([c], buffer);
+        self.Write(buffer[..count]);
+    }
+
+    public static void Write(this Stream self, string s) => self.Write(s, Encoding.UTF8);
+    public static void Write(this Stream self, char c) => self.Write(c, Encoding.UTF8);
 
     public static void WriteShortByLittleEndian(this Stream self, short n) { Span<byte> buffer = stackalloc byte[2]; BinaryPrimitives.WriteInt16LittleEndian(buffer, n); self.Write(buffer); }
     public static void WriteIntByLittleEndian(this Stream self, int n) { Span<byte> buffer = stackalloc byte[4]; BinaryPrimitives.WriteInt32LittleEndian(buffer, n); self.Write(buffer); }

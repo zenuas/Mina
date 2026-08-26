@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Mina.Extension;
+using System;
 using System.IO;
 using System.Text;
 
@@ -17,20 +18,14 @@ public class IndentWriter : IDisposable
     {
         if (IsNewLine && Indent > 0) WriteIndent(BaseStream, Indent, IndentChars, Encoding);
         IsNewLine = false;
-
-        Span<byte> buffer = stackalloc byte[Encoding.GetMaxByteCount(1)];
-        var count = Encoding.GetBytes([c], buffer);
-        BaseStream.Write(buffer[..count]);
+        BaseStream.Write(c, Encoding);
     }
 
     public void Write(string s)
     {
         if (IsNewLine && Indent > 0) WriteIndent(BaseStream, Indent, IndentChars, Encoding);
         IsNewLine = false;
-
-        Span<byte> buffer = stackalloc byte[Encoding.GetMaxByteCount(s.Length)];
-        var count = Encoding.GetBytes(s, buffer);
-        BaseStream.Write(buffer[..count]);
+        BaseStream.Write(s, Encoding);
     }
 
     public void WriteLine()
