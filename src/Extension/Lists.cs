@@ -24,6 +24,7 @@ public static class Lists
         for (var i = 0; i < length; i++, start++) yield return start;
     }
 
+    public static IEnumerable<char> RangeTo(char start, char end) => Range(start, end - start + 1);
     public static IEnumerable<byte> RangeTo(byte start, byte end) => Sequence(start).Take(end - start + 1);
     public static IEnumerable<short> RangeTo(short start, short end) => Sequence(start).Take(end - start + 1);
     public static IEnumerable<int> RangeTo(int start, int end) => Enumerable.Range(start, end - start + 1);
@@ -54,8 +55,6 @@ public static class Lists
             if (++i >= count) break;
         }
     }
-
-    public static IEnumerable<char> RangeTo(char start, char end) => Range(start, end - start + 1);
 
     public static IEnumerable<T> Repeat<T>(T x)
     {
