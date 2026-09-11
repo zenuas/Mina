@@ -9,50 +9,15 @@ namespace Mina.Extension;
 
 public static class Lists
 {
-    public static IEnumerable<char> Sequence(char first, int tolerance = 1)
-    {
-        for (; ; first = (char)(first + tolerance)) yield return first;
-    }
-
-    public static IEnumerable<byte> Sequence(byte first, byte tolerance = 1)
-    {
-        for (; ; first += tolerance) yield return first;
-    }
-
-    public static IEnumerable<short> Sequence(short first, short tolerance = 1)
-    {
-        for (; ; first += tolerance) yield return first;
-    }
-
-    public static IEnumerable<int> Sequence(int first, int tolerance = 1)
-    {
-        for (; ; first += tolerance) yield return first;
-    }
-
-    public static IEnumerable<long> Sequence(long first, long tolerance = 1)
-    {
-        for (; ; first += tolerance) yield return first;
-    }
-
-    public static IEnumerable<sbyte> Sequence(sbyte first, sbyte tolerance = 1)
-    {
-        for (; ; first += tolerance) yield return first;
-    }
-
-    public static IEnumerable<ushort> Sequence(ushort first, ushort tolerance = 1)
-    {
-        for (; ; first += tolerance) yield return first;
-    }
-
-    public static IEnumerable<uint> Sequence(uint first, uint tolerance = 1)
-    {
-        for (; ; first += tolerance) yield return first;
-    }
-
-    public static IEnumerable<ulong> Sequence(ulong first, ulong tolerance = 1)
-    {
-        for (; ; first += tolerance) yield return first;
-    }
+    public static IEnumerable<char> Sequence(char first, int tolerance = 1) { for (; ; first = (char)(first + tolerance)) yield return first; }
+    public static IEnumerable<byte> Sequence(byte first, byte tolerance = 1) { for (; ; first += tolerance) yield return first; }
+    public static IEnumerable<short> Sequence(short first, short tolerance = 1) { for (; ; first += tolerance) yield return first; }
+    public static IEnumerable<int> Sequence(int first, int tolerance = 1) { for (; ; first += tolerance) yield return first; }
+    public static IEnumerable<long> Sequence(long first, long tolerance = 1) { for (; ; first += tolerance) yield return first; }
+    public static IEnumerable<sbyte> Sequence(sbyte first, sbyte tolerance = 1) { for (; ; first += tolerance) yield return first; }
+    public static IEnumerable<ushort> Sequence(ushort first, ushort tolerance = 1) { for (; ; first += tolerance) yield return first; }
+    public static IEnumerable<uint> Sequence(uint first, uint tolerance = 1) { for (; ; first += tolerance) yield return first; }
+    public static IEnumerable<ulong> Sequence(ulong first, ulong tolerance = 1) { for (; ; first += tolerance) yield return first; }
 
     public static IEnumerable<char> Range(char start, int length)
     {
