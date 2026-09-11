@@ -38,25 +38,32 @@ public class ListsTest
     }
 
     [Fact]
+    public void SequenceLongTest()
+    {
+        var xs = Lists.RangeTo(1L, 3L);
+        Assert.Equal(xs, [1, 2, 3]);
+    }
+
+    [Fact]
     public void RangeTest()
     {
         var xs = Enumerable.Range(int.MaxValue - 5, 6);
-        Assert.Equal(xs, new int[] {
+        Assert.Equal(xs, [
                 int.MaxValue - 5,
                 int.MaxValue - 4,
                 int.MaxValue - 3,
                 int.MaxValue - 2,
                 int.MaxValue - 1,
-                int.MaxValue });
+                int.MaxValue]);
 
         var ys = Lists.Range((char)(char.MaxValue - 5), 6);
-        Assert.Equal(ys, new char[] {
+        Assert.Equal(ys, [
                 (char)(char.MaxValue - 5),
                 (char)(char.MaxValue - 4),
                 (char)(char.MaxValue - 3),
                 (char)(char.MaxValue - 2),
                 (char)(char.MaxValue - 1),
-                char.MaxValue });
+                char.MaxValue]);
 
         Assert.Equal(Enumerable.Range(0, 0), []);
         Assert.Equal(Lists.Range('A', 0), []);

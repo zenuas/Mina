@@ -59,7 +59,34 @@ public static class Lists
         for (var i = 0; i < length; i++, start++) yield return start;
     }
 
+    public static IEnumerable<byte> RangeTo(byte start, byte end) => Sequence(start).Take(end - start + 1);
+    public static IEnumerable<short> RangeTo(short start, short end) => Sequence(start).Take(end - start + 1);
     public static IEnumerable<int> RangeTo(int start, int end) => Enumerable.Range(start, end - start + 1);
+    public static IEnumerable<long> RangeTo(long start, long end) => Sequence(start).Take(end - start + 1);
+    public static IEnumerable<sbyte> RangeTo(sbyte start, sbyte end) => Sequence(start).Take(end - start + 1);
+    public static IEnumerable<ushort> RangeTo(ushort start, ushort end) => Sequence(start).Take(end - start + 1);
+    public static IEnumerable<uint> RangeTo(uint start, uint end) => Sequence(start).Take(end - start + 1);
+    public static IEnumerable<ulong> RangeTo(ulong start, ulong end) => Sequence(start).Take(end - start + 1);
+
+    public static IEnumerable<T> Take<T>(this IEnumerable<T> self, long count)
+    {
+        var i = 0L;
+        foreach (var v in self)
+        {
+            if (i++ >= count) break;
+            yield return v;
+        }
+    }
+
+    public static IEnumerable<T> Take<T>(this IEnumerable<T> self, ulong count)
+    {
+        var i = 0UL;
+        foreach (var v in self)
+        {
+            if (i++ >= count) break;
+            yield return v;
+        }
+    }
 
     public static IEnumerable<char> RangeTo(char start, char end) => Range(start, end - start + 1);
 
