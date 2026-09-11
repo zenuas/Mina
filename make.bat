@@ -2,26 +2,29 @@
 @set PREVPROMPT=%PROMPT%
 @prompt $E[1A
 @set MAKE=make.bat
+@set PROJ=Mina
 @echo on
 
-@if "%1" == "" (set TARGET=build
+@if "%~1" == "" (set TARGET=build
 ) else (set TARGET=%1 && shift)
+:__ARGS_APPEND
+@if "%~1" neq "" (set "ARGS=%ARGS% %1" && shift && goto :__ARGS_APPEND)
 
-@call :%TARGET% %1 %2 %3 %4 %5 %6 %7 %8 %9
+@call :%TARGET% %ARGS%
 @prompt %PREVPROMPT%
 @exit /b %ERRORLEVEL%
 
 :build
-	dotnet build --nologo -v q --clp:NoSummary
+	dotnet build --nologo -v q --clp:NoSummary -c Release %PROJ%.slnx %*
 	@exit /b %ERRORLEVEL%
 
 :clean
-	dotnet clean --nologo -v q
+	dotnet clean --nologo -v q %PROJ%.slnx %*
 	@exit /b %ERRORLEVEL%
 
 :distclean
 	@call :clean
-	@for /F %%i in ('powershell -c Select-Xml -Path Mina.slnx -XPath "//Solution/Project | ForEach-Object {$_.Node.Path}"') do @(
+	@for /F %%i in ('powershell -c Select-Xml -Path %PROJ%.slnx -XPath "//Solution/Project | ForEach-Object {$_.Node.Path}"') do @(
 		echo rmdir /S /Q %%~dpibin
 		rmdir /S /Q %%~dpibin 2>nul
 		echo rmdir /S /Q %%~dpiobj
@@ -30,20 +33,20 @@
 	@exit /b %ERRORLEVEL%
 
 :release
-	git archive HEAD --output=Mina-%DATE:/=%.zip
+	git archive HEAD --output=%PROJ%-%DATE:/=%.zip
 	
 	dotnet publish src --nologo -v q --clp:NoSummary -c Release -o .tmp
-	powershell -NoProfile $ProgressPreference = 'SilentlyContinue' ; Compress-Archive -Force -Path .tmp\*, README.md, LICENSE -DestinationPath Mina-lib-%DATE:/=%.zip
+	powershell -NoProfile $ProgressPreference = 'SilentlyContinue' ; Compress-Archive -Force -Path .tmp\*, README.md, LICENSE -DestinationPath %PROJ%-lib-%DATE:/=%.zip
 	rmdir /S /Q .tmp 2>nul
 	
 	@exit /b %ERRORLEVEL%
 
 :test
-	dotnet test --nologo -v q
+	dotnet test --nologo -v q -c Release %PROJ%.slnx %*
 	@exit /b %ERRORLEVEL%
 
 :bench
-	dotnet run --project bench/Mina.Benchmark.csproj --no-launch-profile -c Release %*
+	dotnet run --project bench --no-launch-profile -c Release %*
 	@exit /b %ERRORLEVEL%
 
 :publish
