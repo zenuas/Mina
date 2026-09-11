@@ -35,21 +35,23 @@ public static class Lists
 
     public static IEnumerable<T> Take<T>(this IEnumerable<T> self, long count)
     {
+        if (count <= 0) yield break;
         var i = 0L;
         foreach (var v in self)
         {
-            if (i++ >= count) break;
             yield return v;
+            if (++i >= count) break;
         }
     }
 
     public static IEnumerable<T> Take<T>(this IEnumerable<T> self, ulong count)
     {
+        if (count == 0) yield break;
         var i = 0UL;
         foreach (var v in self)
         {
-            if (i++ >= count) break;
             yield return v;
+            if (++i >= count) break;
         }
     }
 

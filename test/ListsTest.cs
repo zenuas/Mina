@@ -1,6 +1,7 @@
 ﻿using Mina.Extension;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Xunit;
@@ -42,6 +43,26 @@ public class ListsTest
     {
         var xs = Lists.RangeTo(1L, 3L);
         Assert.Equal(xs, [1, 2, 3]);
+    }
+
+    [Fact]
+    public void TakeLongTest()
+    {
+        var vs = new List<int>();
+        var i = 0;
+        var xs = Lists.Repeat(() => { vs.Add(++i); return i; }).Take(3L);
+        Assert.Equal(xs, [1, 2, 3]);
+        Assert.Equal(vs, [1, 2, 3]);
+    }
+
+    [Fact]
+    public void TakeULongTest()
+    {
+        var vs = new List<int>();
+        var i = 0;
+        var xs = Lists.Repeat(() => { vs.Add(++i); return i; }).Take(3UL);
+        Assert.Equal(xs, [1, 2, 3]);
+        Assert.Equal(vs, [1, 2, 3]);
     }
 
     [Fact]
